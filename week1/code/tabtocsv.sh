@@ -22,14 +22,3 @@ echo "Creating a comma delimited version of $1 ..."
 cat $1 | tr -s "\t" "," >> $1.csv
 echo "Done!"
 exit
-
-
-# Plan:
-# 1. edit the script so that if there is no input (or if the input in no correct?)
-# it will print a useful message and exit
-# tab should always have a .txt file- right?- so i can check for this lol...
-
-# I can use an if then statement
-# step 1. check if the number of arguments is at leats one
-# if not - print a message and exit
-# step 2. check if the first argument ends with .txt - update- might be better if I just check if there are tabs
