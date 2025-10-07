@@ -1,0 +1,7 @@
+# .pre-commit-config.yaml
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0  # or use the latest version
+    hooks:
+      - id: check-added-large-files
+        args: ['--maxkb=1000', '--enforce-all']  # optional: set a custom size limit in KB
