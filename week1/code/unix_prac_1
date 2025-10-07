@@ -1,0 +1,14 @@
+
+#1 
+wc -l ../data/fasta/*.fasta
+
+#2 
+cat ../data/fasta/E.coli.fasta | tail -n +2  
+
+#3 
+tail -n +2 ../data/fasta/E.coli.fasta | tr -d '\n'| wc -m
+
+#4 
+tail -n +2 ../data/fasta/E.coli.fasta | tr -d '\n'| grep ATGC -o | wc -l
+
+#5
