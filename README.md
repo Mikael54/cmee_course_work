@@ -37,6 +37,6 @@ This project uses the following languages:
 - Unix/Linux environment or macOS
 
 ## Author
-**Mikael Ridza Minten**
-Email: mikael.minten25@imperial.ac.uk
-Institution: Imperial College London
+**Mikael Ridza Minten**  
+Email: mikael.minten25@imperial.ac.uk  
+Institution: Imperial College London  
