@@ -15,11 +15,10 @@ fi
 if ! grep -q $',' $1; then
     echo "This file has no commas"
     exit 1
-fi # note- does a file with just one value contain commas?- maybe this test is bad- do double check!!
-
+fi 
 
 echo "Creating a space separated version of $1 ..."
-cat $1 | tr -s "," " " >> $1.txt
+cat "$1" | tr -s "," " " >> "../results/$(basename "$1").txt"
 echo "Done!"
 exit
 
