@@ -19,8 +19,6 @@ fi # note- does a file with just one value contain tabs?- maybe this test is bad
 
 
 echo "Creating a tab separated version of $1 ..."
-cat $1 | tr -s "\t" "," >> $1.csv
+cat $1 | tr -s "\t" "," >> "../results/$(basename "$1").csv"
 echo "Done!"
 exit
-
-# another idea- maybe write the script so it removes the .csv before changing it to txt?
