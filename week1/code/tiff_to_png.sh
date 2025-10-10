@@ -19,7 +19,7 @@ fi
 
 
 if ! ls "$1"/*.tif 1> /dev/null 2>&1; then
-    echo "No .tif file present"
+    echo "Please provide a directory with .tif files"
     exit 1
 fi
 

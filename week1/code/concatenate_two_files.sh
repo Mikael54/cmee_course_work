@@ -22,8 +22,7 @@ if [ ! -f "$2" ]; then
     exit 1
 fi
 
-
 cat $1 > "../results/$(basename "$3")"
 cat $2 >> "../results/$(basename "$3")"
-echo "Files $1 and $2 have been concatenated into $3 in the results directory"
+echo "Files $(basename "$1") and $(basename "$2") have been concatenated into $(basename "$3") in the results directory"
 cat ../results/$3
