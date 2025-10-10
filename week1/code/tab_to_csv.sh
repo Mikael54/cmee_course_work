@@ -11,6 +11,11 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
+if [ ! -f "$1" ]; then
+    echo "Error: File '$1' does not exist"
+    exit 1
+fi
+
 if ! grep -q $'\t' $1; then
     echo "This file has no tabs"
     exit 1
