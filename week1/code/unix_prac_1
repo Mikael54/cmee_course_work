@@ -12,4 +12,7 @@ tail -n +2 ../data/fasta/E.coli.fasta | tr -d '\n'| wc -m
 tail -n +2 ../data/fasta/E.coli.fasta | tr -d '\n'| grep ATGC -o | wc -l
 
 #5
-echo "scale=4; $(tail -n +2 ../data/fasta/E.coli.fasta | grep -o '[AT]' | wc -l) / $(tail -n +2 ../data/fasta/E.coli.fasta | grep -o '[GC]' | wc -l)" | bc
+VAR_AT=$(tail -n +2 ../data/fasta/E.coli.fasta | tr -d '\n'| grep '[AT]' -o | wc -l)
+VAR_GC=$(tail -n +2 ../data/fasta/E.coli.fasta | tr -d '\n'| grep '[GC]' -o | wc -l)
+echo "scale=4; $VAR_AT / $VAR_GC" | bc
+
