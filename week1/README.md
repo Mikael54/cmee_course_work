@@ -17,9 +17,6 @@ This project uses the following languages:
 
 - **Bash** (Unix shell scripting) - Version 4.0+
 
-### R Packages
-(To be updated as packages are introduced in coursework)
-
 ### System Requirements
 - Unix/Linux environment or macOS
 - imagemagick for .tiff to .png conversions
