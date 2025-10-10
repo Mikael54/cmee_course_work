@@ -5,7 +5,7 @@ filename=$(basename "$1" .tex)
 
 # Compile in current directory but move PDF to results
 pdflatex $filename.tex
-bibtex $filename.bib
+bibtex $filename
 pdflatex $filename.tex
 pdflatex $filename.tex
 
