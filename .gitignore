@@ -71,13 +71,6 @@ renv/            # renv library folder (if you vendor packages)
 *.crt
 *.cert
 
-##########################
-# Build / distribution / binaries
-##########################
-dist/
-out/
-*.exe
-*.dll
-*.so
+
 
 
