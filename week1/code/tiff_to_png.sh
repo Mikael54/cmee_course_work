@@ -1,4 +1,10 @@
 #!/bin/bash
+# Author: Mikael Minten mikael.minten25@imprial.ac.uk
+# Script: tiff to png
+# Desc: Tiff to png coversion script
+# Argument: 1 -> Directory containing .tif files
+# Saves the output as a .png file in the results directory
+# Date: Oct 2025
 
 if ! command -v convert &> /dev/null; then
     echo "ImageMagick is not installed. Please install it first."

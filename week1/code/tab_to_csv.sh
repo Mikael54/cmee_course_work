@@ -2,7 +2,6 @@
 # Author: Mikael Ridza Minten mikael.minten25@imperial.ac.uk
 # Script: tabtocsv
 # Description: substitute the tab in the files with commas
-#
 # Saves the output into a .csv file
 # Arguments: 1 -> tab file
 # Date: Oct 2019
@@ -15,10 +14,9 @@ fi
 if ! grep -q $'\t' $1; then
     echo "This file has no tabs"
     exit 1
-fi # note- does a file with just one value contain tabs?- maybe this test is bad- do double check!!
-
+fi 
 
 echo "Creating a tab separated version of $1 ..."
-cat $1 | tr -s "\t" "," >> "../results/$(basename "$1").csv"
+cat $1 | tr -s "\t" "," >> "../results/$(basename "$1" .txt).csv"
 echo "Done!"
 exit
