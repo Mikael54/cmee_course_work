@@ -21,11 +21,10 @@ latin_names = []
 common_names = []
 weights = []
 
-for row in birds:
-    latin_names.append(row[0])
-    common_names.append(row[1])
-    weights.append(row[2])
-
+for latin, common, weight in birds:
+    latin_names.append(latin)
+    common_names.append(common)
+    weights.append(weight)
 
 
 # A nice example out out is:
