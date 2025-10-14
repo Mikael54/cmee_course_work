@@ -3,3 +3,6 @@ for (i in 1:10) {
     next # pass to next iteration of loop 
   print(i)
 }
+
+
+plot
