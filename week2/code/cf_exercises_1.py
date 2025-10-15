@@ -44,17 +44,6 @@ def foo_6(x):
     return facto
 
 
-def main(argv):
-    print(foo_1(1))
-    print(foo_2(1))
-    print(foo_3(1))
-    print(foo_4(1))
-    print(foo_5(1))
-    print(foo_6(1))
-    return 0
-
-
-
 if (__name__ == "__main__"):
     status = main(sys.argv)
     sys.exit(status)
