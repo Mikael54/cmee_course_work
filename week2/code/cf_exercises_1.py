@@ -1,3 +1,13 @@
+#!/usr/bin/env python3
+
+"""Some functions exemplifying the use of control statements"""
+__author__ = 'Mikael Minten (mikael.minten25@imperial.ac.uk)'
+__version__ = '0.0.1'
+
+
+import sys
+
+
 def foo_1(x):
     return x ** 0.5
 
@@ -33,3 +43,18 @@ def foo_6(x):
         x = x - 1
     return facto
 
+
+def main(argv):
+    print(foo_1(1))
+    print(foo_2(1))
+    print(foo_3(1))
+    print(foo_4(1))
+    print(foo_5(1))
+    print(foo_6(1))
+    return 0
+
+
+
+if (__name__ == "__main__"):
+    status = main(sys.argv)
+    sys.exit(status)
