@@ -1,19 +1,33 @@
-# Two example sequences to match
-seq2 = "ATCGCCGGATTACGGG"
-seq1 = "CAATTCGGAT"
+#!/usr/bin/env python3
 
-# Assign the longer sequence s1, and the shorter to s2
-# l1 is length of the longest, l2 that of the shortest
+"""A code that finds the best allignent for two strands based on a csv"""
+__author__ = 'Mikael Minten (mikael.minten25@imperial.ac.uk)'
+__version__ = '0.0.1'
 
-l1 = len(seq1)
-l2 = len(seq2)
-if l1 >= l2:
-    s1 = seq1
-    s2 = seq2
-else:
-    s1 = seq2
-    s2 = seq1
-    l1, l2 = l2, l1 # swap the two lengths
+import sys
+
+def import_values():
+
+    import csv
+
+    with open("../data/align_seq_sample.csv", "r") as file:
+        reader = csv.reader(file)
+        rows = list(reader)
+        seq1 = ''.join(rows[0]) # using join to make it a string
+        seq2 = ''.join(rows[1])
+
+    l1 = len(seq1)
+    l2 = len(seq2)
+    if l1 >= l2:
+        s1 = seq1
+        s2 = seq2
+    else:
+        s1 = seq2
+        s2 = seq1
+        l1, l2 = l2, l1 # swap the two lengths
+
+    return(s1, s2, l1, l2)
+
 
 # A function that computes a score by returning the number of matches starting
 # from arbitrary startpoint (chosen by user)
@@ -37,20 +51,32 @@ def calculate_score(s1, s2, l1, l2, startpoint):
 
     return score
 
-# Test the function with some example starting points:
-# calculate_score(s1, s2, l1, l2, 0)
-# calculate_score(s1, s2, l1, l2, 1)
-# calculate_score(s1, s2, l1, l2, 5)
 
-# now try to find the best match (highest score) for the two sequences
-my_best_align = None
-my_best_score = -1
+def find_best_score(s1, s2, l1, l2):
+    my_best_align = None
+    my_best_score = -1
 
-for i in range(l1): # Note that you just take the last alignment with the highest score
-    z = calculate_score(s1, s2, l1, l2, i)
-    if z > my_best_score:
-        my_best_align = "." * i + s2 # think about what this is doing!
-        my_best_score = z 
-print(my_best_align)
-print(s1)
-print("Best score:", my_best_score)
+    for i in range(l1): # Note that you just take the last alignment with the highest score
+        z = calculate_score(s1, s2, l1, l2, i)
+        if z > my_best_score:
+            my_best_align = "." * i + s2 # think about what this is doing!
+            my_best_score = z 
+    print(f"{my_best_align}\n{s1}\nBest score: {my_best_score}")
+    result = f"{my_best_align}\n{s1}\nBest score: {my_best_score}"
+    return result 
+
+def main(argv):
+    s1, s2, l1, l2 = import_values()
+    with open( '../results/aligned_seq.txt', 'w') as f:
+        f.write(find_best_score(s1, s2, l1, l2))    
+    return(0)
+
+
+if (__name__ == "__main__"):
+    status = main(sys.argv)
+    sys.exit(status)
+
+
+
+
+
