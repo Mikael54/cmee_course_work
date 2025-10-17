@@ -23,6 +23,7 @@ logs/
 
 # Python 
 __pycache__/     # compiled bytecode
+**/__pycache__/
 *.py[cod]        # compiled python files
 *.pyo
 *.pyd
