@@ -5,10 +5,10 @@ __author__ = 'Mikael Minten (mikael.minten25@imperial.ac.uk)'
 __version__ = '0.0.1'
 
 import sys
+import csv
+
 
 def import_values():
-
-    import csv
 
     with open("../data/align_seq_sample.csv", "r") as file:
         reader = csv.reader(file)
@@ -75,8 +75,3 @@ def main(argv):
 if (__name__ == "__main__"):
     status = main(sys.argv)
     sys.exit(status)
-
-
-
-
-
