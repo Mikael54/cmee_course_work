@@ -1,0 +1,446 @@
+======================================================================
+AUTOMATED FEEDBACK LOG
+======================================================================
+
+HOW TO READ THIS FEEDBACK:
+--------------------------
+1. This log contains detailed feedback on your code execution
+2. Each script is tested and results are shown with output and errors
+3. IMPORTANT: Read all the way to the END for a summary and debugging guidance
+4. The summary at the end will help you understand and fix any issues
+5. Scripts are run in a headless environment (no GUI applications)
+
+======================================================================
+
+Starting testing for Mikael Minten
+
+Processing week 1
+
+Your current Git repo size is about 1.49 MiB on disk
+
+Found directories: .git, week1, week2, Feedback, week3
+Found files: .pre-commit-config.yaml, .gitignore, README.md
+
+Processing week 1: week1
+
+Found 9 code files to test.
+
+Note: Expected file checking not performed (no FileList provided).
+Expected file checking will only be performed during final assessment.
+
+======================================================================
+Script: count_lines.sh
+
+Contents:
+
+**********
+#!/bin/bash
+# Author: Mikael Minten mikael.minten25@imprial.ac.uk
+# Desc: script to count the number of lines in a file
+# Argument: 1 -> Input file
+# Date: Oct 2025
+
+if [ $# -eq 0 ]; then
+    echo "Please provide a file"
+    exit 1
+fi
+
+
+NumLine=`wc -l < $1`
+echo "the file $1 has $NumLine lines"
+echo
+
+
+
+**********
+
+Output (first 500 chars):
+
+**********
+Please provide a file
+
+**********
+No errors.
+======================================================================
+Script: concatenate_two_files.sh
+
+Contents:
+
+**********
+#!/bin/bash
+# Author: Mikael Minten mikael.minten25@imprial.ac.uk
+# Desc: script to concatenate two files into one
+# Argument: 1 -> First input file, 2 -> Second input file, 3 -> Output file name (will be saved in results directory)
+# Saves the output into the results directory
+# Date: Oct 2025
+
+if [ $# -ne 3 ]; then
+    echo "Please provide two input files and one output file"
+    exit 1
+fi
+
+# Check if first input file exists
+if [ ! -f "$1" ]; then
+    echo "Error: File '$1' does not exist"
+    exit 1
+fi
+
+# Check if second input file exists
+if [ ! -f "$2" ]; then
+    echo "Error: File '$2' does not exist"
+    exit 1
+fi
+
+cat $1 > "../results/$(basename "$3")"
+cat $2 >> "../results/$(basename "$3")"
+echo "Files $(basename "$1") and $(basename "$2") have been concatenated into $(basename "$3") in the results directory"
+cat ../results/$3
+**********
+
+Output (first 500 chars):
+
+**********
+Please provide two input files and one output file
+
+**********
+No errors.
+======================================================================
+Script: csv_to_space.sh
+
+Contents:
+
+**********
+#!/bin/sh
+# Author: Mikael Ridza Minten mikael.minten25@imperial.ac.uk
+# Script: csvtospace
+# Description: substitute the comma in the files with spaces
+# Saves the output into a .txt file
+# Arguments: 1 -> csv file
+# Date: Oct 2019
+
+if [ $# -eq 0 ]; then
+    echo "Please provide a file"
+    exit 1
+fi
+
+if ! grep -q $',' $1; then
+    echo "This file has no commas"
+    exit 1
+fi 
+
+echo "Creating a space separated version of $1 ..."
+cat "$1" | tr -s "," " " >> "../results/$(basename "$1" .csv).txt"
+echo "Done!"
+exit
+
+**********
+
+Output (first 500 chars):
+
+**********
+Please provide a file
+
+**********
+No errors.
+======================================================================
+Script: boilerplate.sh
+
+Contents:
+
+**********
+#!/bin/sh
+# Author: Mikael Minten mikael.minten25@imprial.ac.uk
+# Desc: simple boilerplate for shell scripts
+# Argument: none
+# Date: Sep 2025
+
+echo -e "\nThis is a shell script! \n"
+
+#exit
+**********
+
+Output (first 500 chars):
+
+**********
+
+This is a shell script! 
+
+
+**********
+No errors.
+======================================================================
+Script: tiff_to_png.sh
+
+Contents:
+
+**********
+#!/bin/bash
+# Author: Mikael Minten mikael.minten25@imprial.ac.uk
+# Script: tiff to png
+# Desc: Tiff to png coversion script
+# Argument: 1 -> Directory containing .tif files
+# Saves the output as a .png file in the results directory
+# Date: Oct 2025
+
+if ! command -v convert &> /dev/null; then
+    echo "ImageMagick is not installed. Please install it first."
+    exit 1
+fi
+
+
+if [ $# -eq 0 ]; then
+    echo "Please provide a directory"
+    exit 1
+fi
+
+
+if ! ls "$1"/*.tif 1> /dev/null 2>&1; then
+    echo "Please provide a directory with .tif files"
+    exit 1
+fi
+
+
+for f in "$1"/*.tif; 
+    do  
+        echo "Converting $f"; 
+        convert "$f"  "../results/$(basename "$f" .tif).png"; 
+    done
+**********
+
+Output (first 500 chars):
+
+**********
+Please provide a directory
+
+**********
+No errors.
+======================================================================
+Script: compile_latex.sh
+
+Contents:
+
+**********
+#!/bin/bash
+
+# Remove .tex extension if present
+filename=$(basename "$1" .tex)
+
+# Compile in current directory but move PDF to results
+pdflatex $filename.tex
+bibtex $filename
+pdflatex $filename.tex
+pdflatex $filename.tex
+
+# Move PDF to results directory
+mv $filename.pdf ../results/
+
+# Open PDF from results directory
+evince ../results/$filename.pdf &
+
+## Cleanup
+rm *.aux
+rm *.log
+rm *.bbl
+rm *.blg
+**********
+
+Output (first 500 chars):
+
+**********
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex)
+ restricted \write18 enabled.
+entering extended mode
+(/usr/share/texlive/texmf-dist/tex/latex/tools/.tex
+LaTeX2e <2023-11-01> patch level 1
+L3 programming layer <2024-01-22>
+File ignored)
+*
+! Emergency stop.
+<*> 
+    
+!  ==> Fatal error occurred, no output PDF file produced!
+Transcript written on .log.
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex
+**********
+Errors:
+**********
+bibtex: Need exactly one file argument.
+Try `bibtex --help' for more information.
+mv: cannot stat '.pdf': No such file or directory
+rm: cannot remove '*.aux': No such file or directory
+rm: cannot remove '*.log': No such file or directory
+rm: cannot remove '*.bbl': No such file or directory
+rm: cannot remove '*.blg': No such file or directory
+Cannot parse arguments: Cannot open display: 
+
+**********
+======================================================================
+Script: tab_to_csv.sh
+
+Contents:
+
+**********
+#!/bin/sh
+# Author: Mikael Ridza Minten mikael.minten25@imperial.ac.uk
+# Script: tabtocsv
+# Description: substitute the tab in the files with commas
+# Saves the output into a .csv file
+# Arguments: 1 -> tab file
+# Date: Oct 2019
+
+if [ $# -eq 0 ]; then
+    echo "Please provide a file"
+    exit 1
+fi
+
+if [ ! -f "$1" ]; then
+    echo "Error: File '$1' does not exist"
+    exit 1
+fi
+
+if ! grep -q $'\t' $1; then
+    echo "This file has no tabs"
+    exit 1
+fi 
+
+echo "Creating a tab separated version of $1 ..."
+cat $1 | tr -s "\t" "," >> "../results/$(basename "$1" .txt).csv"
+echo "Done!"
+exit
+
+**********
+
+Output (first 500 chars):
+
+**********
+Please provide a file
+
+**********
+No errors.
+======================================================================
+Script: my_example_script.sh
+
+Contents:
+
+**********
+#!/bin/sh
+# Author: Mikael Ridza Minten mikael.minten25@imperial.ac.uk
+# Script: My example script
+# Description: A simple script to print Hello and the username
+# Arguments: None
+# Date: Oct 2019
+
+MSG1="Hello"
+MSG2=$USER 
+echo "$MSG1 $MSG2"
+echo "Hello $USER"
+echo
+**********
+
+Output (first 500 chars):
+
+**********
+Hello mhasoba
+Hello mhasoba
+
+
+**********
+No errors.
+======================================================================
+Script: variables.sh
+
+Contents:
+
+**********
+#!/bin/sh
+
+## Illustrates the use of variables
+
+# Special variables
+
+echo "this script was called with $# parameters"
+echo "the scripts name is $0"
+echo "the arguments are $@"
+echo "the first argument is $1"
+echo "the second argument is $2"
+
+# Assigned Variables: Explicit declaration:
+MY_VAR='some string'
+echo 'the current value of the variable is:' $MY_VAR
+echo
+echo 'Please enter a new string'
+read MY_VAR
+echo
+echo 'the current value of the variable is:' $MY_VAR
+echo
+
+#Assigned Variables; Reading (multiple values) from user input
+echo 'Enter two numbers seperated by space(s)'
+read a b
+echo
+echo 'you entered' $a 'and' $b ';Their sum is:'
+
+## Assigned Variables; Command substitution
+MY_SUM=$(expr $a + $b)
+echo $MY_SUM
+**********
+
+Output (first 500 chars):
+
+**********
+this script was called with 0 parameters
+the scripts name is variables.sh
+the arguments are 
+the first argument is 
+the second argument is 
+the current value of the variable is: some string
+
+Please enter a new string
+
+the current value of the variable is:
+
+Enter two numbers seperated by space(s)
+
+you entered and ;Their sum is:
+
+
+**********
+Errors:
+**********
+expr: syntax error: missing argument after ‘+’
+
+**********
+
+======================================================================
+FEEDBACK SUMMARY
+======================================================================
+
+Scripts tested: 13
+Scripts successful: 11
+Scripts with errors: 2
+Warnings/Notes: 1
+
+IMPORTANT DEBUGGING GUIDANCE:
+------------------------------
+
+Please review all warnings and errors, and your directory structure based on the above log.
+
+Ask yourself: Why did I not get these warnings or errors on my machine when I tested my code?
+Common reasons for environment differences:
+
+• File paths: Your local machine may have different directory structures
+• Dependencies: Missing packages or different versions
+• File permissions: Scripts may not be executable on the testing server
+• Case sensitivity: Linux systems are case-sensitive (your laptop may not be)
+• Working directory: Scripts may assume they run from a specific location
+• Input files: Required data files may be missing or in wrong locations
+
+Debugging steps:
+1. Test your code in a clean environment (fresh directory)
+2. Check all file paths are relative and correct
+3. Verify all required files are present and properly named
+4. Test on a case-sensitive system if possible
+5. Run your scripts from different directories to check robustness
+
+Fix these issues and test again. Good debugging skills are essential for scientific computing!
+
