@@ -19,11 +19,11 @@ def is_an_oak(name):
     True
     
     """
-    return name.lower().startswith('quercus')
+    return name.lower().startswith('quer') # making it so it can recognise typos as long as it starts with quer
 
 def main(argv): 
     f = open('../data/test_oak_data.csv','r')
-    g = open('../data/just_oak_data.csv','w') #doesnt w mean we write it??- should it not go to results- check with smraat tomorow?
+    g = open('../results/just_oak_data.csv','w') 
     taxa = csv.reader(f)
     csvwrite = csv.writer(g)
     oaks = set()
@@ -37,8 +37,8 @@ def main(argv):
 
     return 0
     
-#if (__name__ == "__main__"):
-#    status = main(sys.argv)
+if (__name__ == "__main__"):
+    status = main(sys.argv)
 
 
 
