@@ -10,36 +10,24 @@ taxa = [ ('Myotis lucifugus','Chiroptera'),
          ('Canis lupus', 'Carnivora'),
         ]
 
-# Write a python script to populate a dictionary called taxa_dic derived from
-# taxa so that it maps order names to sets of taxa and prints it to screen.
-# 
-# An example output is:
-#  
-# 'Chiroptera' : set(['Myotis lucifugus']) ... etc. 
-# OR, 
-# 'Chiroptera': {'Myotis  lucifugus'} ... etc
+taxa_dic = {}
 
-#### Your solution here #### 
-
-taxa =()
-
-dictionary = {testing:set()}
 for species, order in taxa:
-    
-    if order 
-    
-    #is not in taxa then
-        #add order to taxa
+    if order in taxa_dic:
+        taxa_dic[order].add(species)
+    else:
+        taxa_dic[order] = set([species])
 
-# plan:
-# the dictionary must be linked to a set- ie. 'a': 'frfr', 'frfrfr', ect.
-# it should be atupple used as a dictionary key i suppose
-# add orders to the key using and if command
-# theni will have a key- then i can use an if loop to add it to the respective taxa?? if it is the same value?
+print(taxa_dic)
 
-    
+
 
 
 # Now write a list comprehension that does the same (including the printing after the dictionary has been created)  
  
-#### Your solution here #### 
+taxa_dic = {}
+
+orders  = {order for species, order in taxa}
+
+taxa_dic = {order: {species for species, order_2 in taxa if order_2 == order} for order in orders}
+print(taxa_dic)
