@@ -19,6 +19,8 @@
 logs/
 
 
+# Virtual environment
+myenv/
 
 
 # Python 
