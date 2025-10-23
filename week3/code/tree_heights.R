@@ -10,12 +10,24 @@
 # OUTPUT
 # The heights of the tree, same units as "distance"
 
-tree_heigth <- function(degrees, distance) {
+
+if (!require("tidyverse", quietly = TRUE)) {
+  stop("Please install the 'tidyverse' package")
+}
+
+require("tidyverse") # check if tidyverse is installed- if not give an error 
+
+tree_height <- function(degrees, distance) {
     radians <- degrees * pi /180
     height <- distance * tan(radians)
-    print(paste("Tree height is: ", height))
-
     return (height)
 }
 
-tree_heigth(37, 40)
+tree_data <- read.csv("../data/trees.csv", header = TRUE)
+
+tree_data <- tree_data %>%
+    mutate(Tree.Height.m = tree_height(Angle.degrees, Distance.m))
+
+write.csv(tree_data, "../results/tree_hts.csv", row.names = FALSE)
+
+# This script should work using either source or Rscript in Linux / UNIX.
