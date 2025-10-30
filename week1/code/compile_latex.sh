@@ -1,7 +1,20 @@
 #!/bin/bash
 
+
+# Check if argument provided
+if [ -z "$1" ]; then
+    echo "Error: No filename provided"
+    exit 1
+fi
+
 # Remove .tex extension if present
 filename=$(basename "$1" .tex)
+
+# check if file exist
+if [ ! -f "$filename.tex" ]; then
+    echo "Error: $filename.tex not found"
+    exit 1
+fi
 
 # Compile in current directory but move PDF to results
 pdflatex $filename.tex
