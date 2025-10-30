@@ -1,6 +1,6 @@
 rm(list=ls())
 
-ats <- load("../data/key_west_annual_mean_temperature.RData")
+load("../data/key_west_annual_mean_temperature.RData")
 
 
 permutation <- function(df, number_of_permutation){
