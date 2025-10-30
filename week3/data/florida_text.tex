@@ -1,0 +1,35 @@
+\documentclass[10pt]{article}  % smaller base font
+\usepackage{graphicx}
+\usepackage{geometry}
+\geometry{margin=0.8in}  % narrower margins
+
+\usepackage{setspace}
+\setstretch{0.95}  % slightly tighter line spacing
+
+\begin{document}
+
+\title{Annual Temperature in Florida (1901--2000)}
+\author{Mikael Minten}
+\date{October 2025}
+\maketitle
+
+\section*{Introduction}
+This analysis examines annual mean temperature data from Key West, Florida, to determine whether temperatures significantly increased during the 20th century. 
+
+\section*{Methods}
+We calculated Pearson’s correlation between year and annual temperature. To test if this correlation could occur by chance, we ran a permutation test with 100,000 iterations, shuffling temperature values among years each time and recalculating the correlation. The $p$-value was the proportion of permuted correlations greater than the observed one, testing the null hypothesis of no relationship between year and temperature.
+
+\section*{Results}
+The observed correlation coefficient was $r = 0.533$. Of 100,000 random permutations, zero produced a correlation greater than the observed value. Figure~\ref{fig:temp} shows a clear positive trend in annual temperatures across the century.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.6\textwidth]{../results/temperature_plot.pdf}
+\caption{Annual mean temperature in Key West, Florida (1901--2000). Blue line shows linear regression.}
+\label{fig:temp}
+\end{figure}
+
+\section*{Conclusion}
+The permutation test provides strong evidence that temperatures in Key West increased significantly during the 20th century. With 100,000 permutations, the probability of observing a correlation of 0.533 or stronger by random chance is zero, allowing us to reject the null hypothesis of no temporal trend.
+
+\end{document}
