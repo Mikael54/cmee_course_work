@@ -1,19 +1,7 @@
 
-
 library(tidyverse)
 
 ecol <- read.csv("../data/ecol_archives_e089_51_d1.csv")
-
-
-
-# coulor = predator. lifestage
-# facet = Type.of.feeding.interaction
-# x= prey mass in grams, y= predator mass in grams
-# include and lm function
-
-
-# step 1- is make sure the units are consistem
-
 
 gram_conversion <- function(unit, value) {
   ifelse(unit == "mg",
@@ -44,6 +32,29 @@ ecol <- ecol %>%
     x = "Prey Mass in grams",               
     y = "Predator Mass in grams"                 
   ))
-# everything to be included: The regression results should include the following with appropriate headers (e.g., slope, intercept, etc, in each Feeding type
-#life stage category): regression slope, regression intercept, R
-#, F-statistic value, and p-value of the overall regression (Hint: Review the Stats week!).
+
+
+regression_results <- ecol %>%
+  group_by(Type.of.feeding.interaction, Predator.lifestage) %>%
+  filter(n() >= 3) %>% # make sure that there are no NaNs
+  summarise(
+    # Fit the linear model
+    model = list(lm(Prey.mass.grams ~ Predator.mass, data = cur_data())),
+    
+    # Extract slope, intercept, and summary stats
+    slope = coef(model[[1]])[2],
+    intercept = coef(model[[1]])[1],
+    r_squared = summary(model[[1]])$r.squared,
+    f_statistic = summary(model[[1]])$fstatistic[1],
+    p_value = pf(summary(model[[1]])$fstatistic[1],
+                 summary(model[[1]])$fstatistic[2],
+                 summary(model[[1]])$fstatistic[3],
+                 lower.tail = FALSE),
+    .groups = "drop"
+  ) %>%
+  select(-model)  # remove model list column before saving
+
+
+write.csv(regression_results, "../results/reggression_results.csv")
+
+ggsave("../results/reggression.pdf", plot = p, width = 8, height = 15)
