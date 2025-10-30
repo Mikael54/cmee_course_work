@@ -11,7 +11,7 @@ with open('../data/test_csv.csv', 'r') as f:
         print(row)
         print("The species is", row[0])
 
-with open('../data/testcsv.csv', 'r') as f:
+with open('../data/test_csv.csv', 'r') as f:
     with open('../results/body_mass.csv', 'w') as g:
 
         csvread = csv.reader(f)
