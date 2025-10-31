@@ -1,3 +1,8 @@
+# A script to plott the Girko’s law simulation, including saving the result figure as a file called Girko.pdf in the results directory.
+
+library(tidyverse)
+
+
 build_ellipse <- function(hradius, vradius){ # function that returns an ellipse
   npoints = 250
   a <- seq(0, 2 * pi, length = npoints + 1)
@@ -34,3 +39,5 @@ p <- p + geom_vline(aes(xintercept = 0))
 # finally, add the ellipse
 p <- p + geom_polygon(data = ellDF, aes(x = Real, y = Imaginary, alpha = 1/20, fill = "red"))
 p
+
+ggsave("../results/girko.pdf", plot = p, width = 5,height = 5)
