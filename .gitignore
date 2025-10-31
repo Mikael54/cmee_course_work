@@ -22,6 +22,7 @@
 **/*.bak       # Backup files
 **/*.orig      # Merge/backup files
 **/*.old       # Old versions
+.tmp
 
 
 #############################################
