@@ -1,3 +1,8 @@
+# Author: Mikael Minten
+# Date: October 2025
+# Description: This script creates a plot and saves it.
+
+
 x <- seq(0, 100, by = 0.1)
 y <- -4. + 0.25 * x +
   rnorm(length(x), mean = 0., sd = 2.5)

@@ -1,3 +1,8 @@
+# Author: Mikael Minten
+# Date: October 2025
+# Description: This script loads predator-prey data, performs log-log
+# regression, analyzes results by Lifestage, and saves the plot and results table.
+
 
 library(tidyverse)
 

@@ -1,3 +1,8 @@
+# Author: Mikael Minten
+# Date: October 2025
+# Description: This script creates a figure and gets a p value for the warming in florida over the 20th century.
+
+
 rm(list=ls())
 
 library(tidyverse)
