@@ -1,3 +1,5 @@
+library(ggplot2)
+
 a <- read.table("../data/results.txt", header = TRUE)
 
 head(a)
