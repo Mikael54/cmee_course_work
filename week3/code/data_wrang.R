@@ -13,8 +13,8 @@ MyMetaData <- read.csv("../data/pound_hill_meta_data.csv", header = TRUE, sep = 
 head(MyData)
 dim(MyData)
 str(MyData)
-fix(MyData) #you can also do this
-fix(MyMetaData)
+#fix(MyData) #you can also do this
+#fix(MyMetaData)
 
 ############# Transpose ###############
 # To get those species into columns and treatments into rows 
@@ -54,7 +54,7 @@ class(MyWrangledData)
 
 glimpse(MyWrangledData) #like str(), but nicer!
 
-utils::View(MyWrangledData) #same as fix()
+#utils::View(MyWrangledData) #same as fix()
 
 slice(MyWrangledData, 10:15) # Look at a particular range of data rows
 
