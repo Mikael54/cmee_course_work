@@ -1,3 +1,9 @@
+# Author: Mikael Minten mikael.minten25@imprial.ac.uk
+# Script: unix practical 1 
+# Description: Reads multiple files based off a fasta file.
+# Date: Oct 2025
+
+
 
 #1 
 wc -l ../data/fasta/*.fasta

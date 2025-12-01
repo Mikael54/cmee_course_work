@@ -1,10 +1,11 @@
 #!/bin/bash
 # Author: Mikael Minten mikael.minten25@imprial.ac.uk
+# Script: concatenate_two_files.sh
 # Desc: script to concatenate two files into one
 # Argument: 1 -> First input file, 2 -> Second input file, 3 -> Output file name (will be saved in results directory)
-# Saves the output into the results directory
 # Date: Oct 2025
 
+# Check if three arguments are provided
 if [ $# -ne 3 ]; then
     echo "Please provide two input files and one output file"
     exit 1
@@ -22,6 +23,7 @@ if [ ! -f "$2" ]; then
     exit 1
 fi
 
+# concatenate the files
 cat $1 > "../results/$(basename "$3")"
 cat $2 >> "../results/$(basename "$3")"
 echo "Files $(basename "$1") and $(basename "$2") have been concatenated into $(basename "$3") in the results directory"

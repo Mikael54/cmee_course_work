@@ -1,4 +1,9 @@
 #!/bin/bash
+# Author: Mikael Minten mikael.minten25@imprial.ac.uk
+# Script: compile_latex.sh
+# Desc: Compiles a latex file from a text file.
+# Argument: The text file
+# Date: Oct 2025
 
 
 # Check if argument provided

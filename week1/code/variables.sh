@@ -1,6 +1,10 @@
 #!/bin/sh
+# Author: Mikael Minten mikael.minten25@imprial.ac.uk
+# Script: variables.sh 
+# Description: Illustrates the use of variables
+# Argument: Up to two input arguments
+# Date: Oct 2025
 
-## Illustrates the use of variables
 
 # Special variables
 
