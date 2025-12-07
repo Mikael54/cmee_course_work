@@ -30,6 +30,11 @@ read a b
 echo
 echo 'you entered' $a 'and' $b ';Their sum is:'
 
+if [ -z "$a" ] || [ -z "$b" ]; then
+    echo "Error: you must enter two numbers."
+    exit 1
+fi
+
 ## Assigned Variables; Command substitution
 MY_SUM=$(expr $a + $b)
 echo $MY_SUM
