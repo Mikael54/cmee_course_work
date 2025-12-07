@@ -1,6 +1,7 @@
 ################################################################
 ################## Wrangling the Pound Hill Dataset ############
 ################################################################
+library(tidyverse)
 
 ############# Load the dataset ###############
 # header = false because the raw data don't have real headers
@@ -54,12 +55,14 @@ class(MyWrangledData)
 
 glimpse(MyWrangledData) #like str(), but nicer!
 
-#utils::View(MyWrangledData) #same as fix()
+# utils::View(MyWrangledData) #same as fix()
+
+filter(MyWrangledData, Count>100) #like subset(), but nicer!
 
 slice(MyWrangledData, 10:15) # Look at a particular range of data rows
-
 
 MyWrangledData %>%
     group_by(Species) %>%
         summarise(avg = mean(Count))
 
+aggregate(MyWrangledData$Count, list(MyWrangledData$Species), FUN=mean) 
