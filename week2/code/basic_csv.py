@@ -9,9 +9,9 @@ import csv
 
 # Read a file containing:
 # 'Species','Infraorder','Family','Distribution','Body mass male (Kg)'
-with open('../data/test_csv.csv', 'r') as f:
+with open('../data/test_csv.csv', 'r') as input:
 
-    csvread = csv.reader(f)
+    csvread = csv.reader(input)
     temp = []
     for row in csvread:
         temp.append(tuple(row))
@@ -20,11 +20,11 @@ with open('../data/test_csv.csv', 'r') as f:
 
 # Write a csv with only species and body mass
 # create or overwrite '../results/body_mass.csv'.
-with open('../data/test_csv.csv', 'r') as f:
-    with open('../results/body_mass.csv', 'w') as g:
+with open('../data/test_csv.csv', 'r') as input:
+    with open('../results/body_mass.csv', 'w') as output:
 
-        csvread = csv.reader(f)
-        csvwrite = csv.writer(g)
+        csvread = csv.reader(input)
+        csvwrite = csv.writer(output)
         for row in csvread:
             print(row)
             # write species and the (string) body mass value
