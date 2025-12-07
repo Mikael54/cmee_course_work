@@ -1,5 +1,6 @@
 # Author: Mikael Minten
 # Date: October 2025
+# Script: plot_lin.R
 # Description: This script creates a plot and saves it.
 
 library(ggplot2)
@@ -35,6 +36,6 @@ p <- p + geom_text(aes(x = 60, y = 0,
                        parse = TRUE, size = 6, 
                        colour = "blue")
 
-p
 
+# save the plot
 ggsave("../results/my_lin_reg.pdf", plot = p, width = 7,height = 5)

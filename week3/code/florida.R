@@ -2,25 +2,46 @@
 # Date: October 2025
 # Description: This script creates a figure and gets a p value for the warming in florida over the 20th century.
 
-
+# Clear workspace
 rm(list=ls())
 
+# Load required library
 library(tidyverse)
 
+# Load temperature data for Key West
 load("../data/key_west_annual_mean_temperature.RData")
 
-# calculate p values
+
+# Performs permutation test by randomly shuffling temperature data and calculating correlations
+# Args:
+#   df: dataframe containing Year and Temp columns
+#   number_of_permutation: number of permutation iterations to perform
+# Returns: vector of correlation coefficients from permuted data
 permutation <- function(df, number_of_permutation){
+    # Initialize vector to store correlation coefficients
     cof_result <- vector(, number_of_permutation)
+
+    # Loop through each permutation
     for(i in 1:number_of_permutation) {
+    # Calculate correlation between Year and randomly shuffled Temp values
         cof_result[i]<- cor(df$Year, sample(df$Temp, nrow(df), replace = FALSE))
     }
     return(cof_result)
  }
 
+
+# Function: calc_p_value
+# Calculates p-value by comparing observed correlation to permutation distribution
+# Args:
+#   sequential_cof: observed correlation coefficient from actual data
+#   permutation_cof: vector of correlation coefficients from permutations
+# Returns: p-value (ratio of permutations greater than observed)
 calc_p_value <- function(sequential_cof, permutation_cof) {
+    # Initialize counters
     greater_than <- 0
     less_than <- 0
+
+    # Count how many permutation correlations are greater/less than observed
     for(i in 1:length(permutation_cof)) {
         if (permutation_cof[i] > sequential_cof) {
             greater_than <- greater_than + 1 
@@ -28,15 +49,19 @@ calc_p_value <- function(sequential_cof, permutation_cof) {
             less_than <- less_than + 1
         }
     }
+
+    # Return p-value based off a ratio
     return(greater_than/less_than) 
 }
 
+# Calculate observed correlation between Year and Temperature
 sequential_cof <-cor(ats$Year, ats$Temp)
 
+# Generate permutation distribution with 100,000 iterations
 permutation_cof <- permutation(ats, 100000)
 
+# Calculate and print p-value
 calc_p_value(sequential_cof, permutation_cof)
-
 
 
 # Making a figure

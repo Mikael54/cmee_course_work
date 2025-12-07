@@ -1,3 +1,9 @@
+# Author: Mikael Minten
+# Date: October 2025
+# Script: control_flow.R
+# Description: Demonstrates control flow tools.  
+
+
 a <- TRUE
 if (a == TRUE) {
     print ("a is TRUE")

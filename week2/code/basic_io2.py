@@ -2,7 +2,7 @@
 # Script: basic_io2.py
 # Description: Writes a text file with numbers 1-100
 # Arguments: None
-# Date: Oct 2019
+# Date: Oct 2025
 
 # Save the elements of a list to a file
 list_to_save = range(100)

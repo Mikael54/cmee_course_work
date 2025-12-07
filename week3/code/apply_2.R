@@ -1,3 +1,9 @@
+# Author: Mikael Minten
+# Date: October 2025
+# Script: apply_2.R
+# Description: Demonstrates how apply function works.
+
+
 SomeOperation <- function(v) { # (What does this function do?)
   if (sum(v) > 0) { #note that sum(v) is a single (scalar) value
     return (v * 100)

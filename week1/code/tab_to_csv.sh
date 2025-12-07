@@ -3,7 +3,7 @@
 # Script: tabtocsv.sh
 # Description: substitute the tab in the files with commas and saves the output into a .csv file
 # Arguments: 1 -> tab file
-# Date: Oct 2019
+# Date: Oct 2025
 
 # Checks if there is an input file
 if [ $# -eq 0 ]; then

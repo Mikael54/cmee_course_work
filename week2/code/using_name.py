@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-# Filename: using_name.py
+# Author: Mikael Ridza Minten mikael.minten25@imperial.ac.uk
+# Script: using_name.py
+# Description: shows how the __name__ works in python pograms.
+# Arguments: None
+# Date: Oct 2025
 
 if __name__ == '__main__':
     print('This program is being run by itself!')

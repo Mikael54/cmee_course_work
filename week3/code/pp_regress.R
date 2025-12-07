@@ -1,5 +1,6 @@
 # Author: Mikael Minten
 # Date: October 2025
+# Script: pp_regress.R
 # Description: This script loads predator-prey data, performs log-log
 # regression, analyzes results by Lifestage, and saves the plot and results table.
 
@@ -21,7 +22,7 @@ ecol <- ecol %>%
 
 
 
-(p <- ggplot(ecol, aes(x=Prey.mass.grams, y = Predator.mass, colour = Predator.lifestage)) + 
+p <- ggplot(ecol, aes(x=Prey.mass.grams, y = Predator.mass, colour = Predator.lifestage)) + 
     geom_point(shape = I(3)) + 
     facet_wrap(Type.of.feeding.interaction~., ncol =1, strip.position = "right") +
     geom_smooth(method = "lm", fullrange = TRUE) + 
@@ -36,7 +37,7 @@ ecol <- ecol %>%
   labs(
     x = "Prey Mass in grams",               
     y = "Predator Mass in grams"                 
-  ))
+  )
 
 
 regression_results <- ecol %>%

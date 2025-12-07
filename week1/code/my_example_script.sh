@@ -3,7 +3,7 @@
 # Script: My example script
 # Description: A simple script to print Hello and the username
 # Arguments: None
-# Date: Oct 2019
+# Date: Oct 2025
 
 MSG1="Hello"
 MSG2=$USER 

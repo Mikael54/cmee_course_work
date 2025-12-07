@@ -1,3 +1,8 @@
+# Author: Mikael Minten
+# Date: October 2025
+# Script: try.r
+# Description: Creating the try code that examins the 'try' function.
+
 doit <- function(x) {
     temp_x <- sample(x, replace = TRUE)
     if(length(unique(temp_x)) > 30) {#only take mean if sample was sufficient

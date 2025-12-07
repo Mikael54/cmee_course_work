@@ -1,3 +1,8 @@
+# Author: Mikael Minten
+# Date: October 2025
+# Script: sample.R
+# Description: A script to demonstrate different ways to run simulations in R, including preallocation and vectorization.
+
 ######### Functions ##########
 
 ## A function to take a sample of size n from a population "popn" and return its mean

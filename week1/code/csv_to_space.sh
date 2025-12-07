@@ -3,7 +3,7 @@
 # Script: csv_to_space.sh
 # Description: substitute the comma in the files with spaces and saves the output into a .txt file
 # Arguments: 1 -> csv file
-# Date: Oct 2019
+# Date: Oct 2025
 
 # Checks if there is an input file
 if [ $# -eq 0 ]; then

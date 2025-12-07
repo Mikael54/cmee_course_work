@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 
-"""A code that finds the best allignent for two strands based on a csv"""
+"""
+A code that finds the best allignent for two strands based on a csv file
+"""
+
+__appname__ = '[Align Sequences]'
 __author__ = 'Mikael Minten (mikael.minten25@imperial.ac.uk)'
 __version__ = '0.0.1'
 
@@ -9,7 +13,7 @@ import csv
 
 
 def import_values():
-
+    """Imports the sequence data based on a csv and extracts ordered values, including lenght and sequence"""
     with open("../data/align_seq_sample.csv", "r") as file:
         reader = csv.reader(file)
         rows = list(reader)
@@ -29,9 +33,9 @@ def import_values():
     return(s1, s2, l1, l2)
 
 
-# A function that computes a score by returning the number of matches starting
-# from arbitrary startpoint (chosen by user)
+# A function that computes a score by returning the number of matches 
 def calculate_score(s1, s2, l1, l2, startpoint):
+    """Calculate the match score based on a startpoint"""
     matched = "" # to hold string displaying alignements
     score = 0
     for i in range(l2):
@@ -53,6 +57,8 @@ def calculate_score(s1, s2, l1, l2, startpoint):
 
 
 def find_best_score(s1, s2, l1, l2):
+    """Find the best allignment between sequences"""
+
     my_best_align = None
     my_best_score = -1
 
@@ -66,6 +72,7 @@ def find_best_score(s1, s2, l1, l2):
     return result 
 
 def main(argv):
+    """Finds the best allignment and saves it to a text file"""
     s1, s2, l1, l2 = import_values()
     with open( '../results/aligned_seq.txt', 'w') as f:
         f.write(find_best_score(s1, s2, l1, l2))    

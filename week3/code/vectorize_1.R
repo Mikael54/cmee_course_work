@@ -1,3 +1,8 @@
+# Author: Mikael Minten
+# Date: October 2025
+# Script: vectorize_1.R
+# Description: A script to demonstrate vectorization in R.
+
 M <- matrix(runif(1000000), 1000, 1000)
 
 SumAllElements <- function(M) {

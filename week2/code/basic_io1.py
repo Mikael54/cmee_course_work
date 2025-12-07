@@ -2,7 +2,7 @@
 # Script: basic_io1.py
 # Description: Reads file and reads a file while skipping blank lines
 # Arguments: None
-# Date: Oct 2019
+# Date: Oct 2025
 
 
 # Open a file for reading

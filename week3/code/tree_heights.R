@@ -1,3 +1,9 @@
+# Author: Mikael Minten
+# Date: October 2025
+# Script: tree_heights.R
+# Description: A script to calculate tree heights based on distance and angle.
+
+
 # This function calculates heights of trees given distance of each tree 
 # from its base and angle to its top, using  the trigonometric formula 
 #
@@ -17,13 +23,13 @@ if (!require("tidyverse", quietly = TRUE)) {
 
 require("tidyverse") # check if tidyverse is installed- if not give an error 
 
+tree_data <- read.csv("../data/trees.csv", header = TRUE)
+
 tree_height <- function(degrees, distance) {
     radians <- degrees * pi /180
     height <- distance * tan(radians)
     return (height)
 }
-
-tree_data <- read.csv("../data/trees.csv", header = TRUE)
 
 tree_data <- tree_data %>%
     mutate(Tree.Height.m = tree_height(Angle.degrees, Distance.m))

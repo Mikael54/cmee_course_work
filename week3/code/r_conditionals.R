@@ -1,3 +1,9 @@
+# Author: Mikael Minten
+# Date: October 2025
+# Script: r_conditionals.R
+# Description: Demonstrated how conditionals and funtions work.
+
+
 # Checks if an integer is even
 is.even <- function(n = 2) {
   if (n %% 2 == 0) {

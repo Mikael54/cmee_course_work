@@ -1,3 +1,10 @@
+# Author: Mikael Ridza Minten mikael.minten25@imperial.ac.uk
+# Script: basic_csv.py
+# Description: A simple script to read and write a csv file
+# Arguments: None
+# Date: Oct 2025
+
+
 import csv
 
 # Read a file containing:
@@ -11,6 +18,8 @@ with open('../data/test_csv.csv', 'r') as f:
         print(row)
         print("The species is", row[0])
 
+# Write a csv with only species and body mass
+# create or overwrite '../results/body_mass.csv'.
 with open('../data/test_csv.csv', 'r') as f:
     with open('../results/body_mass.csv', 'w') as g:
 
@@ -18,4 +27,5 @@ with open('../data/test_csv.csv', 'r') as f:
         csvwrite = csv.writer(g)
         for row in csvread:
             print(row)
+            # write species and the (string) body mass value
             csvwrite.writerow([row[0], row[4]])

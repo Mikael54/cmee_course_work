@@ -1,3 +1,12 @@
+#!/usr/bin/env python3
+
+# Author: Mikael Ridza Minten mikael.minten25@imperial.ac.uk
+# Script: timeit_me.py
+# Description: A script to compare the performance of pro.
+# Arguments: None
+# Date: Oct 2025
+
+
 ##############################################################################
 # loops vs. list comprehensions: which is faster?
 ##############################################################################

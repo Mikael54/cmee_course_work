@@ -1,3 +1,11 @@
+#!/usr/bin/env python3
+# Author: Mikael Ridza Minten mikael.minten25@imperial.ac.uk
+# Script: scope.py
+# Description: Shows global and local variable variables.
+# Arguments: None
+# Date: Oct 2025
+
+
 _a_global = 10 # a global variable
 
 if _a_global >= 5:

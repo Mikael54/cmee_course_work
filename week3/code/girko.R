@@ -1,4 +1,7 @@
-# A script to plott the Girko’s law simulation, including saving the result figure as a file called Girko.pdf in the results directory.
+# Author: Mikael Minten
+# Date: October 2025
+# Script: girko.R
+# Description: A script to plott the Girko’s law simulation, including saving the result figure as a file called Girko.pdf in the results directory.
 
 library(tidyverse)
 
