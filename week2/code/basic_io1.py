@@ -30,4 +30,4 @@ for line in f:
     if len(line.strip()) > 0:
         print(line)
 
-f.close
+f.close()
