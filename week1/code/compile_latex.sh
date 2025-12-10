@@ -5,6 +5,21 @@
 # Argument: The text file
 # Date: Oct 2025
 
+# Check if required packages are installed
+if ! command -v pdflatex &> /dev/null; then
+    echo "Error: pdflatex is not installed. Please install a LaTeX distribution (e.g., texlive)."
+    exit 1
+fi
+
+if ! command -v bibtex &> /dev/null; then
+    echo "Error: bibtex is not installed. Please install a LaTeX distribution (e.g., texlive)."
+    exit 1
+fi
+
+if ! command -v evince &> /dev/null; then
+    echo "Error: evince is not installed. Please install evince PDF viewer."
+    exit 1
+fi
 
 # Check if argument provided
 if [ -z "$1" ]; then
