@@ -6,10 +6,19 @@
 
 
 import csv
+import os
+import sys
+
+# Check if the input file exists
+input_file = '../data/test_csv.csv'
+if not os.path.exists(input_file):
+    print(f"Error: File '{input_file}' not found.")
+    print("Please make sure the file exists in the data directory.")
+    sys.exit(1)
 
 # Read a file containing:
 # 'Species','Infraorder','Family','Distribution','Body mass male (Kg)'
-with open('../data/test_csv.csv', 'r') as input:
+with open(input_file, 'r') as input:
 
     csvread = csv.reader(input)
     temp = []
@@ -20,7 +29,7 @@ with open('../data/test_csv.csv', 'r') as input:
 
 # Write a csv with only species and body mass
 # create or overwrite '../results/body_mass.csv'.
-with open('../data/test_csv.csv', 'r') as input:
+with open(input_file, 'r') as input:
     with open('../results/body_mass.csv', 'w') as output:
 
         csvread = csv.reader(input)
