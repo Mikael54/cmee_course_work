@@ -10,11 +10,36 @@ __version__ = '0.0.1'
 
 import sys
 import csv
+import os
 
 
 def import_values():
-    """Imports the sequence data based on a csv and extracts ordered values, including lenght and sequence"""
-    with open("../data/align_seq_sample.csv", "r") as file:
+    """
+    Imports sequence data from a CSV file and orders them by length.
+    
+    Reads two DNA sequences from ../data/align_seq_sample.csv and ensures 
+    the longer sequence is assigned as s1.
+    
+    Returns:
+        tuple: (s1, s2, l1, l2) where:
+            - s1 : The longer sequence
+            - s2 : The shorter sequence 
+            - l1 : Length of s1
+            - l2 : Length of s2
+    """
+    # Check if the file exists
+    filepath = "../data/align_seq_sample.csv"
+    if not os.path.exists(filepath):
+        print(f"Error: File '{filepath}' not found.")
+        print("Please make sure the file exists in the data directory.")
+        sys.exit(1)
+    
+    # Check if the file is readable
+    if not os.access(filepath, os.R_OK):
+        print(f"Error: File '{filepath}' is not readable.")
+        sys.exit(1)
+    
+    with open(filepath, "r") as file:
         reader = csv.reader(file)
         rows = list(reader)
         seq1 = ''.join(rows[0]) # using join to make it a string
@@ -35,7 +60,22 @@ def import_values():
 
 # A function that computes a score by returning the number of matches 
 def calculate_score(s1, s2, l1, l2, startpoint):
-    """Calculate the match score based on a startpoint"""
+    """
+    Calculate the alignment score at a given starting position.
+    
+    Compares the shorter sequence (s2) against the longer sequence (s1) 
+    starting at the specified position and counts matching bases.
+    
+    Args:
+        s1 : The longer sequence
+        s2 : The shorter sequence
+        l1 : Length of s1
+        l2 : Length of s2
+        startpoint : Position in s1 where s2 alignment begins
+
+    Returns:
+        int: Number of matching bases (e.g., 5 matches out of 10 bases)
+    """
     matched = "" # to hold string displaying alignements
     score = 0
     for i in range(l2):
@@ -57,7 +97,21 @@ def calculate_score(s1, s2, l1, l2, startpoint):
 
 
 def find_best_score(s1, s2, l1, l2):
-    """Find the best allignment between sequences"""
+    """
+    Find the optimal alignment between two sequences.
+    
+    Tests all possible starting positions and returns the alignment 
+    with the highest number of matching bases.
+    
+    Args:
+        s1 : The longer sequence
+        s2 : The shorter sequence
+        l1 : Length of s1
+        l2 : Length of s2
+
+    Returns:
+        Formatted alignment result
+    """
 
     my_best_align = None
     my_best_score = -1
@@ -72,7 +126,18 @@ def find_best_score(s1, s2, l1, l2):
     return result 
 
 def main(argv):
-    """Finds the best allignment and saves it to a text file"""
+    """
+    Main function that orchestrates sequence alignment.
+    
+    Imports sequences, finds the best alignment, and saves the result 
+    to ../results/aligned_seq.txt.
+    
+    Args:
+        argv: Command line arguments (not currently used)
+    
+    Returns:
+        int: Exit status (0 for success)
+    """
     s1, s2, l1, l2 = import_values()
     with open( '../results/aligned_seq.txt', 'w') as f:
         f.write(find_best_score(s1, s2, l1, l2))    
