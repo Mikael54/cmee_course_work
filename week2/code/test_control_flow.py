@@ -27,7 +27,8 @@ def even_or_odd(x=0):
         return f"{x} is Even!"
     return f"{x} is Odd!"
 
-def main(argv): 
+def main(argv):
+    """Demonstrates the even_or_odd function and runs doctests."""
     print(even_or_odd(22))
     print(even_or_odd(33))
     return 0

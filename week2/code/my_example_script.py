@@ -6,6 +6,9 @@
 # Date: Oct 2025
 
 def foo(x):
+    """
+    Squares the input value and prints the result.
+    """
     x *= x # same as x = x*x
     print(x)
 

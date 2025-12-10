@@ -15,6 +15,7 @@ print("Before calling a_function, outside the function, the value of _a_global i
 print("Before calling a_function, outside the function, the value of _b_global is", _b_global)
 
 def a_function():
+    """Demonstrates local variables shadowing global variables."""
     _a_global = 4 # a local variable
     
     if _a_global >= 4:
@@ -36,6 +37,7 @@ print("After calling a_function, outside the function, the value of _b_global is
 _a_global = 10
 
 def a_function():
+    """Demonstrates accessing global variables from within a function."""
     _a_local = 4
     
     print("Inside the function, the value _a_local is", _a_local)
@@ -53,6 +55,7 @@ _a_global = 10
 print("Before calling a_function, outside the function, the value of _a_global is", _a_global)
 
 def a_function():
+    """Demonstrates modifying a global variable using the global keyword."""
     global _a_global
     _a_global = 5
     _a_local = 4
@@ -68,9 +71,11 @@ print("After calling a_function, outside the function, the value of _a_global no
 
 
 def a_function():
+    """Demonstrates nested functions with local and global scope."""
     _a_global = 10
 
     def _a_function2():
+        """Nested function that modifies the global variable."""
         global _a_global
         _a_global = 20
     
@@ -88,8 +93,10 @@ print("The value of a_global in main workspace / namespace now is", _a_global)
 _a_global = 10
 
 def a_function():
+    """Demonstrates nested function accessing and modifying global variable."""
 
     def _a_function2():
+        """Nested function that modifies the global variable."""
         global _a_global
         _a_global = 20
     
