@@ -26,6 +26,32 @@ This project uses the following languages:
 
 ## Scripts and Programs
 
+### Quick Reference
+- [**apply_1.R**](#apply_1r) - Matrix operations with `apply()` function
+- [**apply_2.R**](#apply_2r) - Advanced `apply()` with custom functions
+- [**basic_io.R**](#basic_ior) - File input/output operations
+- [**boilerplate.R**](#boilerplater) - R function template
+- [**break.R**](#breakr) - Loop termination with `break` statement
+- [**browse.R**](#browser) - Debugging with `browser()` function
+- [**compile_latex_florida.sh**](#compile_latex_floridash) - Compiles LaTeX document for Florida analysis
+- [**control_flow.R**](#control_flowr) - If-else, for, and while loop structures
+- [**data_wrang.R**](#data_wrangr) - Tidyverse data wrangling on Pound Hill dataset
+- [**florida.R**](#floridar) - Permutation testing for temperature trends
+- [**girko.R**](#girkor) - Visualizes Girko's circular law with eigenvalues
+- [**my_bars.R**](#my_barsr) - Multi-layered bar chart with ggplot2
+- [**next.R**](#nextr) - Skip loop iterations with `next` statement
+- [**plot_lin.R**](#plot_linr) - Linear regression plot with residuals
+- [**pp_regress.R**](#pp_regressr) - Predator-prey body mass regression analysis
+- [**preallocate.R**](#preallocater) - Vector preallocation performance comparison
+- [**r_conditionals.R**](#r_conditionalsr) - Conditional logic functions
+- [**sample.R**](#sampler) - Simulation approaches benchmark (loops vs vectorized)
+- [**sq_linr.R**](#sq_linrr) - SQLite database operations
+- [**tree_heights.R**](#tree_heightsr) - Calculates tree heights from trigonometry
+- [**try.r**](#tryr) - Error handling with `try()` function
+- [**vectorize_1.R**](#vectorize_1r) - Vectorization performance comparison
+
+---
+
 ### apply_1.R
 
 **Purpose:** Demonstrates the use of the `apply()` function in R for performing operations on matrix rows and columns. Calculates means and variances across rows and columns of a random matrix.

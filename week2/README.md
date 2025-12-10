@@ -24,6 +24,32 @@ This project uses the following languages:
 
 ## Scripts and Programs
 
+### Quick Reference
+- [**align_seqs.py**](#align_seqspy) - Finds optimal DNA sequence alignment with scoring
+- [**basic_csv.py**](#basic_csvpy) - Reads and writes CSV files
+- [**basic_io1.py**](#basic_io1py) - Basic file reading operations
+- [**basic_io2.py**](#basic_io2py) - Basic file writing operations
+- [**basic_io3.py**](#basic_io3py) - Object serialization with pickle
+- [**boilerplate.py**](#boilerplatepy) - Python script template
+- [**cf_exercises_1.py**](#cf_exercises_1py) - Control flow exercises (sqrt, factorial, sorting)
+- [**cf_exercises_2.py**](#cf_exercises_2py) - Loop and conditional demonstrations
+- [**control_flow.py**](#control_flowpy) - Control flow examples (even/odd, divisors, primes)
+- [**debugme.py**](#debugmepy) - Error handling with try-except blocks
+- [**dictionary.py**](#dictionarypy) - Dictionary creation using loops and comprehensions
+- [**lc1.py**](#lc1py) - List comprehensions for bird data extraction
+- [**lc2.py**](#lc2py) - List comprehensions for rainfall filtering
+- [**loops.py**](#loopspy) - Fundamental loop constructs
+- [**my_example_script.py**](#my_example_scriptpy) - Simple function demonstration
+- [**oaks.py**](#oakspy) - Filters oak species from taxa list
+- [**oaks_debugme.py**](#oaks_debugmepy) - Oak filtering with fuzzy matching and doctests
+- [**scope.py**](#scopepy) - Variable scope demonstration
+- [**sysargv.py**](#sysargvpy) - Command-line argument handling
+- [**test_control_flow.py**](#test_control_flowpy) - Doctest module demonstration
+- [**tuple.py**](#tuplepy) - Tuple unpacking demonstration
+- [**using_name.py**](#using_namepy) - Explains `__name__` variable behavior
+
+---
+
 ### align_seqs.py
 
 **Purpose:** Finds the optimal alignment between two DNA sequences by calculating match scores at different starting positions. Reads sequences from a CSV file and outputs the best alignment to a text file.

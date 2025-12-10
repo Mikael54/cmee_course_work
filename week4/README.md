@@ -24,6 +24,13 @@ This project uses the following languages:
 
 ## Scripts and Programs
 
+### Quick Reference
+- [**profile_me.py**](#profile_mepy) - Functions for performance profiling (loops)
+- [**profile_me_2.py**](#profile_me_2py) - Optimized versions (comprehensions)
+- [**timeit_me.py**](#timeit_mepy) - Benchmarks performance differences
+
+---
+
 ### profile_me.py
 
 **Purpose:** Demonstrates basic Python functions for performance profiling. Contains two functions (list squaring and string joining) implemented using traditional loops, designed to be profiled to identify performance bottlenecks.

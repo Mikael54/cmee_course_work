@@ -25,6 +25,19 @@ This project uses the following languages:
 
 ## Scripts and Programs
 
+### Quick Reference
+- [**boilerplate.sh**](#boilerplatesh) - Basic shell script template with header formatting
+- [**concatenate_two_files.sh**](#concatenate_two_filessh) - Combines two files into one output file
+- [**count_lines.sh**](#count_linessh) - Counts lines in a file
+- [**csv_to_space.sh**](#csv_to_spacesh) - Converts CSV to space-separated format
+- [**tab_to_csv.sh**](#tab_to_csvsh) - Converts tab-delimited to CSV format
+- [**tiff_to_png.sh**](#tiff_to_pngsh) - Batch converts TIFF images to PNG
+- [**variables.sh**](#variablessh) - Demonstrates variable usage and command-line arguments
+- [**my_example_script.sh**](#my_example_scriptsh) - Simple greeting script
+- [**compile_latex.sh**](#compile_latexsh) - Compiles LaTeX documents with bibliography
+
+---
+
 ### boilerplate.sh
 
 **Purpose:** Demonstrates the basic structure of a shell script with standard header formatting and a simple echo command.
