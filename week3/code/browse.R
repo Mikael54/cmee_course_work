@@ -9,10 +9,10 @@ Exponential <- function(N0 = 1, r = 1, generations = 10) {
   
   N <- rep(NA, generations)    # Creates a vector of NA
   
-  N[1] <- N0
+  N[1] <- N0 # Set the first population value
   for (t in 2:generations) {
-    N[t] <- N[t-1] * exp(r)
-    browser()
+    N[t] <- N[t-1] * exp(r) # Each generation = previous population * growth rate
+    browser() # Pause here to inspect variables 
   }
   return (N)
 }

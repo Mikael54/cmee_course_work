@@ -21,12 +21,29 @@ if (!require("tidyverse", quietly = TRUE)) {
   stop("Please install the 'tidyverse' package")
 }
 
-require("tidyverse") # check if tidyverse is installed- if not give an error 
+library(tidyverse)
+
+# Check if data file exists
+if (!file.exists("../data/trees.csv")) {
+    stop("Error: File '../data/trees.csv' not found. Please check the file path.")
+}
 
 tree_data <- read.csv("../data/trees.csv", header = TRUE)
 
+# Check if data was loaded successfully
+if (nrow(tree_data) == 0) {
+    stop("Error: trees.csv appears to be empty.")
+}
+
+# Check for required columns
+required_cols <- c("Angle.degrees", "Distance.m")
+if (!all(required_cols %in% colnames(tree_data))) {
+    stop("Error: Required columns missing in data. Expected: ", 
+         paste(required_cols, collapse = ", "))
+}
+
 tree_height <- function(degrees, distance) {
-    radians <- degrees * pi /180
+    radians <- degrees * pi / 180
     height <- distance * tan(radians)
     return (height)
 }

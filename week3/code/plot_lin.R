@@ -3,6 +3,12 @@
 # Script: plot_lin.R
 # Description: This script creates a plot and saves it.
 
+# Check and load required packages
+if (!require(ggplot2, quietly = TRUE)) {
+    stop("Error: ggplot2 package not installed.\n",
+         "       Please install with: install.packages('ggplot2')")
+}
+
 library(ggplot2)
 
 x <- seq(0, 100, by = 0.1)

@@ -1,4 +1,15 @@
+# Check and load required packages
+if (!require(ggplot2, quietly = TRUE)) {
+    stop("Error: ggplot2 package not installed.\n",
+         "       Please install with: install.packages('ggplot2')")
+}
+
 library(ggplot2)
+
+# Check if data file exists
+if (!file.exists("../data/results.txt")) {
+    stop("Error: File '../data/results.txt' not found. Please check the file path.")
+}
 
 a <- read.table("../data/results.txt", header = TRUE)
 

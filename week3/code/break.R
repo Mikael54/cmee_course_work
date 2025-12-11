@@ -5,11 +5,11 @@
 
 
 i <- 0 #Initialize i
-    while (i < Inf) {
+    while (i < Inf) { # This would loop forever without break
         if (i == 10) {
-            break 
+            break # Exit the loop when i reaches 10
         } else { # Break out of the while loop!  
             cat("i equals " , i , " \n")
-            i <- i + 1 # Update i
+            i <- i + 1 # Update i (increase by 1 each time)
     }
 }
