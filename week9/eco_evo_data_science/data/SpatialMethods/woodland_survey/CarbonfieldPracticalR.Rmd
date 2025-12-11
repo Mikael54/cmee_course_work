@@ -1,0 +1,434 @@
+---
+title: "Field Practical (Oct 2024)"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook with the
+class exercise for the Field Ecology Skills course convened by Catalina
+Estrada @Silwood Park.
+
+The aim of this exercise is to estimate the above ground biomass (AGB)
+of the woodlands in Silwood Park using the survey data on stems that you
+collected.
+
+Captain's log:
+
+\- 2019 Original guide from David Orme
+
+\- 2021 Minor mods and comments from R. Nobrega (Prenticelab)
+
+\- 2022 Bugs fixed (just single stems measured). David Sandoval
+(Prenticelab)
+
+\- Online version 2023 it did not work
+
+Notes:
+
+We want a final value that is in standard units of unit mass per unit
+area: tonnes or M grams per hectare is widely used.
+
+In order to estimate the biomass, we need to find or calculate the
+following for our woodland samples:
+
+1\. The timber density of the tree species as kg per m3 of dry wood;
+
+2\. The volume of sampled stems in meters cubed, and hence;
+
+3\. The biomass of sampled trees in tonnes;
+
+4\. The spatial density of stems as number per hectare;
+
+5\. The total biomass per hectare for each woodland.
+
+```{r, warning=FALSE}
+# Import the three sets of form data from the Epicollect Download
+
+# setwd("C:/Users/ds6915/OneDrive - Imperial College London/Documents/Silwood_stuff/Biomass_field_skills_2023/Woodland structure and composition/Data")
+
+
+library(readr)
+field_survey <- read_csv("form-3__stem-data.csv",
+  col_types = cols(
+    Date = col_date(format = "%d/%m/%Y"),
+    Group = col_integer(), Tag = col_integer(),
+    Stem_number = col_integer()
+  )
+)
+```
+
+We will simplify the labels for the tree species to remove the common
+names, making them easier to display. This code uses regular expressions
+to search and remove bracketed text. These are an advanced topic: they
+are a perfect quick tool here but do not worry about them, except to
+note that they may be a really useful thing to learn in the future!
+
+```{r}
+# This line removes text in brackets
+field_survey$Tree_Sp <- sub("\\([A-Za-z ]+\\)", "", field_survey$Tree_Sp)
+# This line removes trailing and leading spaces
+field_survey$Tree_Sp <- gsub("^\\s+|\\s+$", "", field_survey$Tree_Sp)
+```
+
+Lets explore the data so we can spot possible errors (units)
+
+```{r}
+par(mfrow = c(3, 2), mar = c(3, 3, 1, 1))
+hist(field_survey$Stem_number, main = "stem number")
+hist(field_survey$Distance_Density_SamplePoint_m, main = "Distance to stem (m)")
+hist(field_survey$Stem_girth, main = "Stem girth (cm)")
+hist(field_survey$Angle_to_base, main = "Angle to base (\u00B0)")
+hist(field_survey$Angle_to_canopy, main = "Angle to canopy (\u00B0)")
+```
+
+Is there any issues?
+
+```{r}
+field_survey$Stem_number[field_survey$Stem_number > 100] <- NA
+# We need to correct some distances that have been recorded as centimetres.
+# field_survey$Stem_distance <- with(field_survey,
+#                                              ifelse(Stem_distance > 50, Stem_distance/100,
+#                                                     Stem_distance))
+```
+
+# Calculations
+
+## Step 1: Timber density
+
+Although the woodlands are dominated by two or three species, there are
+quite a lot of different tree species that were sampled during the
+fieldwork:
+
+```{r}
+# set the plot window up to have a big margin for species names
+par(mar = c(3, 20, 1, 1))
+# count the stems in the different tree species
+species_counts <- table(field_survey$Tree_Sp)
+species_counts <- sort(species_counts, decreasing = TRUE)
+# create a barplot to show frequencies
+barplot(species_counts, horiz = TRUE, las = 1, cex.names = 0.75)
+```
+
+We can use values from the literature to see if the different species
+differ greatly in timber density and whether we should worry about
+species identify in calculating biomass. The table below gives average
+dry timber densities taken from <https://www.wood-database.com> for the
+more common species found at Silwood. The value for Corylus avellana is
+taken from 10.5552/drind.2016.1529.
+
+| Species             | Density (dry kg/m3) |
+|---------------------|:-------------------:|
+| Acer pseudoplatanus |         615         |
+| Alnus glutinosa     |         495         |
+| Betula pendula      |         640         |
+| Corylus avellana    |         670         |
+| Fagus sylvatica     |         710         |
+| Quercus robur       |         675         |
+| Quercus petraea     |         710         |
+| Sorbus aucuparia    |         770         |
+
+There are considerable differences between species, so we probably
+should handle species separately, rather than just using a single
+representative density. However, it probably isn't worth trying to track
+down densities for every last species, so we'll lump the rare species
+and retain the most common ones.
+
+The code below sets out the common species we are going to use, along
+with their timber densities and then creates a new variable to record
+the identity of common species and lump the rarer species as 'Others'.
+
+```{r}
+# Create a list of wood densities that we are going to use
+timber_density <- c(
+  "Acer pseudoplatanus" = 615,
+  "Alnus sp" = 495,
+  "Betula pendula" = 640,
+  "Corylus avellana" = 670,
+  "Fagus sylvatica" = 710,
+  "Quercus robur" = 675,
+  "Quercus petraea" = 710,
+  "Sorbus aucuparia" = 770
+)
+
+# Add a mean value to use for Other species
+timber_density["Other"] <- mean(timber_density)
+
+field_survey$AGB_Species <- with(
+  field_survey,
+  ifelse(Tree_Sp %in% names(timber_density), Tree_Sp, "Other")
+)
+```
+
+## Step 2: Stem volumes
+
+From the handout, we have the stem angles and distances to calculate
+stem height (hh) and then the stem circumference (cc) and hence basal
+area. We then need a model of how to convert that into stem volume. The
+forest modelling literature includes a huge range of different geometry
+models for tree stems, but here we will just stick with a
+straightforward cylindrical model.
+
+### Height calculation
+
+There was some confusion in the recording for fallen stems, with some
+having angles and only a few having measured lengths. Here, we'll assume
+that fallen stem angles are horizontal angles measured at right angles
+to the fallen stem, so treating them just as if they were vertical. If a
+fallen stem length was directly measured, we'll use that instead.
+
+```{r}
+# First, calculate height for all stems
+field_survey$height <- with(field_survey, tan(Angle_to_base / 180 * pi) * Distance_Density_SamplePoint_m + tan(Angle_to_canopy / 180 * pi) * Distance_Density_SamplePoint_m)
+
+# Substitute directly measured heights of fallen stems
+# field_survey$height <- with(field_survey, ifelse(is.na(Fallen_stem_length), height, Fallen_stem_length))
+
+# Have a quick look at the distribution of heights
+par(mfrow = c(1, 2), mar = c(3, 3, 1, 1))
+hist(field_survey$height, cex.main = 0.8, main = "Histogram (in m)")
+hist(log10(field_survey$height), cex.main = 0.8, main = "Histogram (log10)")
+```
+
+We've got some issues with tree height - anything over about 30 meters
+is clearly wrong - for now we will consider 50 as a threshold. However,
+we are going to use the quarter point trees as a sample of each tree
+species in each woodland. If we use the median height, then the outliers
+might disappear.
+
+We can check whether the median heights of stems by woodland and species
+are reasonable.
+
+```{r}
+median_height <- aggregate(height ~ Woodland + AGB_Species, data = field_survey, FUN = median)
+xtabs(height ~ Woodland + AGB_Species, data = median_height)
+```
+
+### Volume calculation
+
+We can now calculate the stem volume, remembering to convert the
+circumference measurements from cm to m.
+
+```{r}
+# Try a filter?
+field_survey$height[field_survey$height > 30] <- NA
+field_survey$basal_area <- (field_survey$Stem_girth / 100)^2 / (4 * pi)
+field_survey$stem_volume <- with(field_survey, basal_area * height)
+```
+
+### Combining stems
+
+We now to combine the volumes of multi-stem trees to give a single
+volume for each tree. Most trees only have a single stem but you did
+measure some multi-stem trees:
+
+```{r}
+par(mar = c(3, 3, 1, 1))
+# Count the number of occurrences of each tree id
+stem_counts <- table(field_survey$ec5_parent_uuid)
+hist(stem_counts, breaks = 0:8)
+```
+
+We will simply add the volumes of each stem together, as if the stems
+are a bunch of straws, and then add this data on to the tree level data.
+
+```{r}
+# Aggregate the volume by adding together values grouped by tree id
+tree_volume <- aggregate(stem_volume ~ ec5_parent_uuid, data = field_survey, FUN = sum)
+# Add the combined stem volumes into the tree level data
+tree_level_data <- merge(field_survey, tree_volume, by = "ec5_parent_uuid")
+tree_level_data$stem_volume <- tree_level_data$stem_volume.y
+```
+
+## Step 3: Tree biomass
+
+We now have the volume of each tree and the density of the tree species,
+so we can combine those to find the biomass of each tree. We first need
+to get timber density for each sampled species and can then simply
+multiply volume and density to get total biomass
+
+```{r}
+# Use the species name to select the correct timber densities from our list of values
+tree_level_data$timber_density <- timber_density[tree_level_data$AGB_Species]
+# Find the biomass in tonnes
+tree_level_data$biomass <- with(tree_level_data, timber_density * stem_volume) / 1000
+# if only a single stem was measured:
+# field_survey$timber_density <- timber_density[field_survey$AGB_Species]
+# # Find the biomass in tonnes
+# field_survey$biomass <- with(field_survey, timber_density * stem_volume) / 1000
+```
+
+The lattice package in R is useful for quickly visualizing groups of
+data, so we can check the calculated biomass of the different species:
+
+```{r}
+library(lattice)
+histogram(~ log10(biomass) | AGB_Species, data = tree_level_data)
+```
+
+There are clearly some problems in those biomass values: most trees are
+around 1 tonne (log10(1)=0log10(1)=0) but a few of the trees seem to be
+over 100 tonnes (log10(100)=2log10(100)=2), depending on the filter
+used. We'll again look at the median biomass by species and woodland to
+see if the median values look reasonable:
+
+```{r}
+# Calculate the biomass per species per woodland and print out as a table.
+median_biomass <- aggregate(biomass ~ Woodland + AGB_Species,
+  data = tree_level_data, FUN = median
+)
+xtabs(biomass ~ Woodland + AGB_Species, data = median_biomass)
+```
+
+Issues?
+
+### Component biomass
+
+We have only estimated the biomass of the stem. We've included bark in
+that volume, although it has a lower density, but we've ignored the
+branches and foliage and of course the below ground biomass in the
+roots. Calculating total biomass is difficult - there are lots of
+approaches with species specific estimation. The figure below, taken
+from here, suggests that for hardwood trees of the size we are studying,
+the stem may only be about 60% - 80% of the biomass.
+
+Given that we are not using a particularly high precision method, we
+won't try and do anything more complicated here and will stick with just
+using stem biomass.
+
+## Step 4: Spatial density
+
+We now calculate the spatial density of stems in each of the woodlands.
+From the handout, the density in stems per hectare is:
+
+$$\lambda=(1/r^2)×10000$$
+
+where r is the mean distance from the sample point . We'll first look at
+the distribution of distances to check they look sensible:
+
+```{r}
+overall_median_distance <- median(tree_level_data$Distance_Density_SamplePoint_m, na.rm = TRUE)
+overall_mean_distance <- mean(tree_level_data$Distance_Density_SamplePoint_m, na.rm = TRUE)
+print(overall_median_distance)
+
+print(overall_mean_distance)
+
+par(mfrow = c(1, 2), mar = c(3, 3, 1, 1))
+hist(tree_level_data$Distance_Density_SamplePoint_m, main = "Distance to stem (m)")
+abline(v = c(overall_median_distance, overall_mean_distance), col = c("red", "blue"))
+hist(log10(tree_level_data$Distance_Density_SamplePoint_m), main = expression(log[10] ~ Distance ~ to ~ stem(m)))
+
+# if only a single stem was measured:
+# overall_median_distance <- median(field_survey$Stem_distance, na.rm=TRUE)
+# overall_mean_distance <- mean(field_survey$Stem_distance, na.rm=TRUE)
+#
+# par(mfrow=c(1,2), mar=c(3, 3, 1, 1))
+# hist(field_survey$Stem_distance, main='Distance to stem (m)')
+# abline(v=c(overall_median_distance, overall_mean_distance), col=c('red', 'blue'))
+# hist(log10(field_survey$Stem_distance), main=expression(log[10]~Distance~to~stem (m)))
+```
+
+We can calculate the average stem density across all woodlands in stems
+per hectare:
+
+```{r}
+(1 / (overall_mean_distance^2)) * 10000
+```
+
+That seems ok - we'd expect somewhere between about 100 and 200 stems
+per hectare, but there isn't an obvious source of error. We can also
+calculate the stem densities per woodland from the average distances per
+woodland.
+
+```{r}
+# Get the mean distance by woodland
+spatial_density <- aggregate(Distance_Density_SamplePoint_m ~ Woodland, data = tree_level_data, FUN = mean)
+# and hence the stem densities per hectare by woodland
+spatial_density$lambda <- (1 / spatial_density$Distance_Density_SamplePoint_m^2) * 10000
+
+# print(spatial_density)
+# spatial_density <- aggregate(Stem_distance ~ Woodland, data=field_survey, FUN=mean)
+# # and hence the stem densities per hectare by woodland
+# spatial_density$lambda <- (1 / spatial_density$Stem_distance  ^ 2) * 10000
+```
+
+We can then get the proportions of each species in each woodland:
+
+```{r}
+composition <- prop.table(xtabs(~ AGB_Species + Woodland, data = tree_level_data), margin = 2)
+print(composition, digits = 3)
+#
+library(RColorBrewer)
+tree_cols <- brewer.pal(9, "Set3")
+#
+par(mar = c(5.5, 3, 1, 9.5), cex = 0.8, mgp = c(2, 1, 0))
+barplot(composition,
+  legend.text = rownames(composition),
+  ylab = "Proportion of community", col = tree_cols,
+  args.legend = list(x = 9.5, y = 1, xjust = 0, bty = "n"), las = 2, cex.names = 0.65
+)
+
+# composition <- prop.table(xtabs( ~ AGB_Species + Woodland , data=field_survey), margin=2)
+# print(composition, digits=3)
+# #### plot the proportinons
+# library(RColorBrewer)
+# tree_cols <- brewer.pal(9, 'Set3')
+#
+# par(mar=c(3,3,1,9.5), cex=0.8, mgp=c(2,1,0))
+# barplot(composition, legend.text=rownames(composition),
+#          ylab='Proportion of community', col=tree_cols,
+#          args.legend=list(x=8.5, y=1, xjust=0, bty='n'), cex.names=0.65)
+```
+
+Now we can combine the stem density in each woodland with the species
+proportions to get the stem density per species:
+
+```{r}
+composition <- as.data.frame(composition)
+spatial_density <- merge(spatial_density, composition)
+spatial_density$tree_stem_density <- with(spatial_density, Freq * lambda)
+```
+
+## Step 5: Biomass estimation per hectare
+
+We now have one data set that has the spatial density of each species in
+each woodland and another that has the median biomass by woodland for
+the same species. We can simply merge them together and multiply the
+number of stems per hectare by median stem biomass
+
+```{r}
+# merge spatial_density with median_biomass
+spatial_density <- merge(spatial_density, median_biomass, by = c("Woodland", "AGB_Species"))
+# calculate total biomass per species
+spatial_density$total_biomass <- with(spatial_density, tree_stem_density * biomass)
+```
+
+We can now inspect a table of the species biomass by woodland and look
+at a stacked barplot to compare woodlands.
+
+```{r}
+biomass <- xtabs(total_biomass ~ AGB_Species + Woodland, data = spatial_density)
+print(biomass)
+
+total_biomass <- colSums(biomass)
+
+par(mar = c(5.5, 4, 1, 12), cex = 0.8, mgp = c(2, 1, 0))
+centres <- barplot(biomass,
+  legend.text = rownames(biomass), las = 2,
+  ylab = "Total biomass (t/ha)", ylim = c(0, 300), col = tree_cols,
+  args.legend = list(x = 9.5, y = 300, xjust = 0, bty = "n"), cex.names = 0.65
+)
+text(centres, total_biomass, labels = round(total_biomass, 1), adj = c(0.5, -1.2))
+```
+
+Some values are mostly far too high. We would expect around 100 tonnes
+per hectare of above ground biomass: roughly 100 mature stems per
+hectare with a median stem biomass of about 1 tonne. We clearly have
+problems both with the estimation of stem biomass - and that is
+particularly problematic for rarer species where we have small samples
+to estimate a representative stem weight - and with the estimation of
+spatial stem densities.
