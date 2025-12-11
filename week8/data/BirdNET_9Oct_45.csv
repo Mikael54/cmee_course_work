@@ -1,0 +1,172 @@
+Start (s),End (s),scientific_name,common_name,Confidence,File,lat,lon
+3.0,6.0,Erithacus rubecula,European Robin,0.8354,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_070000.wav,51.407777,-0.646617
+9.0,12.0,Troglodytes troglodytes,Eurasian Wren,0.3616,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_070000.wav,51.407777,-0.646617
+15.0,18.0,Troglodytes troglodytes,Eurasian Wren,0.3039,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_070000.wav,51.407777,-0.646617
+18.0,21.0,Troglodytes troglodytes,Eurasian Wren,0.5987,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_070000.wav,51.407777,-0.646617
+21.0,24.0,Erithacus rubecula,European Robin,0.7270,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_070000.wav,51.407777,-0.646617
+24.0,27.0,Erithacus rubecula,European Robin,0.7629,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_070000.wav,51.407777,-0.646617
+30.0,33.0,Erithacus rubecula,European Robin,0.2873,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_070000.wav,51.407777,-0.646617
+39.0,42.0,Erithacus rubecula,European Robin,0.8914,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_070000.wav,51.407777,-0.646617
+6.0,9.0,Erithacus rubecula,European Robin,0.6740,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_070500.wav,51.407777,-0.646617
+9.0,12.0,Turdus merula,Eurasian Blackbird,0.7892,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_070500.wav,51.407777,-0.646617
+9.0,12.0,Erithacus rubecula,European Robin,0.4378,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_070500.wav,51.407777,-0.646617
+12.0,15.0,Erithacus rubecula,European Robin,0.6033,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_070500.wav,51.407777,-0.646617
+21.0,24.0,Erithacus rubecula,European Robin,0.4811,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_070500.wav,51.407777,-0.646617
+24.0,27.0,Erithacus rubecula,European Robin,0.2846,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_070500.wav,51.407777,-0.646617
+36.0,39.0,Corvus monedula,Eurasian Jackdaw,0.8972,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_070500.wav,51.407777,-0.646617
+42.0,45.0,Corvus monedula,Eurasian Jackdaw,0.7316,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_070500.wav,51.407777,-0.646617
+45.0,48.0,Corvus monedula,Eurasian Jackdaw,0.3457,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_070500.wav,51.407777,-0.646617
+48.0,51.0,Corvus monedula,Eurasian Jackdaw,0.4297,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_070500.wav,51.407777,-0.646617
+6.0,9.0,Corvus monedula,Eurasian Jackdaw,0.3330,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_071000.wav,51.407777,-0.646617
+18.0,21.0,Buteo buteo,Common Buzzard,0.7105,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_071000.wav,51.407777,-0.646617
+27.0,30.0,Buteo buteo,Common Buzzard,0.3731,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_071000.wav,51.407777,-0.646617
+30.0,33.0,Buteo buteo,Common Buzzard,0.6746,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_071000.wav,51.407777,-0.646617
+33.0,36.0,Buteo buteo,Common Buzzard,0.4844,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_071000.wav,51.407777,-0.646617
+42.0,45.0,Streptopelia decaocto,Eurasian Collared-Dove,0.4405,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_071000.wav,51.407777,-0.646617
+45.0,48.0,Streptopelia decaocto,Eurasian Collared-Dove,0.7473,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_071000.wav,51.407777,-0.646617
+48.0,51.0,Spinus spinus,Eurasian Siskin,0.4948,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_071000.wav,51.407777,-0.646617
+0.0,3.0,Regulus regulus,Goldcrest,0.2782,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_071500.wav,51.407777,-0.646617
+6.0,9.0,Erithacus rubecula,European Robin,0.3082,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_071500.wav,51.407777,-0.646617
+36.0,39.0,Troglodytes troglodytes,Eurasian Wren,0.3552,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_071500.wav,51.407777,-0.646617
+9.0,12.0,Erithacus rubecula,European Robin,0.2804,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_072000.wav,51.407777,-0.646617
+12.0,15.0,Erithacus rubecula,European Robin,0.2817,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_072000.wav,51.407777,-0.646617
+36.0,39.0,Troglodytes troglodytes,Eurasian Wren,0.4291,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_072000.wav,51.407777,-0.646617
+42.0,45.0,Erithacus rubecula,European Robin,0.3504,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_072000.wav,51.407777,-0.646617
+45.0,48.0,Erithacus rubecula,European Robin,0.3620,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_072000.wav,51.407777,-0.646617
+48.0,51.0,Erithacus rubecula,European Robin,0.5175,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_072000.wav,51.407777,-0.646617
+51.0,54.0,Turdus philomelos,Song Thrush,0.3364,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_072000.wav,51.407777,-0.646617
+9.0,12.0,Sitta europaea,Eurasian Nuthatch,0.5999,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_072500.wav,51.407777,-0.646617
+12.0,15.0,Turdus iliacus,Redwing,0.6893,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_072500.wav,51.407777,-0.646617
+21.0,24.0,Turdus iliacus,Redwing,0.8080,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_072500.wav,51.407777,-0.646617
+27.0,30.0,Garrulus glandarius,Eurasian Jay,0.5090,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_072500.wav,51.407777,-0.646617
+42.0,45.0,Garrulus glandarius,Eurasian Jay,0.9414,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_072500.wav,51.407777,-0.646617
+0.0,3.0,Turdus merula,Eurasian Blackbird,0.9775,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_073000.wav,51.407777,-0.646617
+3.0,6.0,Turdus merula,Eurasian Blackbird,0.7716,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_073000.wav,51.407777,-0.646617
+6.0,9.0,Turdus merula,Eurasian Blackbird,0.9803,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_073000.wav,51.407777,-0.646617
+9.0,12.0,Turdus merula,Eurasian Blackbird,0.9689,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_073000.wav,51.407777,-0.646617
+12.0,15.0,Turdus merula,Eurasian Blackbird,0.9274,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_073000.wav,51.407777,-0.646617
+15.0,18.0,Turdus merula,Eurasian Blackbird,0.9713,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_073000.wav,51.407777,-0.646617
+18.0,21.0,Turdus merula,Eurasian Blackbird,0.9576,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_073000.wav,51.407777,-0.646617
+21.0,24.0,Turdus merula,Eurasian Blackbird,0.9621,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_073000.wav,51.407777,-0.646617
+24.0,27.0,Dendrocopos major,Great Spotted Woodpecker,0.2585,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_073000.wav,51.407777,-0.646617
+27.0,30.0,Turdus merula,Eurasian Blackbird,0.4876,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_073000.wav,51.407777,-0.646617
+33.0,36.0,Turdus merula,Eurasian Blackbird,0.6633,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_073000.wav,51.407777,-0.646617
+33.0,36.0,Turdus pilaris,Fieldfare,0.4344,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_073000.wav,51.407777,-0.646617
+36.0,39.0,Turdus merula,Eurasian Blackbird,0.8726,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_073000.wav,51.407777,-0.646617
+39.0,42.0,Turdus merula,Eurasian Blackbird,0.6170,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_073000.wav,51.407777,-0.646617
+42.0,45.0,Turdus merula,Eurasian Blackbird,0.3007,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_073000.wav,51.407777,-0.646617
+45.0,48.0,Turdus merula,Eurasian Blackbird,0.5934,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_073000.wav,51.407777,-0.646617
+51.0,54.0,Turdus merula,Eurasian Blackbird,0.2940,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_073000.wav,51.407777,-0.646617
+12.0,15.0,Picus viridis,Eurasian Green Woodpecker,0.6704,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_073500.wav,51.407777,-0.646617
+18.0,21.0,Parus major,Great Tit,0.4089,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_073500.wav,51.407777,-0.646617
+21.0,24.0,Parus major,Great Tit,0.5245,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_073500.wav,51.407777,-0.646617
+33.0,36.0,Parus major,Great Tit,0.3015,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_073500.wav,51.407777,-0.646617
+36.0,39.0,Cyanistes caeruleus,Eurasian Blue Tit,0.4615,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_073500.wav,51.407777,-0.646617
+48.0,51.0,Parus major,Great Tit,0.3589,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_073500.wav,51.407777,-0.646617
+57.0,60.0,Parus major,Great Tit,0.3896,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_073500.wav,51.407777,-0.646617
+3.0,6.0,Regulus ignicapilla,Common Firecrest,0.5484,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_074000.wav,51.407777,-0.646617
+24.0,27.0,Regulus ignicapilla,Common Firecrest,0.8926,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_074000.wav,51.407777,-0.646617
+33.0,36.0,Regulus ignicapilla,Common Firecrest,0.3609,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_074000.wav,51.407777,-0.646617
+51.0,54.0,Regulus ignicapilla,Common Firecrest,0.4317,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_074000.wav,51.407777,-0.646617
+3.0,6.0,Picus viridis,Eurasian Green Woodpecker,0.3349,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_074500.wav,51.407777,-0.646617
+6.0,9.0,Cyanistes caeruleus,Eurasian Blue Tit,0.2548,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_074500.wav,51.407777,-0.646617
+12.0,15.0,Erithacus rubecula,European Robin,0.2622,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_074500.wav,51.407777,-0.646617
+24.0,27.0,Regulus regulus,Goldcrest,0.6601,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_074500.wav,51.407777,-0.646617
+30.0,33.0,Regulus regulus,Goldcrest,0.3638,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_074500.wav,51.407777,-0.646617
+39.0,42.0,Regulus regulus,Goldcrest,0.2634,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_074500.wav,51.407777,-0.646617
+42.0,45.0,Regulus regulus,Goldcrest,0.4863,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_074500.wav,51.407777,-0.646617
+3.0,6.0,Regulus ignicapilla,Common Firecrest,0.2631,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_075000.wav,51.407777,-0.646617
+33.0,36.0,Regulus ignicapilla,Common Firecrest,0.5637,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_075000.wav,51.407777,-0.646617
+36.0,39.0,Regulus ignicapilla,Common Firecrest,0.6383,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_075000.wav,51.407777,-0.646617
+39.0,42.0,Regulus ignicapilla,Common Firecrest,0.9618,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_075000.wav,51.407777,-0.646617
+42.0,45.0,Regulus ignicapilla,Common Firecrest,0.5970,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_075000.wav,51.407777,-0.646617
+51.0,54.0,Regulus ignicapilla,Common Firecrest,0.4995,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_075000.wav,51.407777,-0.646617
+24.0,27.0,Regulus ignicapilla,Common Firecrest,0.8914,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_075500.wav,51.407777,-0.646617
+33.0,36.0,Turdus iliacus,Redwing,0.2887,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_075500.wav,51.407777,-0.646617
+42.0,45.0,Regulus ignicapilla,Common Firecrest,0.4376,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_075500.wav,51.407777,-0.646617
+45.0,48.0,Certhia familiaris,Eurasian Treecreeper,0.7767,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_075500.wav,51.407777,-0.646617
+48.0,51.0,Regulus ignicapilla,Common Firecrest,0.6385,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_075500.wav,51.407777,-0.646617
+51.0,54.0,Turdus iliacus,Redwing,0.6134,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_075500.wav,51.407777,-0.646617
+51.0,54.0,Certhia familiaris,Eurasian Treecreeper,0.5240,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_075500.wav,51.407777,-0.646617
+54.0,57.0,Certhia familiaris,Eurasian Treecreeper,0.3397,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_075500.wav,51.407777,-0.646617
+54.0,57.0,Turdus iliacus,Redwing,0.2501,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_075500.wav,51.407777,-0.646617
+57.0,60.0,Turdus iliacus,Redwing,0.4792,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_075500.wav,51.407777,-0.646617
+3.0,6.0,Regulus ignicapilla,Common Firecrest,0.3955,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_080000.wav,51.407777,-0.646617
+3.0,6.0,Dendrocopos major,Great Spotted Woodpecker,0.3421,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_080000.wav,51.407777,-0.646617
+6.0,9.0,Aegithalos caudatus,Long-tailed Tit,0.3400,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_080000.wav,51.407777,-0.646617
+9.0,12.0,Regulus regulus,Goldcrest,0.6980,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_080000.wav,51.407777,-0.646617
+12.0,15.0,Erithacus rubecula,European Robin,0.4624,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_080000.wav,51.407777,-0.646617
+15.0,18.0,Erithacus rubecula,European Robin,0.3726,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_080000.wav,51.407777,-0.646617
+21.0,24.0,Troglodytes troglodytes,Eurasian Wren,0.7466,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_080000.wav,51.407777,-0.646617
+30.0,33.0,Regulus ignicapilla,Common Firecrest,0.2549,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_080000.wav,51.407777,-0.646617
+36.0,39.0,Regulus ignicapilla,Common Firecrest,0.5687,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_080000.wav,51.407777,-0.646617
+48.0,51.0,Regulus ignicapilla,Common Firecrest,0.2842,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_080000.wav,51.407777,-0.646617
+30.0,33.0,Erithacus rubecula,European Robin,0.3298,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_080500.wav,51.407777,-0.646617
+33.0,36.0,Erithacus rubecula,European Robin,0.3942,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_080500.wav,51.407777,-0.646617
+36.0,39.0,Accipiter gentilis,Northern Goshawk,0.3033,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_080500.wav,51.407777,-0.646617
+39.0,42.0,Erithacus rubecula,European Robin,0.7072,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_080500.wav,51.407777,-0.646617
+42.0,45.0,Erithacus rubecula,European Robin,0.3000,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_080500.wav,51.407777,-0.646617
+45.0,48.0,Erithacus rubecula,European Robin,0.9607,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_080500.wav,51.407777,-0.646617
+48.0,51.0,Erithacus rubecula,European Robin,0.9145,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_080500.wav,51.407777,-0.646617
+51.0,54.0,Erithacus rubecula,European Robin,0.8453,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_080500.wav,51.407777,-0.646617
+54.0,57.0,Erithacus rubecula,European Robin,0.9945,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_080500.wav,51.407777,-0.646617
+57.0,60.0,Erithacus rubecula,European Robin,0.5836,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_080500.wav,51.407777,-0.646617
+0.0,3.0,Erithacus rubecula,European Robin,0.3403,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_081000.wav,51.407777,-0.646617
+3.0,6.0,Erithacus rubecula,European Robin,0.4606,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_081000.wav,51.407777,-0.646617
+27.0,30.0,Dendrocopos major,Great Spotted Woodpecker,0.2670,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_081000.wav,51.407777,-0.646617
+39.0,42.0,Erithacus rubecula,European Robin,0.2832,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_081000.wav,51.407777,-0.646617
+0.0,3.0,Corvus monedula,Eurasian Jackdaw,0.4357,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_082000.wav,51.407777,-0.646617
+3.0,6.0,Corvus monedula,Eurasian Jackdaw,0.4526,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_082000.wav,51.407777,-0.646617
+6.0,9.0,Corvus corone,Carrion Crow,0.3925,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_082000.wav,51.407777,-0.646617
+6.0,9.0,Corvus cornix,Hooded Crow,0.2886,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_082000.wav,51.407777,-0.646617
+12.0,15.0,Troglodytes troglodytes,Eurasian Wren,0.4178,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_082000.wav,51.407777,-0.646617
+18.0,21.0,Corvus monedula,Eurasian Jackdaw,0.3824,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_082000.wav,51.407777,-0.646617
+24.0,27.0,Corvus corone,Carrion Crow,0.3171,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_082000.wav,51.407777,-0.646617
+33.0,36.0,Corvus monedula,Eurasian Jackdaw,0.4852,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_082000.wav,51.407777,-0.646617
+36.0,39.0,Corvus monedula,Eurasian Jackdaw,0.4789,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_082000.wav,51.407777,-0.646617
+39.0,42.0,Corvus monedula,Eurasian Jackdaw,0.7990,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_082000.wav,51.407777,-0.646617
+42.0,45.0,Corvus monedula,Eurasian Jackdaw,0.4438,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_082000.wav,51.407777,-0.646617
+45.0,48.0,Corvus monedula,Eurasian Jackdaw,0.2577,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_082000.wav,51.407777,-0.646617
+54.0,57.0,Corvus monedula,Eurasian Jackdaw,0.4156,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_082000.wav,51.407777,-0.646617
+54.0,57.0,Regulus regulus,Goldcrest,0.2891,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_082000.wav,51.407777,-0.646617
+57.0,60.0,Corvus corone,Carrion Crow,0.2874,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_082000.wav,51.407777,-0.646617
+12.0,15.0,Erithacus rubecula,European Robin,0.3186,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_082500.wav,51.407777,-0.646617
+27.0,30.0,Erithacus rubecula,European Robin,0.4213,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_082500.wav,51.407777,-0.646617
+36.0,39.0,Corvus monedula,Eurasian Jackdaw,0.6002,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_082500.wav,51.407777,-0.646617
+39.0,42.0,Corvus monedula,Eurasian Jackdaw,0.8822,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_082500.wav,51.407777,-0.646617
+42.0,45.0,Corvus monedula,Eurasian Jackdaw,0.9325,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_082500.wav,51.407777,-0.646617
+45.0,48.0,Corvus monedula,Eurasian Jackdaw,0.3132,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_082500.wav,51.407777,-0.646617
+48.0,51.0,Erithacus rubecula,European Robin,0.3513,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_082500.wav,51.407777,-0.646617
+0.0,3.0,Corvus monedula,Eurasian Jackdaw,0.7330,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_083000.wav,51.407777,-0.646617
+3.0,6.0,Aegithalos caudatus,Long-tailed Tit,0.4392,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_083000.wav,51.407777,-0.646617
+24.0,27.0,Erithacus rubecula,European Robin,0.2983,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_083000.wav,51.407777,-0.646617
+33.0,36.0,Erithacus rubecula,European Robin,0.6330,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_083000.wav,51.407777,-0.646617
+36.0,39.0,Erithacus rubecula,European Robin,0.3481,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_083000.wav,51.407777,-0.646617
+45.0,48.0,Aegithalos caudatus,Long-tailed Tit,0.4355,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_083000.wav,51.407777,-0.646617
+45.0,48.0,Erithacus rubecula,European Robin,0.3455,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_083000.wav,51.407777,-0.646617
+54.0,57.0,Erithacus rubecula,European Robin,0.3711,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_083000.wav,51.407777,-0.646617
+6.0,9.0,Oriolus oriolus,Eurasian Golden Oriole,0.2866,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_084000.wav,51.407777,-0.646617
+33.0,36.0,Psittacula krameri,Rose-ringed Parakeet,0.2557,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_084000.wav,51.407777,-0.646617
+45.0,48.0,Pica pica,Eurasian Magpie,0.3206,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_084000.wav,51.407777,-0.646617
+3.0,6.0,Sitta europaea,Eurasian Nuthatch,0.5690,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_084500.wav,51.407777,-0.646617
+9.0,12.0,Sitta europaea,Eurasian Nuthatch,0.4161,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_084500.wav,51.407777,-0.646617
+15.0,18.0,Sitta europaea,Eurasian Nuthatch,0.5664,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_084500.wav,51.407777,-0.646617
+18.0,21.0,Sitta europaea,Eurasian Nuthatch,0.3509,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_084500.wav,51.407777,-0.646617
+18.0,21.0,Regulus ignicapilla,Common Firecrest,0.2535,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_084500.wav,51.407777,-0.646617
+27.0,30.0,Sitta europaea,Eurasian Nuthatch,0.3344,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_084500.wav,51.407777,-0.646617
+30.0,33.0,Sitta europaea,Eurasian Nuthatch,0.5648,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_084500.wav,51.407777,-0.646617
+39.0,42.0,Dendrocopos major,Great Spotted Woodpecker,0.3253,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_084500.wav,51.407777,-0.646617
+0.0,3.0,Garrulus glandarius,Eurasian Jay,0.3053,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_085000.wav,51.407777,-0.646617
+12.0,15.0,Erithacus rubecula,European Robin,0.3849,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_085000.wav,51.407777,-0.646617
+18.0,21.0,Corvus monedula,Eurasian Jackdaw,0.8180,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_085000.wav,51.407777,-0.646617
+42.0,45.0,Corvus monedula,Eurasian Jackdaw,0.3762,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_085000.wav,51.407777,-0.646617
+48.0,51.0,Erithacus rubecula,European Robin,0.3929,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_085000.wav,51.407777,-0.646617
+54.0,57.0,Erithacus rubecula,European Robin,0.4676,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_085000.wav,51.407777,-0.646617
+57.0,60.0,Corvus monedula,Eurasian Jackdaw,0.5176,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_085000.wav,51.407777,-0.646617
+0.0,3.0,Parus major,Great Tit,0.3203,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_085500.wav,51.407777,-0.646617
+9.0,12.0,Parus major,Great Tit,0.3965,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_085500.wav,51.407777,-0.646617
+15.0,18.0,Turdus merula,Eurasian Blackbird,0.4096,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_085500.wav,51.407777,-0.646617
+15.0,18.0,Pica pica,Eurasian Magpie,0.2919,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_085500.wav,51.407777,-0.646617
+18.0,21.0,Pica pica,Eurasian Magpie,0.6755,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_085500.wav,51.407777,-0.646617
+21.0,24.0,Corvus monedula,Eurasian Jackdaw,0.2560,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_085500.wav,51.407777,-0.646617
+24.0,27.0,Corvus monedula,Eurasian Jackdaw,0.2975,/Users/clarence/camera_trap/acoustic_data/Project Acoustic Data/DawnChorus_9Oct/2MM06423_20251009_085500.wav,51.407777,-0.646617
