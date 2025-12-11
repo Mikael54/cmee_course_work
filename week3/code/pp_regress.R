@@ -4,8 +4,18 @@
 # Description: This script loads predator-prey data, performs log-log
 # regression, analyzes results by Lifestage, and saves the plot and results table.
 
+# Check and load required packages
+if (!require(tidyverse, quietly = TRUE)) {
+    stop("Error: tidyverse package not installed (includes ggplot2, dplyr, etc.).\n",
+         "       Please install with: install.packages('tidyverse')")
+}
 
 library(tidyverse)
+
+# Check if data file exists
+if (!file.exists("../data/ecol_archives_e089_51_d1.csv")) {
+    stop("Error: File '../data/ecol_archives_e089_51_d1.csv' not found. Please check the file path.")
+}
 
 ecol <- read.csv("../data/ecol_archives_e089_51_d1.csv")
 

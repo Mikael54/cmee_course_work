@@ -3,8 +3,10 @@
 # Script: girko.R
 # Description: A script to plott the Girko’s law simulation, including saving the result figure as a file called Girko.pdf in the results directory.
 
+if (!require(tidyverse)) {
+    stop("Error: tidyverse package not installed. Please install with: install.packages('tidyverse')")
+}
 library(tidyverse)
-
 
 build_ellipse <- function(hradius, vradius){ # function that returns an ellipse
   npoints = 250

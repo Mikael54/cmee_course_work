@@ -1,9 +1,26 @@
 ################################################################
 ################## Wrangling the Pound Hill Dataset ############
 ################################################################
+
+# Check and load required packages
+if (!require(tidyverse)) {
+    stop("Error: tidyverse package not installed. Please install with: install.packages('tidyverse')")
+}
+if (!require(reshape2)) {
+    stop("Error: reshape2 package not installed. Please install with: install.packages('reshape2')")
+}
+
 library(tidyverse)
 
 ############# Load the dataset ###############
+# Check if data files exist
+if (!file.exists("../data/pound_hill_data.csv")) {
+    stop("Error: File '../data/pound_hill_data.csv' not found. Please check the file path.")
+}
+if (!file.exists("../data/pound_hill_meta_data.csv")) {
+    stop("Error: File '../data/pound_hill_meta_data.csv' not found. Please check the file path.")
+}
+
 # header = false because the raw data don't have real headers
 MyData <- as.matrix(read.csv("../data/pound_hill_data.csv", header = FALSE))
 
@@ -32,8 +49,7 @@ TempData <- as.data.frame(MyData[-1,],stringsAsFactors = F) #stringsAsFactors = 
 colnames(TempData) <- MyData[1,] # assign column names from original data
 
 ############# Convert from wide to long format  ###############
-require(reshape2) # load the reshape2 package
-
+# Check if required columns exist
 
 MyWrangledData <- melt(TempData, id=c("Cultivation", "Block", "Plot", "Quadrat"), variable.name = "Species", value.name = "Count")
 
@@ -42,6 +58,11 @@ MyWrangledData[, "Block"] <- as.factor(MyWrangledData[, "Block"])
 MyWrangledData[, "Plot"] <- as.factor(MyWrangledData[, "Plot"])
 MyWrangledData[, "Quadrat"] <- as.factor(MyWrangledData[, "Quadrat"])
 MyWrangledData[, "Count"] <- as.integer(MyWrangledData[, "Count"])
+
+# Check for conversion warnings (NAs introduced)
+if (any(is.na(MyWrangledData$Count))) {
+    warning("Warning: Some Count values could not be converted to integers and were set to NA.")
+}
 
 str(MyWrangledData)
 head(MyWrangledData)

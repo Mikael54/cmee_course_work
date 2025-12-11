@@ -3,7 +3,12 @@
 # Script: Basic_io.R
 # Description: A simple script to illustrate R input-output.  
 
-# Run line by line and check inputs outputs to understand what is happening  
+# Run line by line and check inputs outputs to understand what is happening
+
+# Check if data file exists
+if (!file.exists("../data/trees.csv")) {
+    stop("Error: File '../data/trees.csv' not found. Please check the file path.")
+}
 
 my_data <- read.csv("../data/trees.csv", header = TRUE) # import with headers
 

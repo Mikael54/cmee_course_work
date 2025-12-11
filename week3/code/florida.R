@@ -5,8 +5,19 @@
 # Clear workspace
 rm(list=ls())
 
+# Check and load required packages
+if (!require(tidyverse, quietly = TRUE)) {
+    stop("Error: tidyverse package not installed (includes ggplot2, dplyr, etc.).\n",
+         "       Please install with: install.packages('tidyverse')")
+}
+
 # Load required library
 library(tidyverse)
+
+# Check if data file exists
+if (!file.exists("../data/key_west_annual_mean_temperature.RData")) {
+    stop("Error: File '../data/key_west_annual_mean_temperature.RData' not found. Please check the file path.")
+}
 
 # Load temperature data for Key West
 load("../data/key_west_annual_mean_temperature.RData")
