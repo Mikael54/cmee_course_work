@@ -11,6 +11,12 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
+# Check if the file exists
+if [ ! -f "$1" ]; then
+    echo "Error: File '$1' does not exist"
+    exit 1
+fi
+
 # Counts lines
 NumLine=`wc -l < $1`
 echo "the file $1 has $NumLine lines"
