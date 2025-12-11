@@ -1,0 +1,15 @@
+,Station,Species,DateTimeOriginal,Date,Time,delta.time.secs,delta.time.mins,delta.time.hours,delta.time.days,Directory,FileName,n_images
+1,30,Capreolus capreolus,2025/10/25 20:15,2025/10/25,20:15:58,0,0,0,0,fixed/siteA/Capreolus capreolus,30__2025-10-25__20-15-58 (2).jpg,3
+2,30,Capreolus capreolus,2025/11/12 1:57,2025/11/12,1:57:02,1489264,24821.1,413.7,17.2,fixed/siteA/Capreolus capreolus,30__2025-11-12__01-57-02 (3).jpg,3
+3,30,Capreolus capreolus,2025/11/21 4:21,2025/11/21,4:21:14,786252,13104.2,218.4,9.1,fixed/siteA/Capreolus capreolus,30__2025-11-21__04-21-14 (2).jpg,3
+4,30,Muntiacus reevesi,2025/10/10 9:25,2025/10/10,9:25:10,0,0,0,0,fixed/siteA/Muntiacus reevesi,30__2025-10-10__09-25-10.jpg,3
+5,30,Muntiacus reevesi,2025/10/23 9:20,2025/10/23,9:20:08,1122898,18715,311.9,13,fixed/siteA/Muntiacus reevesi,30__2025-10-23__09-20-08 (2).jpg,3
+6,30,Muntiacus reevesi,2025/10/25 21:20,2025/10/25,21:20:08,216000,3600,60,2.5,fixed/siteA/Muntiacus reevesi,30__2025-10-25__21-20-08.jpg,3
+7,30,Muntiacus reevesi,2025/11/1 17:10,2025/11/1,17:10:38,589830,9830.5,163.8,6.8,fixed/siteA/Muntiacus reevesi,30__2025-11-01__17-10-38 (2).jpg,3
+8,30,Muntiacus reevesi,2025/11/4 17:52,2025/11/4,17:52:50,261732,4362.2,72.7,3,fixed/siteA/Muntiacus reevesi,30__2025-11-04__17-52-50 (2).jpg,3
+9,30,Muntiacus reevesi,2025/11/17 10:42,2025/11/17,10:42:34,1097384,18289.7,304.8,12.7,fixed/siteA/Muntiacus reevesi,30__2025-11-17__10-42-34.jpg,3
+10,30,Muntiacus reevesi,2025/11/19 16:20,2025/11/19,16:20:44,193090,3218.2,53.6,2.2,fixed/siteA/Muntiacus reevesi,30__2025-11-19__16-20-44.jpg,6
+11,30,Phasianus colchicus,2025/11/1 8:01,2025/11/1,8:01:06,0,0,0,0,fixed/siteA/Phasianus colchicus,30__2025-11-01__08-01-06 (2).jpg,3
+12,30,Phasianus colchicus,2025/11/11 12:46,2025/11/11,12:46:18,881112,14685.2,244.8,10.2,fixed/siteA/Phasianus colchicus,30__2025-11-11__12-46-18.jpg,3
+13,30,Phasianus colchicus,2025/11/15 11:35,2025/11/15,11:35:04,341326,5688.8,94.8,3.9,fixed/siteA/Phasianus colchicus,30__2025-11-15__11-35-04 (3).jpg,6
+14,30,Phasianus colchicus,2025/11/15 12:10,2025/11/15,12:10:30,2126,35.4,0.6,0,fixed/siteA/Phasianus colchicus,30__2025-11-15__12-10-30 (3).jpg,3
