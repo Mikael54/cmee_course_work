@@ -2,7 +2,7 @@
 
 ## Description
 
-This repository contains coursework completed during the Data Science in Ecology and Evolution course at Imperial College London - Integrative Analysis Module (combining spatial data with ecological monitoring).
+This repository contains coursework completed during the Data Science in Ecology and Evolution course at Imperial College London.
 
 ⚠️ **Note:** Due to file size constraints, satellite imagery (.tiff), shapefiles, and large spatial datasets are not included in this repository. Please contact mikael.minten25@imperial.ac.uk if you need the complete dataset to run this code.
 
