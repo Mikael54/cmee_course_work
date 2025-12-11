@@ -1,0 +1,91 @@
+# Week 10 - Spatial Data and Remote Sensing
+# Ignore large spatial data files to keep repository size manageable
+
+#############################################
+# Raster files (satellite imagery, etc.)
+#############################################
+*.tif
+*.tiff
+*.TIF
+*.TIFF
+*.img
+*.IMG
+*.dat
+*.grd
+*.gri
+*.hdf
+*.HDF
+*.nc
+*.NC
+
+#############################################
+# Shapefiles and vector data
+#############################################
+*.shp
+*.shx
+*.dbf
+*.prj
+*.sbn
+*.sbx
+*.fbn
+*.fbx
+*.ain
+*.aih
+*.ixs
+*.mxs
+*.atx
+*.cpg
+*.qix
+
+#############################################
+# GeoTIFF auxiliary files
+#############################################
+*.tif.aux.xml
+*.tiff.aux.xml
+*.tif.ovr
+*.tiff.ovr
+*.tif.xml
+*.tiff.xml
+
+#############################################
+# KML/KMZ files
+#############################################
+*.kml
+*.kmz
+
+#############################################
+# GeoJSON and other formats
+#############################################
+*.geojson
+*.topojson
+*.gpx
+
+#############################################
+# GeoPackage
+#############################################
+*.gpkg
+
+#############################################
+# Other spatial formats
+#############################################
+*.e00
+*.gdb/
+*.mdb
+
+#############################################
+# Temporary lock files (LibreOffice, Excel)
+#############################################
+.~lock.*#
+~$*
+
+#############################################
+# R temporary files
+#############################################
+.Rhistory
+.RData
+.Rproj.user/
+
+#############################################
+# PDF outputs (optional - remove if you want to track)
+#############################################
+*.pdf
