@@ -309,12 +309,12 @@ neutral_time_series <- function(community,duration)  {
   richness <- vector("numeric", duration + 1)
   
   # Record initial species richness
-  richness[1] <- length(unique(community))
+  richness[1] <- species_richness(community)
   
     # Simulate over generations
   for (generation in 1:duration) {
     community <- neutral_generation(community)
-    richness[generation + 1] <- length(unique(community))
+    richness[generation + 1] <- species_richness(community)
   }
   
   return(richness)
@@ -452,11 +452,11 @@ question_18 <- function()  {
         panel.grid = element_blank(),
         plot.margin = unit(c(1, 1, 1, 1), units = "cm"),       legend.text = element_text(size = 12, face = "italic"),         # Setting the font for the legend text
         legend.title = element_blank(),                                 # Removing the legend title
-        legend.position = c(0.2, 0.9))                                 #
+        legend.position = c(0.23, 0.9))                                 #
 
       )
 
-  png(filename = "question_18.png", width = 600, height = 400)
+  png(filename = "question_18", width = 600, height = 400)
   print(richness_plot)
   Sys.sleep(0.1)
   dev.off()
@@ -467,12 +467,19 @@ question_18 <- function()  {
 
 # Question 19
 species_abundance <- function(community)  {
-  
+  abundance <- sort(table(community), decreasing = TRUE) # get abundance in decreasing order
+  return(as.vector(abundance)) # return as vector
 }
 
 # Question 20
 octaves <- function(abundance_vector) {
+  # Find which octave class each abundance is part of
+  octave_classes <- floor(log2(abundance_vector)) + 1
   
+  # Count number of species in each class
+  octave_counts <- tabulate(octave_classes)
+  
+  return(octave_counts)
 }
 
 # Question 21
@@ -482,17 +489,88 @@ sum_vect <- function(x, y) {
   if (length(y) > length(x)) {
     x <- c(x, rep(0,length(y) - length(x)))}
   return(x+y)
-}
-
-
-# if length of a is less than length of b- then ammend legth(a) - length(b)
+} # if length of a is less than length of b- then ammend legth(a) - length(b)
 
 
 # Question 22
 question_22 <- function() {
   
+  # Two different initial conditions
+  community_max <- init_community_max(100)
+  community_min <- init_community_min(100)
+
+
+# maximum community
+  for (generation in 1:2200) {
+    community_max <- neutral_generation_speciation(community_max, 0.1)
+
+    # record the abundance vector every 20 generations starting from generation 200
+    if (generation %% 20 == 0 && generation >= 200) {
+      abundance_vector_max <- species_abundance(community_max)
+      octave_vector_max <- octaves(abundance_vector_max)
+    # combine each observation into a single vector
+      if (generation == 200) {
+        combined_octave_max <- octave_vector_max
+      } else {
+        combined_octave_max <- sum_vect(combined_octave_max, octave_vector_max)
+      }
+    }
+  }
+  
+  # Calculate average by dividing sum by 101 observations (generations 200-2200, every 20)
+  combined_octave_max <- combined_octave_max / 101
+
+  # minimum community
+  for (generation in 1:2200) {
+    community_min <- neutral_generation_speciation(community_min, 0.1)
+
+    # record the abundance vector every 20 generations starting from generation 200
+    if (generation %% 20 == 0 && generation >= 200) {
+      abundance_vector_min <- species_abundance(community_min)
+      octave_vector_min <- octaves(abundance_vector_min)
+    # combine each observation into a single vector
+      if (generation == 200) {
+        combined_octave_min <- octave_vector_min
+      } else {
+        combined_octave_min <- sum_vect(combined_octave_min, octave_vector_min)
+      }
+    }
+  }
+  
+  # Calculate average by dividing sum by 101 observations (generations 200-2200, every 20)
+  combined_octave_min <- combined_octave_min / 101
+
+  # Create tidy format data frame
+  df <- data.frame(
+    octave = c(1:length(combined_octave_max), 1:length(combined_octave_min)),
+    mean_species_abundance = c(combined_octave_max, combined_octave_min),
+    initialization = c(rep("Maximum diversity initialisation", length(combined_octave_max)),
+                      rep("Minimum diversity initialisation", length(combined_octave_min)))
+  )
+
+# Plot the results as a bar graph for both octaves
+  (octave_plot <- ggplot(df, aes(x = octave, y = mean_species_abundance, fill = initialization)) +
+      geom_bar(stat = "identity") +
+      facet_wrap(~ initialization, ncol = 2) +
+      labs(x = "\nOctave", y = "Mean Species Abundance\n") +
+      scale_x_continuous(breaks = 1:max(df$octave)) +
+      scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
+      theme_bw() +
+      theme(
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        axis.title = element_text(size = 14, face = "plain"),
+        panel.grid = element_blank(),
+        plot.margin = unit(c(1, 1, 1, 1), units = "cm"),
+        strip.text = element_text(size = 12, face = "italic"),  # Facet panel labels
+        legend.position = "none")                               # Remove legend since facet labels show it
+
+      )
+
+
+
   png(filename="question_22", width = 600, height = 400)
-  # plot your graph here
+  print(octave_plot)
   Sys.sleep(0.1)
   dev.off()
   
@@ -500,8 +578,47 @@ question_22 <- function() {
 }
 
 # Question 23
+# NOTE THAT THIS DOES NOT MEASURE THE INITIAL DIVERSITY AT TIME ZERO- IS THIS THE WAY TO DO IT??- ie , if you want to measure every 4, it will measure the 4th
 neutral_cluster_run <- function(speciation_rate, size, wall_time, interval_rich, interval_oct, burn_in_generations, output_file_name) {
     
+
+
+  
+  # create minimum community
+  community <- init_community_min(size)
+
+  start_time <- proc.time()
+  elapsed_time <- proc.time() - start_time
+
+  generation <- 1
+
+  time_series <- numeric()
+  abundance_list <- list()
+
+  while (elapsed_time[3] < wall_time*60) {
+    community <- neutral_generation_speciation(community, speciation_rate)
+
+    if (generation <= burn_in_generations && generation %% interval_rich == 0) {
+    # measure the richness
+    time_series <- c(time_series, species_richness(community))
+    }
+
+    if (generation %% interval_oct == 0) {
+      # measure the octaves
+      abundance_list[[length(abundance_list) + 1]] <- octaves(species_abundance(community))
+    }
+
+    generation <- generation + 1
+
+    elapsed_time <- proc.time() - start_time
+  }
+
+  total_time <- elapsed_time[[3]] / 60  # total time in minutes
+  
+  # save the results to an .rda file
+  save(time_series, abundance_list, community, total_time,
+       speciation_rate, size, wall_time, interval_rich, interval_oct,
+       burn_in_generations, file = output_file_name)
 }
 
 # Questions 24 and 25 involve writing code elsewhere to run your simulations on
@@ -542,23 +659,133 @@ Challenge_A <- function(){
   
 }
 
+
+time_series_repetition <- function(community, speciation_rate, duration, rep) {
+   # Create data frame to store 'rep' columns
+   df <- data.frame(matrix(NA, nrow = duration + 1, ncol = rep))
+   
+   # Run 'rep' replicate time series
+   for (i in 1:rep) {
+     df[, i] <- neutral_time_series_speciation(community, speciation_rate, duration)
+   }
+   
+   df_summary <- data.frame(
+     time = 0:duration,
+     mean = rowMeans(df),
+     ci_lower = apply(df, 1, function(x) quantile(x, probs = 0.014)),
+     ci_upper = apply(df, 1, function(x) quantile(x, probs = 0.986))
+   )
+
+   return(df_summary)
+}
+
+
 # Challenge question B
 Challenge_B <- function() {
   
+  # Create data frame to store 10 replicates for both max and min
+
+  rep <- 50  
+
+  community_max <- init_community_max(100)
+  community_min <- init_community_min(100)
+
+
+   df_max <- time_series_repetition(community_max, 0.1, 2200, rep)
+   df_min <- time_series_repetition(community_min, 0.1, 2200, rep)
+
+# putting it into one dataframe for plotting
+df_summary <- rbind(
+  data.frame(df_max, initialization = "Maximum diversity initialisation"),
+  data.frame(df_min, initialization = "Minimum diversity initialisation")
+)
+
+  (richness_plot_CI <- ggplot() +
+      geom_line(data = df_summary, aes(x = time, y = mean, colour = initialization)) +
+      geom_ribbon(data = df_summary, aes(x = time, ymin = ci_lower, ymax = ci_upper, fill = initialization), alpha = 0.2) +
+      labs(x = "\nGeneration", y = "Richness\n") +
+      scale_x_continuous(limits = c(0, 2200), expand = c(0, 0)) +
+      scale_y_continuous(expand = c(0, 0)) +
+      theme_bw() +
+      theme(
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        axis.title = element_text(size = 14, face = "plain"),
+        panel.grid = element_blank(),
+        plot.margin = unit(c(1, 1, 1, 1), units = "cm"),       legend.text = element_text(size = 12, face = "italic"),         # Setting the font for the legend text
+        legend.title = element_blank(),                                 # Removing the legend title
+        legend.position = c(0.23, 0.9))                                 #
+
+      )
+
+
+
   png(filename="Challenge_B", width = 600, height = 400)
-  # plot your graph here
+  print(richness_plot_CI)
   Sys.sleep(0.1)
   dev.off()
+
+    return("type your written answer here -  NOT SURE IF THIS SHOULD INCLUDE A BURN IN OR NOT??")
+
   
 }
 
-# Challenge question C
-Challenge_B <- function() {
+
+init_community_random <- function(size){
+  community <- sample(1:size, size, replace = TRUE)
+  return(community)
+}
+
+# Challenge question C- THERE WAS A TYPO - i think this was supposeed to be C instead of B
+Challenge_C <- function() {
   
+  # create a loop to run 10 replicates of random initialisation
+  initial_states <- 5
+
+  rep <- 5 
+   
+    # create a list to save all the results
+    results_list <- list()
+
+  for (i in 1:initial_states) {
+
+    community_random <- init_community_random(100)
+    # use time series repetition function to get mean and ci and save it to list
+    results_list[[i]] <- time_series_repetition(community_random, 0.1, 2200, rep)
+  }
+    
+
+  # make a line plot where each line is one of the random initialisations with ci ribbon
+  df_all <- do.call(rbind, lapply(1:initial_states, function(i) {
+    data.frame(results_list[[i]], initialization = paste("Random initialisation", i))
+  }))
+
+ (richness_plot_CI <- ggplot() +
+      geom_line(data = df_all, aes(x = time, y = mean, colour = initialization)) +
+      geom_ribbon(data = df_all, aes(x = time, ymin = ci_lower, ymax = ci_upper, fill = initialization), alpha = 0.2) +
+      labs(x = "\nGeneration", y = "Richness\n") +
+      scale_x_continuous(limits = c(0, 2200), expand = c(0, 0)) +
+      scale_y_continuous(expand = c(0, 0)) +
+      theme_bw() +
+      theme(
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        axis.title = element_text(size = 14, face = "plain"),
+        panel.grid = element_blank(),
+        plot.margin = unit(c(1, 1, 1, 1), units = "cm"),       legend.text = element_text(size = 12, face = "italic"),         # Setting the font for the legend text
+        legend.title = element_blank(),                                 # Removing the legend title
+        legend.position = c(0.23, 0.9))                                 #
+
+      )
+
+
   png(filename="Challenge_C", width = 600, height = 400)
-  # plot your graph here
+  print(richness_plot_CI)
   Sys.sleep(0.1)
   dev.off()
+
+  return("Did I do everything corrent??- something feels wrong here...")
+
 
 }
 
