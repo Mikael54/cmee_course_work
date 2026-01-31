@@ -20,6 +20,10 @@ username <- "mm4725"
 
 # Section One: Stochastic demographic population model
 
+
+# MAKE SURE TO CHANGE THE NAMES OF THE FILES TO BE STARTING WITH MM4725 !!!
+
+
 # Question 0
 
 state_initialise_adult <- function(num_stages,initial_size){
@@ -627,18 +631,86 @@ neutral_cluster_run <- function(speciation_rate, size, wall_time, interval_rich,
 # Question 26 
 process_neutral_cluster_results <- function() {
   
+  sizes <- c(500, 1000, 2500, 5000)
+  sum_list <- list(0, 0, 0, 0)
+  count_list <- list(0, 0, 0, 0)
   
-  combined_results <- list() #create your list output here to return
-  # save results to an .rda file
+  # Get all results
+  files <- list.files(pattern = "neutral_sim_.*\\.rda")
   
-}
+  for (f in files) {
+    # Load the data: time_series, abundance_list, size, burn_in_generations, interval_oct
+    load(f)
+    
+    # catagorise the size
+    size_index <- which(sizes == size)
+    
+    # Calculate how many entries to skip (burn-in period)
+    post_burn_octaves <- abundance_list[(burn_in_generations / interval_oct + 1):length(abundance_list)]
+      # Sum the octaves for this simulation
+      for (oct in post_burn_octaves) {
+        # sum_vect is a helper to add vectors of unequal length by padding with zeros
+        sum_list[[size_index]] <- sum_vect(sum_list[[size_index]], oct)
+        count_list[[size_index]] <- count_list[[size_index]] + 1
+      }
+    
+  }
 
+  # Calculate averages
+  combined_results <- list()
+  for (i in 1:4) {
+    combined_results[[i]] <- sum_list[[i]] / count_list[[i]]
+  }
+  
+  # Save the data
+  save(combined_results, file = "combined_results.rda")
+  return(combined_results)
+}
+  
+
+
+# CHECK IF I SHOULD START OCTAVE AT 0 OR 1!!!
 plot_neutral_cluster_results <- function(){
 
     # load combined_results from your rda file
+    load("combined_results.rda")
+
+    sizes <- c("Size: 500","Size: 1000","Size: 2500","Size: 5000")
+  plot_data <- data.frame()
+  
+  # Loop through the 4 result vectors
+  for (i in 1:4) {
+    temp_df <- data.frame(
+      Octave = seq(0, length(combined_results[[i]]) - 1),
+      Abundance = combined_results[[i]],
+      Size = sizes[i]
+    )
+    # Stack it onto the main table
+    plot_data <- rbind(plot_data, temp_df)
+  }
+
+  # create levels for size factor
+  plot_data$Size <- factor(plot_data$Size, levels = sizes)
+
+  # create a bar plot for all sizes
+  (bar_plot <- ggplot(plot_data, aes(x = Octave, y = Abundance)) +
+      facet_wrap(~ Size, ncol = 2) +
+    geom_bar(stat = "identity", position = "dodge") +
+    labs(x = "\nOctave", y = "Mean Species Abundance\n") +
+    scale_x_continuous(breaks = 0:length(combined_results[[1]])) +
+    scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
+      theme_bw() +
+      theme(
+        strip.text = element_text(size = 12),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        axis.title = element_text(size = 14, face = "plain"),
+        panel.grid = element_blank(),
+        plot.margin = unit(c(1, 1, 1, 1), units = "cm")))
+
   
     png(filename="plot_neutral_cluster_results", width = 600, height = 400)
-    # plot your graph here
+    print(bar_plot)
     Sys.sleep(0.1)
     dev.off()
     
@@ -679,13 +751,13 @@ time_series_repetition <- function(community, speciation_rate, duration, rep) {
    return(df_summary)
 }
 
-
+# CHANGE THE NAMES OF EVERYTHING FROM abc123 TO SOMETHING ELSE- LIKE mm4725!!!
 # Challenge question B
 Challenge_B <- function() {
   
   # Create data frame to store 10 replicates for both max and min
 
-  rep <- 50  
+  rep <- 50
 
   community_max <- init_community_max(100)
   community_min <- init_community_min(100)
@@ -790,12 +862,59 @@ Challenge_C <- function() {
 }
 
 # Challenge question D
+# DO I NEED TO LOAD THE FILES AGAIN???- CHECK THIS!!!
 Challenge_D <- function() {
+
+  all_sizes <- c(500, 1000, 2500, 5000)
+  size_labels <- c("Size: 500", "Size: 1000", "Size: 2500", "Size: 5000")
   
-  png(filename="Challenge_D", width = 600, height = 400)
-  # plot your graph here
-  Sys.sleep(0.1)
-  dev.off()
+  # Create lists to store the sum of richness and number of simulations per size
+  richness_sum <- list(numeric(), numeric(), numeric(), numeric())
+  sim_count <- c(0, 0, 0, 0)
+  
+  files <- list.files(pattern = "neutral_sim_.*\\.rda")
+  
+  for (f in files) {
+    load(f)
+    size_index <- which(all_sizes == size)
+    
+    richness_sum[[size_index]] <- sum_vect(richness_sum[[size_index]], time_series)
+    sim_count[size_index] <- sim_count[size_index] + 1
+  }
+  
+  # Prepare data for ggplot
+  plot_data <- data.frame()
+  
+  for (i in 1:4) {
+    if (sim_count[i] > 0) {
+      mean_richness <- richness_sum[[i]] / sim_count[i]
+      
+      temp_df <- data.frame(
+        # Generations = index * interval (since interval_rich was 1, it's just the index)
+        Generation = seq_along(mean_richness),
+        Richness = mean_richness,
+        Size = factor(size_labels[i], levels = size_labels)
+      )
+      plot_data <- rbind(plot_data, temp_df)
+    }
+  }
+  
+  # Create the plot
+  (rich_plot <- ggplot(plot_data, aes(x = Generation, y = Richness)) +
+    geom_line(size = 0.5) +
+    facet_wrap(~ Size, ncol = 2, scales = "free") +
+    labs(x = "\nSimulation Generation", 
+         y = "Mean Species Richness\n") +
+    theme_bw() +
+    theme(
+      strip.text = element_text(size = 12),
+      axis.text.x = element_text(size = 12),     # making the years at a bit of an angle
+      axis.text.y = element_text(size = 12),
+      axis.title = element_text(size = 14, face = "plain"),                        
+      panel.grid = element_blank(),                                   # Removing the background grid lines               
+      plot.margin = unit(c(1,1,1,1), units = "cm"),                 # Adding a 1cm margin around the plot
+    ))
+
 }
 
 # Challenge question E

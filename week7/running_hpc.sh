@@ -10,10 +10,3 @@ echo "R has finished running"X
 
 
 
-
-# Questions
-# Do I need to load my other files to the HPC cluster as well??
-# like Demographics.R
-
-
-# Once I run it everything will be in my HOME directory on the HPC- should I move it to my laptop or not?
