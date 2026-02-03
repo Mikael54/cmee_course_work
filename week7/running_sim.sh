@@ -4,7 +4,7 @@
 cd $HOME
 module load anaconda3/personal
 echo "R is about to run"
-R --vanilla <$HOME/abc123_HPC_2025_demographic_cluster.R
+R --vanilla <$HOME/mm4725_HPC_2025_demographic_cluster.R
 mv output_* $HOME
 echo "R has finished running"
 

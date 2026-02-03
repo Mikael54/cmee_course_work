@@ -49,7 +49,7 @@ source("Demographic.R")
 library(ggplot2)
 
 question_1 <- function(){
-  # defining the matrix (do we define it within the function?)
+  # defining the matrix
   growth_matrix <- matrix(c(0.1, 0.0, 0.0, 0.0,
                               0.5, 0.4, 0.0, 0.0,
                               0.0, 0.4, 0.7, 0.0,
@@ -237,12 +237,110 @@ for(i in 1:100) {
 # Question 6
 question_6 <- function(){
   
+  # matrices (same as Q1)
+  growth_matrix <- matrix(c(0.1, 0.0, 0.0, 0.0,
+                            0.5, 0.4, 0.0, 0.0,
+                            0.0, 0.4, 0.7, 0.0,
+                            0.0, 0.0, 0.25, 0.4),
+                          nrow=4, ncol=4, byrow=TRUE)
+  
+  reproduction_matrix <- matrix(c(0.0, 0.0, 0.0, 2.6,
+                                  0.0, 0.0, 0.0, 0.0,
+                                  0.0, 0.0, 0.0, 0.0,
+                                  0.0, 0.0, 0.0, 0.0),
+                                nrow=4, ncol=4, byrow=TRUE)
+  
+  projection_matrix <- growth_matrix + reproduction_matrix
+
+
+
+  # containers for summed population sizes
+  small_spread_sum <- rep(0, 121)
+  large_spread_sum <- rep(0, 121)
+
+
+    # loop through files for initial conditions 3 and 4
+  for(i in 51:100){
+    
+    if(i <= 75){
+      file_path <- paste0("output_files/output_large_spread_", i, ".rda")
+      type <- "large"
+    } else {
+      file_path <- paste0("output_files/output_small_spread_", i, ".rda")
+      type <- "small"
+    }
+    
+    load(file_path)
+    
+    # loop through simulations in each file
+    for(j in 1:150){
+      if(type == "large"){
+        large_spread_sum <- large_spread_sum + results_list[[j]]
+      } else {
+        small_spread_sum <- small_spread_sum + results_list[[j]]
+      }
+    }
+  }
+
+
+  # mean stochastic population trends
+  large_spread_mean <- large_spread_sum / 3750
+  small_spread_mean <- small_spread_sum / 3750
+
+
+    # deterministic simulations
+  large_det <- deterministic_simulation(
+    state_initialise_spread(4, 100),
+    projection_matrix, 120)
+  
+  small_det <- deterministic_simulation(
+    state_initialise_spread(4, 10),
+    projection_matrix, 120)
+  
+  # deviation from deterministic model
+  large_dev <- large_spread_mean / large_det
+  small_dev <- small_spread_mean / small_det
+
+
+  time <- 0:120
+  
+  df <- data.frame(
+    time = time,
+    small = small_dev,
+    large = large_dev
+  )
+
+    deviation_plot <- ggplot() +
+    geom_line(data=df, aes(x=time, y=small, colour="Small population")) +
+    geom_line(data=df, aes(x=time, y=large, colour="Large population")) +
+    labs(
+      x = "\nTime step",
+      y = "Deviation from deterministic model\n",
+    ) +
+    scale_x_continuous(limits=c(0,120), expand=c(0,0)) +
+    theme_bw() +
+    theme(
+      axis.text.x = element_text(size = 12),
+      axis.text.y = element_text(size = 12),
+      axis.title = element_text(size = 14),
+      plot.title = element_text(size = 14),
+      panel.grid = element_blank(),
+      legend.title = element_blank(),
+      legend.text = element_text(size = 12, face = "italic"),
+      legend.position = c(0.3, 0.9),
+      plot.margin = unit(c(1,1,1,1), units = "cm")
+    )
+
+
+
+
   png(filename="question_6", width = 600, height = 400)
   # plot your graph here
+  print(deviation_plot)
   Sys.sleep(0.1)
   dev.off()
-  
-  return("type your written answer here")
+
+  return("over time both trend upwards, both have greater deviations at the start which then stabilises. The small population overall has a greater deviation from the deterministic model compared to the large population, additionally, the small population also deviate further from the deterministic than the large pop.")
 }
 
 
@@ -724,6 +822,83 @@ plot_neutral_cluster_results <- function(){
 # Challenge question A
 Challenge_A <- function(){
   
+  population_size_df <- data.frame()
+  sim_id <- 1  # unique simulation identifier
+
+  time_steps <- 0:120
+
+  # Loop through files 1–100
+  for (i in 1:100) {
+
+    # Determine initial condition and file path
+    if (i <= 25) {
+      initial_state <- "large adult"
+      file_path <- paste0("output_files/output_large_adult_", i, ".rda")
+
+    } else if (i <= 50) {
+      initial_state <- "small adult"
+      file_path <- paste0("output_files/output_small_adult_", i, ".rda")
+
+    } else if (i <= 75) {
+      initial_state <- "large mixed"
+      file_path <- paste0("output_files/output_large_spread_", i, ".rda")
+
+    } else {
+      initial_state <- "small mixed"
+      file_path <- paste0("output_files/output_small_spread_", i, ".rda")
+    }
+
+    # Load results_list
+    load(file_path)
+
+    # Loop through the 150 simulations in this file
+    for (j in 1:150) {
+
+      pop_ts <- results_list[[j]]
+
+      df_tmp <- data.frame(
+        simulation_number = sim_id,
+        initial_condition = initial_state,
+        time_step = time_steps,
+        population_size = pop_ts
+      )
+
+      population_size_df <- rbind(population_size_df, df_tmp)
+      sim_id <- sim_id + 1
+    }
+  }
+
+  return(population_size_df)
+
+
+  # Plot all time series
+  p <- ggplot(population_size_df,
+              aes(x = time_step,
+                  y = population_size,
+                  group = simulation_number,
+                  colour = initial_condition)) +
+    geom_line(alpha = 0.1) +
+    labs(
+      x = "Time step",
+      y = "Population size",
+      colour = "Initial condition"
+    ) +
+      theme_bw() +
+      theme(
+        strip.text = element_text(size = 12),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        axis.title = element_text(size = 14, face = "plain"),
+        panel.grid = element_blank(),
+        plot.margin = unit(c(1, 1, 1, 1), units = "cm"))
+    
+
+
+
+
+
+
+
   png(filename="Challenge_A", width = 600, height = 400)
   # plot your graph here
   Sys.sleep(0.1)
