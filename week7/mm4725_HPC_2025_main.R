@@ -24,6 +24,10 @@ username <- "mm4725"
 # MAKE SURE TO CHANGE THE NAMES OF THE FILES TO BE STARTING WITH MM4725 !!!
 
 
+
+
+# CHECK ALL FORMULAS IN THE HAND OUT SHEET- THESE MAY NOT HAVE DONE THINGS CORECTYLY!!!!!
+
 # Question 0
 
 state_initialise_adult <- function(num_stages,initial_size){
@@ -82,7 +86,8 @@ question_1 <- function(){
   adult_v_spread_plot <- ggplot() +
     geom_line(data = df, aes(x = time, y = adult, color = "Adult-only initialisation")) +
     geom_line(data = df, aes(x = time, y = spread, color = "Evenly spread initialisation")) +
-    labs(x = "\nTime step", y = "Population size\n") +
+    labs(title = "Effect of Initial Age Structure on Deterministic Population Change",
+         x = "\nTime step", y = "Population size\n") +
     scale_x_continuous(limits = c(0, 24), expand = c(0, 0)) +
     theme_bw() +
     theme(
@@ -90,7 +95,7 @@ question_1 <- function(){
       axis.text.y = element_text(size = 12),
       axis.title = element_text(size = 14, face = "plain"),                        
       panel.grid = element_blank(),                                   # Removing the background grid lines               
-      plot.margin = unit(c(1,1,1,1), units = , "cm"),                 # Adding a 1cm margin around the plot
+      plot.margin = unit(c(1,1,1,1), units = "cm"),                 # Adding a 1cm margin around the plot
       legend.text = element_text(size = 12, face = "italic"),         # Setting the font for the legend text
       legend.title = element_blank(),                                 # Removing the legend title
       legend.position = c(0.2, 0.9))                                 #
@@ -101,8 +106,7 @@ question_1 <- function(){
   Sys.sleep(0.1)
   dev.off()
   
-  return("example of what he said he wanted: All adults has initial quicker growth, then a crash, and then stable growth which seems to mirror exponential curve.
-   - the evenly spread initiallization expiriences a initial rap growth, though less than adult only, then  expirience a very minor decrease, after which it goes on to also mirror an exponential cure, lagging behind the adult only initialization")
+  return("The adult-only initialization exhibits rapid initial growth, followed by a more pronounced crash and then a period of stable growth that closely resembles an exponential curve. The evenly spread initialization also shows early rapid growth, though to a lesser extent than the adult-only case. This is followed by a phase of stagnation or slight decline occurring at the same time step as the crash in the adult-only initialization. After this point, the population again follows the onset of exponential growth, but with population size consistently lagging behind that of the adult-only initialization.")
 }
 
 # Question 2
@@ -137,7 +141,8 @@ question_2 <- function(){
   stochastic_plot <- ggplot() +
     geom_line(data = df, aes(x = time, y = adult, color = "Adult-only initialisation")) +
     geom_line(data = df, aes(x = time, y = spread, color = "Evenly spread initialisation")) +
-    labs(x = "\nTime step", y = "Population size\n") +
+    labs(title = "Effect of Initial Age Structure on Stocastic Population Change",
+         x = "\nTime step", y = "Population size\n") +
     scale_x_continuous(limits = c(0, 24), expand = c(0, 0)) +
     theme_bw() +
     theme(
@@ -145,20 +150,20 @@ question_2 <- function(){
       axis.text.y = element_text(size = 12),
       axis.title = element_text(size = 14, face = "plain"),                        
       panel.grid = element_blank(),                                   # Removing the background grid lines               
-      plot.margin = unit(c(1,1,1,1), units = , "cm"),                 # Adding a 1cm margin around the plot
+      plot.margin = unit(c(1,1,1,1), units = "cm"),                 # Adding a 1cm margin around the plot
       legend.text = element_text(size = 12, face = "italic"),         # Setting the font for the legend text
       legend.title = element_blank(),                                 # Removing the legend title
       legend.position = c(0.2, 0.9))                                 #
 
 
-  png(filename="question_2", width = 600, height = 400)
+  png(filename="question_2", width = 600, height = 400, res = 300)
   # plot your graph here
   print(stochastic_plot)
 
   Sys.sleep(0.1)
   dev.off()
   
-  return("type your written answer here")
+  return("This mirrors the general trend observed in the previous deterministic simulation (i.e. initial rapid growth, followed by a crash or stagnation, and then more steady growth). However, the stochastic simulation is less smooth because it is driven by random chance. Over time, or across many simulations, these small random fluctuations are expected to average out, resulting in dynamics that more closely resemble the results from Question 1.")
 }
 
 
@@ -177,16 +182,16 @@ for(i in 1:100) {
   # Determine parameter type and build file path based on number range
   if(i <= 25) {
     initial_state <- "large_adult"
-    file_path <- paste0("output_files/output_large_adult_", i, ".rda")
+    file_path <- paste0("output_large_adult_", i, ".rda")
   } else if(i <= 50) {
     initial_state <- "small_adult"
-    file_path <- paste0("output_files/output_small_adult_", i, ".rda")
+    file_path <- paste0("output_small_adult_", i, ".rda")
   } else if(i <= 75) {
     initial_state <- "large_spread"
-    file_path <- paste0("output_files/output_large_spread_", i, ".rda")
+    file_path <- paste0("output_large_spread_", i, ".rda")
   } else {
     initial_state <- "small_spread"
-    file_path <- paste0("output_files/output_small_spread_", i, ".rda")
+    file_path <- paste0("output_small_spread_", i, ".rda")
   }
   
     
@@ -206,23 +211,25 @@ for(i in 1:100) {
   proportion_extinct <-extinction_number/(25*150)
 
   df <- data.frame(
-   initial_state = c("Small Adult Population", 
-                    "Large Adult Population", 
-                    "Small Spread Population", 
-                    "Large Spread Population"),
+   initial_state = c("Small Adult", 
+                    "Large Adult", 
+                    "Small Spread", 
+                    "Large Spread"),
   proportion = as.numeric(proportion_extinct)
 )
 
   (richness_barplot <- ggplot(df, aes(x = initial_state, y = proportion)) +
     geom_bar(position = position_dodge(), stat = "identity", colour = "black", fill = "#00868B") +
     theme_bw() +
-    ylab("Proportion of Extinctions\n") +                             
-    xlab("Initial state")  +
+    labs(title = "Extinction Risk Across Population Size and Age Structure",
+         x = "Initial Population State",
+         y = "Proportion of Extinctions\n") +
     theme(axis.text.x = element_text(size = 12, angle = 45, vjust = 1, hjust = 1),  # Angled labels, so text doesn't overlap
           axis.text.y = element_text(size = 12),
-          axis.title = element_text(size = 14, face = "plain"),                      
+          axis.title = element_text(size = 14, face = "plain"),
+          plot.title = element_text(size = 14, face = "plain", hjust = 0.5),
           panel.grid = element_blank(),                                          
-          plot.margin = unit(c(1,1,1,1), units = , "cm")))
+          plot.margin = unit(c(1,1,1,1), units = "cm")))
 
 
   png(filename="question_5", width = 600, height = 400)
@@ -231,7 +238,9 @@ for(i in 1:100) {
   Sys.sleep(0.1)
   dev.off()
   
-  return("type your written answer here")
+  return("The population most likely to go extinct is the small, evenly spread population, followed by the small adult-only population. This is primarily because smaller populations contain fewer individuals and are therefore more vulnerable to demographic stochasticity, where random events have a proportionally larger impact. In contrast, random fluctuations in larger populations are less significant at the individual level and tend to average out across many individuals, resulting in more stable, positive growth overall.
+
+Small populations are more prone to extinction when individuals are evenly distributed across life stages, because immature individuals must first survive to adulthood before they can reproduce. This introduces additional stochasticity and delays population growth. By comparison, in an adult-only population, all individuals are immediately capable of reproduction, reducing the risk of extinction.")
 }
 
 # Question 6
@@ -263,10 +272,10 @@ question_6 <- function(){
   for(i in 51:100){
     
     if(i <= 75){
-      file_path <- paste0("output_files/output_large_spread_", i, ".rda")
+      file_path <- paste0("output_large_spread_", i, ".rda")
       type <- "large"
     } else {
-      file_path <- paste0("output_files/output_small_spread_", i, ".rda")
+      file_path <- paste0("output_small_spread_", i, ".rda")
       type <- "small"
     }
     
@@ -340,7 +349,9 @@ question_6 <- function(){
   Sys.sleep(0.1)
   dev.off()
 
-  return("over time both trend upwards, both have greater deviations at the start which then stabilises. The small population overall has a greater deviation from the deterministic model compared to the large population, additionally, the small population also deviate further from the deterministic than the large pop.")
+  return("
+
+A deterministic model better approximates the average behaviour of a large population. This is evident from the large population values generally being closer to 1, indicating lower deviation. Small populations are more susceptible to stochasticity, whereas in large populations, random individual-level events are averaged out across many individuals. As a result, population dynamics in larger populations more closely align with the predictions of a deterministic model.")
 }
 
 
@@ -438,16 +449,18 @@ question_8 <- function() {
 
   richness_plot <- ggplot() +
     geom_line(data = df, aes(x = time, y = richness)) +
-    labs(x = "\nGeneration", y = "Species Richness\n") +
+    labs(title = "Change in Species Richness Under Neutral Theory Without Speciation",
+         x = "\nGeneration", y = "Species Richness\n") +
     scale_x_continuous(limits = c(0, 200), expand = c(0, 0)) +
     scale_y_continuous(expand = c(0, 0)) +
     theme_bw() +
     theme(
     axis.text.x = element_text(size = 12),     # making the years at a bit of an angle
       axis.text.y = element_text(size = 12),
-      axis.title = element_text(size = 14, face = "plain"),                        
+      axis.title = element_text(size = 14, face = "plain"),
+      plot.title = element_text(size = 14, face = "plain", hjust = 0.5),
       panel.grid = element_blank(),                                   # Removing the background grid lines               
-      plot.margin = unit(c(1,1,1,1), units = , "cm"))                 # Adding a 1cm margin around the plot
+      plot.margin = unit(c(1,1,1,1), units = "cm"))                 # Adding a 1cm margin around the plot
       
   
   png(filename="question_14", width = 600, height = 400)
@@ -457,7 +470,9 @@ question_8 <- function() {
   Sys.sleep(0.1)
   dev.off()
   
-  return("type your written answer here")
+  return("
+This system will always tend towards domination by a single species. This is because the only process modelled is a death–replacement mechanism (neutral step), in which individuals are removed and replaced at random. Under these conditions, the only lasting change in community composition occurs through species extinctions. Given sufficient time, random fluctuations will lead to the extinction of all but one species."  
+)
 }
 
 # Question 15
@@ -543,7 +558,8 @@ question_18 <- function()  {
   (richness_plot <- ggplot() +
       geom_line(data = df, aes(x = time, y = maximum_richness, colour = "Maximum diversity initialisation")) +
       geom_line(data = df, aes(x = time, y = minimum_richness, colour = "Minimum diversity initialisation")) +
-      labs(x = "\nGeneration", y = "Richness\n") +
+      labs(title = "Change in Species Richness Under Neutral Theory with Speciation",
+           x = "\nGeneration", y = "Richness\n") +
       scale_x_continuous(limits = c(0, 200), expand = c(0, 0)) +
       scale_y_continuous(expand = c(0, 0)) +
       theme_bw() +
@@ -551,6 +567,7 @@ question_18 <- function()  {
         axis.text.x = element_text(size = 12),
         axis.text.y = element_text(size = 12),
         axis.title = element_text(size = 14, face = "plain"),
+        plot.title = element_text(size = 14, face = "plain", hjust = 0.5),
         panel.grid = element_blank(),
         plot.margin = unit(c(1, 1, 1, 1), units = "cm"),       legend.text = element_text(size = 12, face = "italic"),         # Setting the font for the legend text
         legend.title = element_blank(),                                 # Removing the legend title
@@ -564,7 +581,7 @@ question_18 <- function()  {
   dev.off()
 
   
-  return("type your written answer here")
+  return(" In this model, the initial conditions do not affect the long-term outcome, as both communities fluctuate around the same dynamic equilibrium given sufficient time. On average, when community richness is below this stable state, speciation dominates over extinction, leading to an increase in richness. Conversely, when richness exceeds this threshold, extinction plays a larger role than speciation, causing richness to decline.")
 }
 
 # Question 19
@@ -654,13 +671,16 @@ question_22 <- function() {
   (octave_plot <- ggplot(df, aes(x = octave, y = mean_species_abundance, fill = initialization)) +
       geom_bar(stat = "identity") +
       facet_wrap(~ initialization, ncol = 2) +
-      labs(x = "\nOctave", y = "Mean Species Abundance\n") +
+      labs(title = "Species Abundance Distribution",
+           x = "\nAbudance Octave", y = "Number of Species\n") +
       scale_x_continuous(breaks = 1:max(df$octave)) +
       scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
       theme_bw() +
       theme(
         axis.text.x = element_text(size = 12),
         axis.text.y = element_text(size = 12),
+        axis.title = element_text(size = 14, face = "plain"),
+        plot.title = element_text(size = 14, face = "plain", hjust = 0.5),
         axis.title = element_text(size = 14, face = "plain"),
         panel.grid = element_blank(),
         plot.margin = unit(c(1, 1, 1, 1), units = "cm"),
@@ -676,7 +696,7 @@ question_22 <- function() {
   Sys.sleep(0.1)
   dev.off()
   
-  return("type your written answer here")
+  return("The initial conditions do not effect the species abundance distribution after the burn in period. This is because, similar to the previous question 18, the system reaches a dynamic equilibrium where the strenght of speciation and extiction are similar.")
 }
 
 # Question 23
@@ -794,7 +814,8 @@ plot_neutral_cluster_results <- function(){
   (bar_plot <- ggplot(plot_data, aes(x = Octave, y = Abundance)) +
       facet_wrap(~ Size, ncol = 2) +
     geom_bar(stat = "identity", position = "dodge") +
-    labs(x = "\nOctave", y = "Mean Species Abundance\n") +
+    labs(title = "Community Size And Species Abundance Distribution",
+         x = "\nAbundance Octave", y = "Number of Species\n") +
     scale_x_continuous(breaks = 0:length(combined_results[[1]])) +
     scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
       theme_bw() +
@@ -803,6 +824,7 @@ plot_neutral_cluster_results <- function(){
         axis.text.x = element_text(size = 12),
         axis.text.y = element_text(size = 12),
         axis.title = element_text(size = 14, face = "plain"),
+        plot.title = element_text(size = 14, face = "plain", hjust = 0.5),
         panel.grid = element_blank(),
         plot.margin = unit(c(1, 1, 1, 1), units = "cm")))
 
@@ -822,10 +844,20 @@ plot_neutral_cluster_results <- function(){
 # Challenge question A
 Challenge_A <- function(){
   
-  population_size_df <- data.frame()
-  sim_id <- 1  # unique simulation identifier
-
+  # Pre allocate the data frame for better performance
   time_steps <- 0:120
+  n_total_rows <- 100 * 150 * length(time_steps)
+  row_idx <- 1  # Track where to insert next chunk
+  sim_id <- 1   #
+
+  # Pre-allocate the entire data frame
+  population_size_df <- data.frame(
+    simulation_number = integer(n_total_rows),
+    initial_condition = character(n_total_rows),
+    time_step = integer(n_total_rows),
+    population_size = numeric(n_total_rows),
+    stringsAsFactors = FALSE
+  )
 
   # Loop through files 1–100
   for (i in 1:100) {
@@ -833,19 +865,19 @@ Challenge_A <- function(){
     # Determine initial condition and file path
     if (i <= 25) {
       initial_state <- "large adult"
-      file_path <- paste0("output_files/output_large_adult_", i, ".rda")
+      file_path <- paste0("output_large_adult_", i, ".rda")
 
     } else if (i <= 50) {
       initial_state <- "small adult"
-      file_path <- paste0("output_files/output_small_adult_", i, ".rda")
+      file_path <- paste0("output_small_adult_", i, ".rda")
 
     } else if (i <= 75) {
       initial_state <- "large mixed"
-      file_path <- paste0("output_files/output_large_spread_", i, ".rda")
+      file_path <- paste0("output_large_spread_", i, ".rda")
 
     } else {
       initial_state <- "small mixed"
-      file_path <- paste0("output_files/output_small_spread_", i, ".rda")
+      file_path <- paste0("output_small_spread_", i, ".rda")
     }
 
     # Load results_list
@@ -856,20 +888,19 @@ Challenge_A <- function(){
 
       pop_ts <- results_list[[j]]
 
-      df_tmp <- data.frame(
-        simulation_number = sim_id,
-        initial_condition = initial_state,
-        time_step = time_steps,
-        population_size = pop_ts
-      )
+      # Calculate the range of rows to fill
+      end_idx <- row_idx + length(time_steps) - 1
 
-      population_size_df <- rbind(population_size_df, df_tmp)
+      # Fill in the pre-allocated rows
+      population_size_df$simulation_number[row_idx:end_idx] <- sim_id
+      population_size_df$initial_condition[row_idx:end_idx] <- initial_state
+      population_size_df$time_step[row_idx:end_idx] <- time_steps
+      population_size_df$population_size[row_idx:end_idx] <- pop_ts
+      
+      row_idx <- end_idx + 1
       sim_id <- sim_id + 1
     }
   }
-
-  return(population_size_df)
-
 
   # Plot all time series
   p <- ggplot(population_size_df,
@@ -879,31 +910,35 @@ Challenge_A <- function(){
                   colour = initial_condition)) +
     geom_line(alpha = 0.1) +
     labs(
-      x = "Time step",
-      y = "Population size",
+      title = "Stochastic Population Change Across Initial Conditions",
+      x = "\nTime step",
+      y = "Population size\n",
       colour = "Initial condition"
     ) +
+      scale_x_continuous(expand = c(0, 0)) +
+      scale_y_continuous(expand = c(0, 0)) +
       theme_bw() +
       theme(
-        strip.text = element_text(size = 12),
-        axis.text.x = element_text(size = 12),
-        axis.text.y = element_text(size = 12),
-        axis.title = element_text(size = 14, face = "plain"),
-        panel.grid = element_blank(),
-        plot.margin = unit(c(1, 1, 1, 1), units = "cm"))
-    
-
-
-
-
-
+      plot.title = element_text(size = 14, face = "plain", hjust = 0.5),
+    axis.text.x = element_text(size = 12),     # making the years at a bit of an angle
+      axis.text.y = element_text(size = 12),
+      axis.title = element_text(size = 14, face = "plain"),                        
+      panel.grid = element_blank(),                                   # Removing the background grid lines               
+      plot.margin = unit(c(1,1,1,1), units = "cm"),                 # Adding a 1cm margin around the plot
+      legend.text = element_text(size = 12, face = "italic"),         # Setting the font for the legend text
+      legend.title = element_blank(),                                 # Removing the legend title
+      legend.position = c(0.15, 0.85))                                 #
 
 
   png(filename="Challenge_A", width = 600, height = 400)
   # plot your graph here
+  print(p)
   Sys.sleep(0.1)
   dev.off()
   
+
+  return(population_size_df)
+
 }
 
 
@@ -926,7 +961,6 @@ time_series_repetition <- function(community, speciation_rate, duration, rep) {
    return(df_summary)
 }
 
-# CHANGE THE NAMES OF EVERYTHING FROM abc123 TO SOMETHING ELSE- LIKE mm4725!!!
 # Challenge question B
 Challenge_B <- function() {
   
@@ -950,7 +984,8 @@ df_summary <- rbind(
   (richness_plot_CI <- ggplot() +
       geom_line(data = df_summary, aes(x = time, y = mean, colour = initialization)) +
       geom_ribbon(data = df_summary, aes(x = time, ymin = ci_lower, ymax = ci_upper, fill = initialization), alpha = 0.2) +
-      labs(x = "\nGeneration", y = "Richness\n") +
+      labs(title = "Species Richness Change with 97.2% Confidence Intervals Across different Initial Conditions",
+           x = "\nGeneration", y = "Species Richness\n") +
       scale_x_continuous(limits = c(0, 2200), expand = c(0, 0)) +
       scale_y_continuous(expand = c(0, 0)) +
       theme_bw() +
@@ -958,6 +993,7 @@ df_summary <- rbind(
         axis.text.x = element_text(size = 12),
         axis.text.y = element_text(size = 12),
         axis.title = element_text(size = 14, face = "plain"),
+        plot.title = element_text(size = 14, face = "plain", hjust = 0.5),
         panel.grid = element_blank(),
         plot.margin = unit(c(1, 1, 1, 1), units = "cm"),       legend.text = element_text(size = 12, face = "italic"),         # Setting the font for the legend text
         legend.title = element_blank(),                                 # Removing the legend title
@@ -972,7 +1008,7 @@ df_summary <- rbind(
   Sys.sleep(0.1)
   dev.off()
 
-    return("type your written answer here -  NOT SURE IF THIS SHOULD INCLUDE A BURN IN OR NOT??")
+    return("type your written answer here -")
 
   
 }
@@ -983,10 +1019,11 @@ init_community_random <- function(size){
   return(community)
 }
 
-# Challenge question C- THERE WAS A TYPO - i think this was supposeed to be C instead of B
+# Challenge question C
+# PERCENTILE NOT NESSESARY HERE!!!
 Challenge_C <- function() {
   
-  # create a loop to run 10 replicates of random initialisation
+  # create a loop to run replicates of random initialisation
   initial_states <- 5
 
   rep <- 5 
@@ -998,7 +1035,7 @@ Challenge_C <- function() {
 
     community_random <- init_community_random(100)
     # use time series repetition function to get mean and ci and save it to list
-    results_list[[i]] <- time_series_repetition(community_random, 0.1, 2200, rep)
+    results_list[[i]] <- time_series_repetition(community_random, 0.1, 300, rep)
   }
     
 
@@ -1009,19 +1046,20 @@ Challenge_C <- function() {
 
  (richness_plot_CI <- ggplot() +
       geom_line(data = df_all, aes(x = time, y = mean, colour = initialization)) +
-      geom_ribbon(data = df_all, aes(x = time, ymin = ci_lower, ymax = ci_upper, fill = initialization), alpha = 0.2) +
-      labs(x = "\nGeneration", y = "Richness\n") +
-      scale_x_continuous(limits = c(0, 2200), expand = c(0, 0)) +
+      labs(title = "Species Richness Change from Random Initial Communities",
+           x = "\nGeneration", y = "Richness\n") +
+      scale_x_continuous(expand = c(0, 0)) +
       scale_y_continuous(expand = c(0, 0)) +
       theme_bw() +
       theme(
         axis.text.x = element_text(size = 12),
         axis.text.y = element_text(size = 12),
         axis.title = element_text(size = 14, face = "plain"),
+        plot.title = element_text(size = 14, face = "plain", hjust = 0.5),
         panel.grid = element_blank(),
         plot.margin = unit(c(1, 1, 1, 1), units = "cm"),       legend.text = element_text(size = 12, face = "italic"),         # Setting the font for the legend text
         legend.title = element_blank(),                                 # Removing the legend title
-        legend.position = c(0.23, 0.9))                                 #
+        legend.position = "topright")                                 #
 
       )
 
@@ -1078,25 +1116,112 @@ Challenge_D <- function() {
   (rich_plot <- ggplot(plot_data, aes(x = Generation, y = Richness)) +
     geom_line(size = 0.5) +
     facet_wrap(~ Size, ncol = 2, scales = "free") +
-    labs(x = "\nSimulation Generation", 
+    labs(title = "Mean Species Richness Change Across Community Sizes",
+         x = "\nSimulation Generation", 
          y = "Mean Species Richness\n") +
     theme_bw() +
     theme(
       strip.text = element_text(size = 12),
       axis.text.x = element_text(size = 12),     # making the years at a bit of an angle
       axis.text.y = element_text(size = 12),
-      axis.title = element_text(size = 14, face = "plain"),                        
+      axis.title = element_text(size = 14, face = "plain"),
+      plot.title = element_text(size = 14, face = "plain", hjust = 0.5),
       panel.grid = element_blank(),                                   # Removing the background grid lines               
       plot.margin = unit(c(1,1,1,1), units = "cm"),                 # Adding a 1cm margin around the plot
     ))
 
+  png(filename="Challenge_D", width = 600, height = 400)
+  print(rich_plot)
+  Sys.sleep(0.1)
+  dev.off()
+
 }
 
+
+
+
+
 # Challenge question E
-Challenge_E <- function() {
+# I added J and v as parameters- is this correct???? - CHECK!
+# Go back through this and make sure you understand the last part to double check
+# REDO- these are not the same results!
+Challenge_E <- function(J= 100, v = 0.1) {
   
+  # Initialise a vector lineages of length  with  in every entry
+  lineages <- rep(1, J)
+
+  # Initialise an empty vector abundances (of length 0).
+  abundances <- numeric(0)
+
+  # Initialise a number N=J
+  N <- J
+
+  # Calculate theta, where theta = v(J-1)/(1-v).
+  theta <- v * (J - 1) / (1 - v)
+
+    while (N > 1) {
+
+  # Choose an index j for the vector lineages at random according to a uniform distribution.
+  j <- sample(1:J, 1)
+
+  # Pick a random (decimal, not integer) number randnum between 0 and 1 (with a uniform distribution).
+  randnum <- runif(1)
+
+  # if randnum < theta/(theta + N - 1), then:
+  if (randnum < theta / (theta + N - 1)) {
+    # add the value in lineages[j] to the vector abundances
+    abundances <- c(abundances, lineages[j])
+  # else
+  } else {
+   # choose another index i for the vector lineages at random, but do not allow i=j. Then set lineages[i] <- lineages[i] + lineages[j].
+    i <- sample(setdiff(1:N, j), 1)
+    lineages[i] <- lineages[i] + lineages[j]
+  }
+
+  # Remove lineages[j] from lineages so that the lineages vector is now one shorter.
+  lineages <- lineages[-j]
+
+  # Decrease N by one so that N still gives the length of the lineages vector.
+  N <- N - 1
+
+    }
+
+  # Once N=1, add the only element left in lineages to the end of abundances.
+  abundances <- c(abundances, lineages)
+
+
+  # now to plot it
+  octave_vector <- octaves(abundances)
+
+
+  df <- data.frame(
+  octave = seq_along(octave_vector),
+  species_count = octave_vector
+)
+
+
+ (octave_plot <- ggplot(df, aes(x = octave, y = species_count)) +
+      geom_bar(stat = "identity") +
+      labs(title = "Species Abundance Distribution from Coalescence Simulation",
+           x = "\nOctave", y = "Mean Species Abundance\n") +
+      scale_x_continuous(breaks = 1:max(df$octave)) +
+      scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
+      theme_bw() +
+      theme(
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        axis.title = element_text(size = 14, face = "plain"),
+        plot.title = element_text(size = 14, face = "plain", hjust = 0.5),
+        panel.grid = element_blank(),
+        plot.margin = unit(c(1, 1, 1, 1), units = "cm"),
+        strip.text = element_text(size = 12, face = "italic"),  # Facet panel labels
+        legend.position = "none")                               # Remove legend since facet labels show it
+
+      )
+
+
   png(filename="Challenge_E", width = 600, height = 400)
-  # plot your graph here
+  print(octave_plot)
   Sys.sleep(0.1)
   dev.off()
   
