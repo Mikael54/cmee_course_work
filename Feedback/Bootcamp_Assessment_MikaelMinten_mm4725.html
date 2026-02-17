@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Bootcamp_Assessment_MikaelMinten_mm4725</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Bootcamp_Assessment_MikaelMinten_mm4725</h1>
+</header>
+<h1 id="bootcamp-assessment-mikael-minten">Bootcamp Assessment: Mikael
+Minten</h1>
+<h2 id="execution-results">Execution results</h2>
+<p>High-level: - Many scripts executed successfully in the automated
+environment (including <code>TAutoCorr.R</code>, exit code 0). - Several
+failures appear to be <strong>usage related</strong> (scripts expecting
+CLI arguments) or <strong>environment/dependency related</strong>
+(missing R package): <code>concatenate_two_files.sh</code>,
+<code>count_lines.sh</code>, <code>csv_to_space.sh</code>,
+<code>tab_to_csv.sh</code>, <code>tiff_to_png.sh</code>,
+<code>variables.sh</code> → “No filename provided” / missing args
+pattern. - <code>sq_linr.R</code> → dependency error: “please install
+sqldf”.</p>
+<h2 id="script-specific-feedback">Script-Specific Feedback</h2>
+<blockquote>
+<p>Representative scripts chosen to cover: strong examples, assigned
+scripts, execution issues, and common style/robustness problems.</p>
+</blockquote>
+<h3 id="tautocorr.r">TAutoCorr.R</h3>
+<p>Status: Ran successfully</p>
+<p>Evidence (from LOG): - Exit code: 0 - Missing from expected list: Not
+reported in LOG - Tool warnings: Not reported in LOG - Output
+validation: Not reported in LOG</p>
+<p>Rubric relevance: - Criterion 2 - Criterion 3 - Criterion 8 -
+Criterion 9</p>
+<p>Script executed cleanly (exit code 0). Code shows a complete
+end-to-end workflow: load data, compute 1-lag correlation, generate a
+permutation null distribution, compute a p-value, and save outputs (PDF
++ text report).</p>
+<p>Improvement suggestion: Implement the usage header you wrote: parse
+<code>--input</code>, <code>--output</code>, <code>--nperm</code> via
+<code>commandArgs(trailingOnly=TRUE)</code> (or <code>optparse</code>).
+Also guard against short series (n&lt;3) and make the permutation
+p-value two-sided (e.g.,
+<code>mean(abs(perm_cors) &gt;= abs(obs_cor))</code>) if that’s what the
+task intended.</p>
+<h3 id="align_seqs_fasta.py">align_seqs_fasta.py</h3>
+<p>Status: Ran successfully</p>
+<p>Evidence (from LOG): - Exit code: 0 - Missing from expected list: Not
+reported in LOG - Tool warnings: Not reported in LOG - Output
+validation: Not reported in LOG</p>
+<p>Rubric relevance: - Criterion 2 - Criterion 3 - Criterion 8 -
+Criterion 9</p>
+<p>Ran successfully (exit code 0). The script includes argument parsing
+with defaults and appears designed to operate both with provided FASTA
+files and built-in examples, which is robust for automated
+environments.</p>
+<p>Improvement suggestion: Add explicit <code>--help</code> text and
+exit codes for missing inputs; ensure outputs are written
+deterministically into <code>../results</code> and documented in
+README.</p>
+<h3 id="align_seqs_better.py">align_seqs_better.py</h3>
+<p>Status: Ran successfully</p>
+<p>Evidence (from LOG): - Exit code: 0 - Missing from expected list: Not
+reported in LOG - Tool warnings: Not reported in LOG - Output
+validation: Not reported in LOG</p>
+<p>Rubric relevance: - Criterion 2 - Criterion 3 - Criterion 8 -
+Criterion 9</p>
+<p>Ran successfully (exit code 0). Evidence of structured thinking:
+functions, defaults, and a clear main() entrypoint.</p>
+<p>Improvement suggestion: Add minimal input validation (file existence
+checks) and clearer output reporting (what file was written where).</p>
+<h3 id="oaks_debugme.py">oaks_debugme.py</h3>
+<p>Status: Ran successfully</p>
+<p>Evidence (from LOG): - Exit code: 0 - Missing from expected list: Not
+reported in LOG - Tool warnings: Not reported in LOG - Output
+validation: Not reported in LOG</p>
+<p>Rubric relevance: - Criterion 2 - Criterion 3 - Criterion 8 -
+Criterion 9</p>
+<p>Ran successfully (exit code 0). Indicates successful debugging/repair
+of a teaching script; good evidence of engagement with error-finding
+under time pressure.</p>
+<p>Improvement suggestion: Add short comments explaining what was wrong
+originally and how you fixed it (this strengthens Criterion 9/11
+evidence).</p>
+<h3 id="sq_linr.r">sq_linr.R</h3>
+<p>Status: Execution failed (present but not validated)</p>
+<p>Evidence (from LOG): - Exit code: 1 - Missing from expected list: Not
+reported in LOG - Tool warnings: Not reported in LOG - Output
+validation: Not reported in LOG</p>
+<p>Rubric relevance: - Criterion 2 - Criterion 3 - Criterion 8 -
+Criterion 9</p>
+<p>Failed with an explicit dependency error: “please install sqldf”. In
+a headless marking environment, this does not work!</p>
+<p>Improvement suggestion: Add a
+<code>requireNamespace('sqldf', quietly=TRUE)</code> check with an
+informative message; document the dependency in README and provide a
+fallback approach using base R if feasible.</p>
+<h3 id="compile_latex.sh">compile_latex.sh</h3>
+<p>Status: Execution failed (present but not validated)</p>
+<p>Evidence (from LOG): - Exit code: 1 - Missing from expected list: Not
+reported in LOG - Tool warnings: Not reported in LOG - Output
+validation: Not reported in LOG</p>
+<p>Rubric relevance: - Criterion 2 - Criterion 3 - Criterion 8 -
+Criterion 9</p>
+<p>Failed with “No filename provided”. This looks like a script that
+expects command-line arguments.</p>
+<p>Improvement suggestion: Provide a usage message
+(<code>echo 'Usage: ...'</code>) and argument count checks; optionally
+allow a sensible default filename to avoid failing in automated
+runs.</p>
+<h3 id="count_lines.sh">count_lines.sh</h3>
+<p>Status: Execution failed (present but not validated)</p>
+<p>Evidence (from LOG): - Exit code: 1 - Missing from expected list: Not
+reported in LOG - Tool warnings: Not reported in LOG - Output
+validation: Not reported in LOG</p>
+<p>Rubric relevance: - Criterion 2 - Criterion 3 - Criterion 8 -
+Criterion 9</p>
+<p>Failed with “No filename provided”. Same pattern: argument-required
+shell utility script; present-but-not-validated.</p>
+<p>Improvement suggestion: Add
+<code>if [ $# -lt 1 ]; then ...; exit 1; fi</code> and document expected
+input/output; consider supporting stdin piping.</p>
+<h3 id="tab_to_csv.sh">tab_to_csv.sh</h3>
+<p>Status: Execution failed (present but not validated)</p>
+<p>Evidence (from LOG): - Exit code: 1 - Missing from expected list: Not
+reported in LOG - Tool warnings: Not reported in LOG - Output
+validation: Not reported in LOG</p>
+<p>Rubric relevance: - Criterion 2 - Criterion 3 - Criterion 8 -
+Criterion 9</p>
+<p>Failed with “No filename provided”. Again consistent with an
+argument-driven converter script.</p>
+<p>Improvement suggestion: Same as above: usage + arg validation;
+consider allowing input/output paths to be specified explicitly.</p>
+<hr />
+<h2 id="detailed-evaluation-tautocorr.r">Detailed Evaluation:
+TAutoCorr.R</h2>
+<h3 id="conceptual-understanding-of-autocorrelation">Conceptual
+Understanding of Autocorrelation</h3>
+<ul>
+<li>Correctly operationalises <strong>1-step temporal
+autocorrelation</strong> as correlation between <code>Temp[t]</code> and
+<code>Temp[t+1]</code>.</li>
+<li>Correct lag handling using <code>head(...,-1)</code> and
+<code>tail(...,-1)</code>.</li>
+<li>Uses Pearson; example uses Spearman (both acceptable; Spearman is
+more conservative).</li>
+</ul>
+<p><strong>Conceptual judgement:</strong> <em>Strong evidence</em> of
+understanding of lag-1 autocorrelation and permutation-based
+testing.</p>
+<h3 id="b.-algorithmic-implementation-depth">B. Algorithmic
+Implementation Depth</h3>
+<p>Compared to the example solution: - Clean vector slicing;
+preallocation of <code>perm_cors</code> (good practice). -
+Straightforward permutation loop; NA handling via
+<code>use="complete.obs"</code>.</p>
+<p>Gaps vs example: - No function abstraction
+(<code>autocor_test()</code>), and fewer diagnostic plots.</p>
+<h3 id="c.-statistical-computational-rigor">C. Statistical &amp;
+Computational Rigor</h3>
+<ul>
+<li>Uses <code>cor()</code> rather than <code>cor.test()</code>
+(estimate only). Acceptable if the permutation test is the main
+inferential tool.</li>
+<li>P-value is computed as <code>mean(perm_cors &gt;= obs_cor)</code> →
+<strong>one-sided</strong>. If the intended test was two-sided, use
+<code>abs()</code>.</li>
+</ul>
+<h3 id="d.-error-handling-robustness">D. Error Handling &amp;
+Robustness</h3>
+<p>Strengths: - Column presence check via <code>stopifnot</code>. -
+Output directory creation with <code>recursive=TRUE</code>.</p>
+<p>Weaknesses: - No explicit <code>file.exists(infile)</code> guard. -
+No guard for short series.</p>
+<h3 id="e.-comparison-with-example-solution">E. Comparison with Example
+Solution</h3>
+<h4 id="similarities">Similarities</h4>
+<ul>
+<li>Same conceptual target: lag-1 correlation + permutation null
+distribution.</li>
+<li>Random shuffling without replacement; computes null
+correlations.</li>
+</ul>
+<h4 id="key-omissions">Key omissions</h4>
+<ul>
+<li>No temperature/time plot and lag plot.</li>
+<li>No function wrapper; no <code>cor.test()</code> call.</li>
+</ul>
+<h4 id="conceptual-gaps">Conceptual gaps</h4>
+<ul>
+<li>One-sided p-value; direction should be stated or adjusted.</li>
+</ul>
+<h4 id="improvements-beyond-example-if-any">Improvements beyond example
+(if any)</h4>
+<ul>
+<li>Writes a separate text report alongside the figure.</li>
+</ul>
+<h3 id="comparison-with-example-solution">Comparison with Example
+Solution</h3>
+<ul>
+<li><strong>Similarities:</strong> lag-1 correlation; permutation/null
+distribution; saved figure.</li>
+<li><strong>Key omissions:</strong> fewer exploratory plots; no
+function; no progress bar; no <code>cor.test()</code>.</li>
+<li><strong>Conceptual gaps:</strong> p-value sidedness not
+justified.</li>
+<li><strong>Improvements beyond example:</strong> separate text report
+output.</li>
+</ul>
+<h3 id="tautocorr.r-reporting-block">TAutoCorr.R reporting block</h3>
+<p>Status: Ran successfully (exit code 0)</p>
+<p>Specification alignment: - SCRIPT_METADATA_JSON entry not found →
+cannot verify required IO/workflow against JSON. - Matches likely intent
+but does not implement CLI parsing described in header.</p>
+<p>Algorithmic evaluation: - Correct lag construction; correct
+correlation computation; preallocation; outputs saved.</p>
+<p>Conceptual understanding: - Clear understanding of lag-1
+autocorrelation + permutation testing.</p>
+<p>Statistical correctness: - Correlation correct; p-value sidedness
+needs clarification.</p>
+<p>Rubric relevance: - Criterion 2 - Criterion 3 - Criterion 8 -
+Criterion 9 - Criterion 10 - Criterion 11</p>
+<p>Strong implementation that runs cleanly and communicates outputs.</p>
+<p>Improvement suggestion: Add argument parsing and robustness checks;
+clarify/two-side permutation p-value if required.</p>
+<hr />
+<h2 id="problem-solving-evidence">Problem-solving evidence</h2>
+<p>Evidence from LOG indicates: - Successful debugging/repair work
+(<code>oaks_debugme.py</code> runs). - Structured algorithmic
+implementations (sequence alignment scripts with sensible defaults and
+clean runs). - Clear conceptual/statistical method implementation in
+<code>TAutoCorr.R</code> (lag handling + permutation test + saved
+outputs).</p>
+<hr />
+<h2 id="reporting-evidence">Reporting evidence</h2>
+<ul>
+<li>Main README present and strong (multiple sections, code examples;
+per LOG).</li>
+<li>Per-week READMEs present for 8/9 weeks (per LOG).</li>
+<li><code>TAutoCorr.R</code> writes both a figure (PDF) and a short text
+report, supporting reproducible reporting.</li>
+</ul>
+<hr />
+<h2 id="overall-feedback">Overall feedback</h2>
+<p><strong>Repository workflow (C1):</strong> - Strengths:
+<code>.gitignore</code> present with good patterns; no large files
+detected. - Improve: keep <code>results/</code> empty (or
+<code>.gitkeep</code>) and regenerate outputs; some weeks have
+incomplete <code>code/data/results</code> structure.</p>
+<p><strong>Functional correctness (C2):</strong> - Strong: many scripts
+run cleanly. - Improve: harden scripts that require CLI args (usage text
++ argument checks), and handle optional dependencies gracefully.</p>
+<p><strong>Style and clarity (C3–C4):</strong> - Documentation is
+excellent and should be maintained. - For R/shell scripts: reduce style
+warnings via consistent formatting and quoting.</p>
+<p><strong>Error handling (C8):</strong> - Add basic input validation
+and graceful failure behaviour (file existence checks, informative
+messages, early exits).</p>
+<p><strong>Progression (C11):</strong> - “Moderate” progression
+detected; make improvements more visible with short notes in later-week
+READMEs or script headers describing what changed and why.</p>
+<h2 id="priority-fixes">Priority fixes</h2>
+<ol type="1">
+<li>Implement CLI argument parsing + validation for scripts that
+advertise usage flags (especially <code>TAutoCorr.R</code>).</li>
+<li>Add usage + argument checks for shell utilities (prevents
+automated-run failures).</li>
+<li>Handle dependencies explicitly (e.g., <code>sqldf</code>
+check/instructions or fallback).</li>
+<li>Keep generated outputs out of Git (<code>results/</code>), and
+consider adding OS-file patterns to <code>.gitignore</code>.</li>
+</ol>
+<hr />
+<h2 id="summary">Summary</h2>
+<p>Very good work! Strong evidence of engagement and learning: many
+scripts run cleanly; excellent documentation.Main issues were robustness
+(error handling, CLI validation), a handful of execution failures due to
+missing args/dependencies, and some repository hygiene issues with
+committed <code>results/</code> outputs.</p>
+<h2 id="mark-classification">Mark classification</h2>
+<!-- Total Mark: 76/100   -->
+<p>Classification: Distinction</p>
+</body>
+</html>
