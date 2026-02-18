@@ -1,6 +1,3 @@
-#HE MIGHT UPDATE THE DEMOGRAPHICS .R file SO MAKE SURE YOU AHVE IT INSTALLED!!!
-
-
 # CMEE 2024 HPC exercises R code main pro forma
 # You don't HAVE to use this but it will be very helpful.
 # If you opt to write everything yourself from scratch please ensure you use
@@ -20,23 +17,15 @@ username <- "mm4725"
 
 # Section One: Stochastic demographic population model
 
-
-# MAKE SURE TO CHANGE THE NAMES OF THE FILES TO BE STARTING WITH MM4725 !!!
-
-
-
-
-# CHECK ALL FORMULAS IN THE HAND OUT SHEET- THESE MAY NOT HAVE DONE THINGS CORECTYLY!!!!!
-
 # Question 0
 
-state_initialise_adult <- function(num_stages,initial_size){
+state_initialise_adult <- function(num_stages, initial_size){
   state <- rep(0, num_stages)
   state[num_stages] <- initial_size
   return(state)
 }
 
-state_initialise_spread <- function(num_stages,initial_size){
+state_initialise_spread <- function(num_stages, initial_size){
   state <- rep(floor(initial_size / num_stages), num_stages)
   remainder <- initial_size %% num_stages
   
@@ -67,12 +56,12 @@ question_1 <- function(){
 
   # population projections
   projection_matrix <- reproduction_matrix + growth_matrix
-  adult_deterministic <-   deterministic_simulation(state_initialise_adult(4, 100),
+  adult_deterministic <- deterministic_simulation(state_initialise_adult(4, 100),
     projection_matrix, 24)
-  spread_deterministic <-  deterministic_simulation(state_initialise_spread(4, 100),
+  spread_deterministic <- deterministic_simulation(state_initialise_spread(4, 100),
     projection_matrix, 24)
 
-  #time vector
+  # time vector
   time <- 0:24
 
   # plot
@@ -95,7 +84,7 @@ question_1 <- function(){
       axis.text.y = element_text(size = 12),
       axis.title = element_text(size = 14, face = "plain"),                        
       panel.grid = element_blank(),                                   # Removing the background grid lines               
-      plot.margin = unit(c(1,1,1,1), units = "cm"),                 # Adding a 1cm margin around the plot
+      plot.margin = unit(c(1, 1, 1, 1), units = "cm"),                 # Adding a 1cm margin around the plot
       legend.text = element_text(size = 12, face = "italic"),         # Setting the font for the legend text
       legend.title = element_blank(),                                 # Removing the legend title
       legend.position = c(0.2, 0.9))                                 #
@@ -111,7 +100,7 @@ question_1 <- function(){
 
 # Question 2
 question_2 <- function(){
-  clutch_distribution <- c(0.06,0.08,0.13,0.15,0.16,0.18,0.15,0.06,0.03)
+  clutch_distribution <- c(0.06, 0.08, 0.13, 0.15, 0.16, 0.18, 0.15, 0.06, 0.03)
   growth_matrix <- matrix(c(0.1, 0.0, 0.0, 0.0,
                               0.5, 0.4, 0.0, 0.0,
                               0.0, 0.4, 0.7, 0.0,
@@ -123,13 +112,13 @@ question_2 <- function(){
                               0.0, 0.0, 0.0, 0.0),
   nrow=4, ncol=4, byrow=T)
 
-  adult_stochastic <-   stochastic_simulation(state_initialise_adult(4, 100),
-    growth_matrix,reproduction_matrix,clutch_distribution, 24)
-  spread_stochastic <-   stochastic_simulation(state_initialise_spread(4, 100),
-    growth_matrix,reproduction_matrix,clutch_distribution, 24)
+  adult_stochastic <- stochastic_simulation(state_initialise_adult(4, 100),
+    growth_matrix, reproduction_matrix, clutch_distribution, 24)
+  spread_stochastic <- stochastic_simulation(state_initialise_spread(4, 100),
+    growth_matrix, reproduction_matrix, clutch_distribution, 24)
 
 
-  #time vector
+  # time vector
   time <- 0:24
 
     df <- data.frame(
@@ -150,7 +139,7 @@ question_2 <- function(){
       axis.text.y = element_text(size = 12),
       axis.title = element_text(size = 14, face = "plain"),                        
       panel.grid = element_blank(),                                   # Removing the background grid lines               
-      plot.margin = unit(c(1,1,1,1), units = "cm"),                 # Adding a 1cm margin around the plot
+      plot.margin = unit(c(1, 1, 1, 1), units = "cm"),                 # Adding a 1cm margin around the plot
       legend.text = element_text(size = 12, face = "italic"),         # Setting the font for the legend text
       legend.title = element_blank(),                                 # Removing the legend title
       legend.position = c(0.2, 0.9))                                 #
@@ -229,7 +218,7 @@ for(i in 1:100) {
           axis.title = element_text(size = 14, face = "plain"),
           plot.title = element_text(size = 14, face = "plain", hjust = 0.5),
           panel.grid = element_blank(),                                          
-          plot.margin = unit(c(1,1,1,1), units = "cm")))
+          plot.margin = unit(c(1, 1, 1, 1), units = "cm")))
 
 
   png(filename="question_5", width = 600, height = 400)
@@ -326,7 +315,7 @@ question_6 <- function(){
       x = "\nTime step",
       y = "Deviation from deterministic model\n",
     ) +
-    scale_x_continuous(limits=c(0,120), expand=c(0,0)) +
+    scale_x_continuous(limits = c(0, 120), expand = c(0, 0)) +
     theme_bw() +
     theme(
       axis.text.x = element_text(size = 12),
@@ -337,7 +326,7 @@ question_6 <- function(){
       legend.title = element_blank(),
       legend.text = element_text(size = 12, face = "italic"),
       legend.position = c(0.3, 0.9),
-      plot.margin = unit(c(1,1,1,1), units = "cm")
+      plot.margin = unit(c(1, 1, 1, 1), units = "cm")
     )
 
 
@@ -380,8 +369,7 @@ init_community_min <- function(size){
 choose_two <- function(max_value){
   result <- sample(1:max_value, size = 2, replace = FALSE)
   return(result)
-  
-} # QUESTION- should i do it like this or just return(sample)
+}
 
 # Question 11
 neutral_step <- function(community){
@@ -418,7 +406,7 @@ neutral_generation <- function(community) {
 }
 
 # Question 13
-neutral_time_series <- function(community,duration)  {
+neutral_time_series <- function(community, duration) {
   richness <- vector("numeric", duration + 1)
   
   # Record initial species richness
@@ -460,7 +448,7 @@ question_8 <- function() {
       axis.title = element_text(size = 14, face = "plain"),
       plot.title = element_text(size = 14, face = "plain", hjust = 0.5),
       panel.grid = element_blank(),                                   # Removing the background grid lines               
-      plot.margin = unit(c(1,1,1,1), units = "cm"))                 # Adding a 1cm margin around the plot
+      plot.margin = unit(c(1, 1, 1, 1), units = "cm"))                 # Adding a 1cm margin around the plot
       
   
   png(filename="question_14", width = 600, height = 400)
@@ -476,7 +464,7 @@ This system will always tend towards domination by a single species. This is bec
 }
 
 # Question 15
-neutral_step_speciation <- function(community,speciation_rate)  {
+neutral_step_speciation <- function(community, speciation_rate) {
   
   if (runif(1) < speciation_rate) {
     # which individual will die
@@ -498,7 +486,7 @@ neutral_step_speciation <- function(community,speciation_rate)  {
 
 
 # Question 16
-neutral_generation_speciation <- function(community,speciation_rate)  {
+neutral_generation_speciation <- function(community, speciation_rate) {
     x <- length(community)
 
   # if the size is odd
@@ -521,7 +509,7 @@ neutral_generation_speciation <- function(community,speciation_rate)  {
 }
 
 # Question 17
-neutral_time_series_speciation <- function(community,speciation_rate,duration)  {
+neutral_time_series_speciation <- function(community, speciation_rate, duration) {
   richness <- vector("numeric", duration + 1)
 
   # Record initial species richness
@@ -604,9 +592,9 @@ octaves <- function(abundance_vector) {
 # Question 21
 sum_vect <- function(x, y) {
   if (length(x) > length(y)) {
-    y <- c(y, rep(0,length(x) - length(y)))}
+    y <- c(y, rep(0, length(x) - length(y)))}
   if (length(y) > length(x)) {
-    x <- c(x, rep(0,length(y) - length(x)))}
+    x <- c(x, rep(0, length(y) - length(x)))}
   return(x+y)
 } # if length of a is less than length of b- then ammend legth(a) - length(b)
 
@@ -699,7 +687,6 @@ question_22 <- function() {
 }
 
 # Question 23
-# NOTE THAT THIS DOES NOT MEASURE THE INITIAL DIVERSITY AT TIME ZERO- IS THIS THE WAY TO DO IT??- ie , if you want to measure every 4, it will measure the 4th
 neutral_cluster_run <- function(speciation_rate, size, wall_time, interval_rich, interval_oct, burn_in_generations, output_file_name) {
     
 
@@ -791,7 +778,7 @@ plot_neutral_cluster_results <- function(){
     # load combined_results from your rda file
     load("combined_results.rda")
 
-    sizes <- c("Size: 500","Size: 1000","Size: 2500","Size: 5000")
+    sizes <- c("Size: 500", "Size: 1000", "Size: 2500", "Size: 5000")
   plot_data <- data.frame()
   
   # Loop through the 4 result vectors
@@ -924,7 +911,7 @@ Challenge_A <- function(){
       axis.text.y = element_text(size = 12),
       axis.title = element_text(size = 14, face = "plain"),                        
       panel.grid = element_blank(),                                   # Removing the background grid lines               
-      plot.margin = unit(c(1,1,1,1), units = "cm"),                 # Adding a 1cm margin around the plot
+      plot.margin = unit(c(1, 1, 1, 1), units = "cm"),                 # Adding a 1cm margin around the plot
       legend.text = element_text(size = 12, face = "italic"),         # Setting the font for the legend text
       legend.title = element_blank(),                                 # Removing the legend title
       legend.position = c(0.15, 0.85))                                 #
@@ -1048,6 +1035,9 @@ init_community_random_richness <- function(size, richness) {
 }
 
 
+
+
+
 # Challenge question C
 Challenge_C <- function() {
   
@@ -1101,7 +1091,6 @@ df_all <- do.call(rbind, lapply(1:length(richness_levels), function(i) {
 }
 
 # Challenge question D
-# DO I NEED TO LOAD THE FILES AGAIN???- CHECK THIS!!!
 Challenge_D <- function() {
 
   all_sizes <- c(500, 1000, 2500, 5000)
@@ -1153,7 +1142,7 @@ Challenge_D <- function() {
       axis.title = element_text(size = 14, face = "plain"),
       plot.title = element_text(size = 14, face = "plain", hjust = 0.5),
       panel.grid = element_blank(),                                   # Removing the background grid lines               
-      plot.margin = unit(c(1,1,1,1), units = "cm"),                 # Adding a 1cm margin around the plot
+      plot.margin = unit(c(1, 1, 1, 1), units = "cm"),                 # Adding a 1cm margin around the plot
     ))
 
   png(filename="Challenge_D", width = 600, height = 400)
@@ -1165,12 +1154,7 @@ Challenge_D <- function() {
 
 
 
-
-
 # Challenge question E
-# I added J and v as parameters- is this correct???? - CHECK!
-# Go back through this and make sure you understand the last part to double check
-# REDO- these are not the same results!
 Challenge_E <- function() {
   
   # set parameters
