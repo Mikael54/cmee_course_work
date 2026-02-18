@@ -86,7 +86,7 @@ question_1 <- function(){
   adult_v_spread_plot <- ggplot() +
     geom_line(data = df, aes(x = time, y = adult, color = "Adult-only initialisation")) +
     geom_line(data = df, aes(x = time, y = spread, color = "Evenly spread initialisation")) +
-    labs(title = "Effect of Initial Age Structure on Deterministic Population Change",
+    labs(title = "Effect of Initial Age Structure on Deterministic Population Time Series\n",
          x = "\nTime step", y = "Population size\n") +
     scale_x_continuous(limits = c(0, 24), expand = c(0, 0)) +
     theme_bw() +
@@ -141,7 +141,7 @@ question_2 <- function(){
   stochastic_plot <- ggplot() +
     geom_line(data = df, aes(x = time, y = adult, color = "Adult-only initialisation")) +
     geom_line(data = df, aes(x = time, y = spread, color = "Evenly spread initialisation")) +
-    labs(title = "Effect of Initial Age Structure on Stocastic Population Change",
+    labs(title = "Effect of Initial Age Structure on Stocastic Population Time Series\n",
          x = "\nTime step", y = "Population size\n") +
     scale_x_continuous(limits = c(0, 24), expand = c(0, 0)) +
     theme_bw() +
@@ -156,7 +156,7 @@ question_2 <- function(){
       legend.position = c(0.2, 0.9))                                 #
 
 
-  png(filename="question_2", width = 600, height = 400, res = 300)
+  png(filename="question_2", width = 600, height = 400)
   # plot your graph here
   print(stochastic_plot)
 
@@ -221,7 +221,7 @@ for(i in 1:100) {
   (richness_barplot <- ggplot(df, aes(x = initial_state, y = proportion)) +
     geom_bar(position = position_dodge(), stat = "identity", colour = "black", fill = "#00868B") +
     theme_bw() +
-    labs(title = "Extinction Risk Across Population Size and Age Structure",
+    labs(title = "Extinction Risk Across Population Size and Age Structure\n",
          x = "Initial Population State",
          y = "Proportion of Extinctions\n") +
     theme(axis.text.x = element_text(size = 12, angle = 45, vjust = 1, hjust = 1),  # Angled labels, so text doesn't overlap
@@ -449,7 +449,7 @@ question_8 <- function() {
 
   richness_plot <- ggplot() +
     geom_line(data = df, aes(x = time, y = richness)) +
-    labs(title = "Change in Species Richness Under Neutral Theory Without Speciation",
+    labs(title = "Species Richness Time Series Under Neutral Theory Without Speciation\n",
          x = "\nGeneration", y = "Species Richness\n") +
     scale_x_continuous(limits = c(0, 200), expand = c(0, 0)) +
     scale_y_continuous(expand = c(0, 0)) +
@@ -558,7 +558,7 @@ question_18 <- function()  {
   (richness_plot <- ggplot() +
       geom_line(data = df, aes(x = time, y = maximum_richness, colour = "Maximum diversity initialisation")) +
       geom_line(data = df, aes(x = time, y = minimum_richness, colour = "Minimum diversity initialisation")) +
-      labs(title = "Change in Species Richness Under Neutral Theory with Speciation",
+      labs(title = "Species Richness Time Series Under Neutral Theory with Speciation\n",
            x = "\nGeneration", y = "Richness\n") +
       scale_x_continuous(limits = c(0, 200), expand = c(0, 0)) +
       scale_y_continuous(expand = c(0, 0)) +
@@ -671,7 +671,7 @@ question_22 <- function() {
   (octave_plot <- ggplot(df, aes(x = octave, y = mean_species_abundance, fill = initialization)) +
       geom_bar(stat = "identity") +
       facet_wrap(~ initialization, ncol = 2) +
-      labs(title = "Species Abundance Distribution",
+      labs(title = "Species Abundance Distribution\n",
            x = "\nAbudance Octave", y = "Number of Species\n") +
       scale_x_continuous(breaks = 1:max(df$octave)) +
       scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
@@ -679,7 +679,6 @@ question_22 <- function() {
       theme(
         axis.text.x = element_text(size = 12),
         axis.text.y = element_text(size = 12),
-        axis.title = element_text(size = 14, face = "plain"),
         plot.title = element_text(size = 14, face = "plain", hjust = 0.5),
         axis.title = element_text(size = 14, face = "plain"),
         panel.grid = element_blank(),
@@ -787,7 +786,6 @@ process_neutral_cluster_results <- function() {
   
 
 
-# CHECK IF I SHOULD START OCTAVE AT 0 OR 1!!!
 plot_neutral_cluster_results <- function(){
 
     # load combined_results from your rda file
@@ -799,7 +797,7 @@ plot_neutral_cluster_results <- function(){
   # Loop through the 4 result vectors
   for (i in 1:4) {
     temp_df <- data.frame(
-      Octave = seq(0, length(combined_results[[i]]) - 1),
+      Octave = seq(1, length(combined_results[[i]])),
       Abundance = combined_results[[i]],
       Size = sizes[i]
     )
@@ -810,13 +808,15 @@ plot_neutral_cluster_results <- function(){
   # create levels for size factor
   plot_data$Size <- factor(plot_data$Size, levels = sizes)
 
+  max_octave <- max(sapply(combined_results, length))
+
   # create a bar plot for all sizes
   (bar_plot <- ggplot(plot_data, aes(x = Octave, y = Abundance)) +
       facet_wrap(~ Size, ncol = 2) +
     geom_bar(stat = "identity", position = "dodge") +
-    labs(title = "Community Size And Species Abundance Distribution",
+    labs(title = "Community Size And Species Abundance Distribution\n",
          x = "\nAbundance Octave", y = "Number of Species\n") +
-    scale_x_continuous(breaks = 0:length(combined_results[[1]])) +
+    scale_x_continuous(breaks = 1:max_octave, expand = c(0, 0)) +
     scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
       theme_bw() +
       theme(
@@ -910,7 +910,7 @@ Challenge_A <- function(){
                   colour = initial_condition)) +
     geom_line(alpha = 0.1) +
     labs(
-      title = "Stochastic Population Change Across Initial Conditions",
+      title = "Stochastic Population Time Series Across Initial Conditions",
       x = "\nTime step",
       y = "Population size\n",
       colour = "Initial condition"
@@ -972,8 +972,33 @@ Challenge_B <- function() {
   community_min <- init_community_min(100)
 
 
-   df_max <- time_series_repetition(community_max, 0.1, 2200, rep)
-   df_min <- time_series_repetition(community_min, 0.1, 2200, rep)
+   df_max <- time_series_repetition(community_max, 0.1, 100, rep)
+   df_min <- time_series_repetition(community_min, 0.1, 100, rep)
+
+
+  # Function to detect equilibrium
+  detect_equilibrium <- function(df, window = 12, threshold = 0.1) {
+    for (i in (window + 1):nrow(df)) {
+      # Calculate rolling mean for current and previous windows
+      current_mean <- mean(df$mean[(i - window + 1):i])
+      previous_mean <- mean(df$mean[(i - window):(i - 1)])
+      
+      # Check if change is below threshold
+      if (abs(current_mean - previous_mean) < threshold) {
+        return(df$time[i])
+      }
+    }
+    return(NA)
+  }
+  
+  # Detect equilibrium for both conditions
+  equil_max <- detect_equilibrium(df_max)
+  equil_min <- detect_equilibrium(df_min)
+  
+
+  # Take the later of the two (when both have equilibrated)
+  equilibrium_generation <- max(equil_max, equil_min, na.rm = TRUE)
+
 
 # putting it into one dataframe for plotting
 df_summary <- rbind(
@@ -984,9 +1009,12 @@ df_summary <- rbind(
   (richness_plot_CI <- ggplot() +
       geom_line(data = df_summary, aes(x = time, y = mean, colour = initialization)) +
       geom_ribbon(data = df_summary, aes(x = time, ymin = ci_lower, ymax = ci_upper, fill = initialization), alpha = 0.2) +
-      labs(title = "Species Richness Change with 97.2% Confidence Intervals Across different Initial Conditions",
+      labs(title = "Species Richness with 97.2% Confidence Intervals\n",
            x = "\nGeneration", y = "Species Richness\n") +
-      scale_x_continuous(limits = c(0, 2200), expand = c(0, 0)) +
+      # add a line at equilibrium generation
+      geom_vline(xintercept = equilibrium_generation, linetype = "dashed", colour = "black") +
+      annotate("text", x = equilibrium_generation+2, y = 45, label = paste("Dynamic Equilibrium"), size = 3, hjust = 0, angle = 90) +
+      scale_x_continuous(expand = c(0, 0)) +
       scale_y_continuous(expand = c(0, 0)) +
       theme_bw() +
       theme(
@@ -1008,46 +1036,47 @@ df_summary <- rbind(
   Sys.sleep(0.1)
   dev.off()
 
-    return("type your written answer here -")
-
+  return(paste("The system reaches dynamic equilibrium after approximately", 
+               equilibrium_generation, "generations."))
   
 }
 
 
-init_community_random <- function(size){
-  community <- sample(1:size, size, replace = TRUE)
-  return(community)
+init_community_random_richness <- function(size, richness) {
+   community <- sample(1:richness, size, replace = TRUE)
+   return(community)
 }
+
 
 # Challenge question C
-# PERCENTILE NOT NESSESARY HERE!!!
 Challenge_C <- function() {
   
-  # create a loop to run replicates of random initialisation
-  initial_states <- 5
-
+  # create different richness levels for initial communities
+  richness_levels <- c(1, 20, 40, 60, 80, 100)
   rep <- 5 
-   
-    # create a list to save all the results
-    results_list <- list()
-
-  for (i in 1:initial_states) {
-
-    community_random <- init_community_random(100)
-    # use time series repetition function to get mean and ci and save it to list
-    results_list[[i]] <- time_series_repetition(community_random, 0.1, 300, rep)
+  
+  # Create a list to save all the results
+  results_list <- list()
+  
+  # Loop through each richness level
+  for (i in 1:length(richness_levels)) {
+    community <- init_community_random_richness(100, richness_levels[i])
+    # Use time series repetition function to get mean and ci and save it to list
+    results_list[[i]] <- time_series_repetition(community, 0.1, 150, rep)
   }
-    
+  
 
-  # make a line plot where each line is one of the random initialisations with ci ribbon
-  df_all <- do.call(rbind, lapply(1:initial_states, function(i) {
-    data.frame(results_list[[i]], initialization = paste("Random initialisation", i))
-  }))
+df_all <- do.call(rbind, lapply(1:length(richness_levels), function(i) {
+  data.frame(results_list[[i]], 
+             initialization = factor(richness_levels[i],
+                                   levels = richness_levels))
+}))
+
 
  (richness_plot_CI <- ggplot() +
       geom_line(data = df_all, aes(x = time, y = mean, colour = initialization)) +
-      labs(title = "Species Richness Change from Random Initial Communities",
-           x = "\nGeneration", y = "Richness\n") +
+      labs(title = "Species Richness Time Series from Different Richness Levels\n",
+           x = "\nGeneration", y = "Richness\n", colour = "Initial Richness") +
       scale_x_continuous(expand = c(0, 0)) +
       scale_y_continuous(expand = c(0, 0)) +
       theme_bw() +
@@ -1057,9 +1086,10 @@ Challenge_C <- function() {
         axis.title = element_text(size = 14, face = "plain"),
         plot.title = element_text(size = 14, face = "plain", hjust = 0.5),
         panel.grid = element_blank(),
-        plot.margin = unit(c(1, 1, 1, 1), units = "cm"),       legend.text = element_text(size = 12, face = "italic"),         # Setting the font for the legend text
-        legend.title = element_blank(),                                 # Removing the legend title
-        legend.position = "topright")                                 #
+        plot.margin = unit(c(1, 1, 1, 1), units = "cm"),       
+        legend.text = element_text(size = 9, face = "italic"),         # Setting the font for the legend text
+        legend.title = element_text(size = 11),                                 # Removing the legend title
+        legend.position = "right")                                 #
 
       )
 
@@ -1068,10 +1098,6 @@ Challenge_C <- function() {
   print(richness_plot_CI)
   Sys.sleep(0.1)
   dev.off()
-
-  return("Did I do everything corrent??- something feels wrong here...")
-
-
 }
 
 # Challenge question D
@@ -1114,9 +1140,9 @@ Challenge_D <- function() {
   
   # Create the plot
   (rich_plot <- ggplot(plot_data, aes(x = Generation, y = Richness)) +
-    geom_line(size = 0.5) +
+    geom_line(linewidth = 0.5) +
     facet_wrap(~ Size, ncol = 2, scales = "free") +
-    labs(title = "Mean Species Richness Change Across Community Sizes",
+    labs(title = "Mean Species Richness Time Series Across Community Sizes\n",
          x = "\nSimulation Generation", 
          y = "Mean Species Richness\n") +
     theme_bw() +
@@ -1145,86 +1171,124 @@ Challenge_D <- function() {
 # I added J and v as parameters- is this correct???? - CHECK!
 # Go back through this and make sure you understand the last part to double check
 # REDO- these are not the same results!
-Challenge_E <- function(J= 100, v = 0.1) {
+Challenge_E <- function() {
   
-  # Initialise a vector lineages of length  with  in every entry
-  lineages <- rep(1, J)
+  # set parameters
+  community_sizes <- c(500, 1000, 2500, 5000)
+  v <- 0.0062236  
+  reps_per_size <- 25 
 
-  # Initialise an empty vector abundances (of length 0).
-  abundances <- numeric(0)
+  # Track total time for coalescence
+  start_time <- Sys.time()
+  
+  # Store results for each community size
+  octave_results <- list()
 
-  # Initialise a number N=J
-  N <- J
 
-  # Calculate theta, where theta = v(J-1)/(1-v).
-  theta <- v * (J - 1) / (1 - v)
+  for (size_idx in 1:length(community_sizes)) {
+    J <- community_sizes[size_idx]
+    
+    # Store octaves for this size across all reps
+    octave_list <- list()
+  
+  
+    for (rep in 1:reps_per_size) {
+      # Initialise a vector lineages of length J with 1 in every entry
+      lineages <- rep(1, J)
+      # Initialise an empty vector abundances (of length 0).
+      abundances <- numeric(0)
+      # Initialise a number N=J
+      N <- J
+      # Calculate theta, where theta = v(J-1)/(1-v).
+      theta <- v * (J - 1) / (1 - v)
+    
+      while (N > 1) {
+        # Choose an index j for the vector lineages at random according to a uniform distribution.
+        j <- sample(1:N, 1)  # FIXED: was 1:J
+        # Pick a random (decimal, not integer) number randnum between 0 and 1 (with a uniform distribution).
+        randnum <- runif(1)
+        # if randnum < theta/(theta + N - 1), then:
+        if (randnum < theta / (theta + N - 1)) {
+          # add the value in lineages[j] to the vector abundances
+          abundances <- c(abundances, lineages[j])
+        } else {
+        # choose another index i for the vector lineages at random, but do not allow i=j. Then set lineages[i] <- lineages[i] + lineages[j].
+        i <- sample(setdiff(1:N, j), 1)
+        lineages[i] <- lineages[i] + lineages[j]
+        }
+      # Remove lineages[j] from lineages so that the lineages vector is now one shorter.
+      lineages <- lineages[-j]
+      # Decrease N by one so that N still gives the length of the lineages vector.
+      N <- N - 1
+    }
+    # Once N=1, add the only element left in lineages to the end of abundances.
+    abundances <- c(abundances, lineages)
+    octave_list[[rep]] <- octaves(abundances)
+  }
+  
 
-    while (N > 1) {
+      # Average the octave vectors for this community size
+    max_length <- max(sapply(octave_list, length))
+    octave_matrix <- matrix(0, nrow = reps_per_size, ncol = max_length)
+    
+    for (i in 1:reps_per_size) {
+      octave_matrix[i, 1:length(octave_list[[i]])] <- octave_list[[i]]
+    }
+    
+    octave_results[[size_idx]] <- colMeans(octave_matrix)  
 
-  # Choose an index j for the vector lineages at random according to a uniform distribution.
-  j <- sample(1:J, 1)
-
-  # Pick a random (decimal, not integer) number randnum between 0 and 1 (with a uniform distribution).
-  randnum <- runif(1)
-
-  # if randnum < theta/(theta + N - 1), then:
-  if (randnum < theta / (theta + N - 1)) {
-    # add the value in lineages[j] to the vector abundances
-    abundances <- c(abundances, lineages[j])
-  # else
-  } else {
-   # choose another index i for the vector lineages at random, but do not allow i=j. Then set lineages[i] <- lineages[i] + lineages[j].
-    i <- sample(setdiff(1:N, j), 1)
-    lineages[i] <- lineages[i] + lineages[j]
   }
 
-  # Remove lineages[j] from lineages so that the lineages vector is now one shorter.
-  lineages <- lineages[-j]
 
-  # Decrease N by one so that N still gives the length of the lineages vector.
-  N <- N - 1
-
-    }
-
-  # Once N=1, add the only element left in lineages to the end of abundances.
-  abundances <- c(abundances, lineages)
+    # Calculate total time for coalescence
+  time <- difftime(Sys.time(), start_time, units = "hours")
+  
 
 
-  # now to plot it
-  octave_vector <- octaves(abundances)
+    # Create data frame for plotting (4 panels, one per size)
+  df_list <- list()
+  for (i in 1:length(community_sizes)) {
+    df_list[[i]] <- data.frame(
+      octave = seq_along(octave_results[[i]]),
+      species_count = octave_results[[i]],
+      size = paste("Size:", community_sizes[i])
+    )
+  }
+  df_all <- do.call(rbind, df_list)
+  
+  # Convert size to factor with correct order
+  df_all$size <- factor(df_all$size, 
+                        levels = paste("Size:", community_sizes))
+  
+  # now to plot it (4 panels like question 26)
+  (octave_plot <- ggplot(df_all, aes(x = octave, y = species_count)) +
+        facet_wrap(~ size, ncol = 2) +
 
-
-  df <- data.frame(
-  octave = seq_along(octave_vector),
-  species_count = octave_vector
-)
-
-
- (octave_plot <- ggplot(df, aes(x = octave, y = species_count)) +
-      geom_bar(stat = "identity") +
-      labs(title = "Species Abundance Distribution from Coalescence Simulation",
-           x = "\nOctave", y = "Mean Species Abundance\n") +
-      scale_x_continuous(breaks = 1:max(df$octave)) +
-      scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
+    geom_bar(stat = "identity", position = "dodge") +
+    labs(title = "Community Size And Species Abundance Distribution\n",
+         x = "\nAbundance Octave", y = "Number of Species\n") +
+         # breaks for x axis- every octave
+    scale_x_continuous(breaks = seq(0, max(df_all$octave), by = 1)) +
+    scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
       theme_bw() +
       theme(
+        strip.text = element_text(size = 12),
         axis.text.x = element_text(size = 12),
         axis.text.y = element_text(size = 12),
         axis.title = element_text(size = 14, face = "plain"),
         plot.title = element_text(size = 14, face = "plain", hjust = 0.5),
         panel.grid = element_blank(),
-        plot.margin = unit(c(1, 1, 1, 1), units = "cm"),
-        strip.text = element_text(size = 12, face = "italic"),  # Facet panel labels
-        legend.position = "none")                               # Remove legend since facet labels show it
+        plot.margin = unit(c(1, 1, 1, 1), units = "cm")))
+  
 
-      )
 
 
   png(filename="Challenge_E", width = 600, height = 400)
   print(octave_plot)
   Sys.sleep(0.1)
   dev.off()
-  
-  return("type your written answer here")
+
+  return(paste("Coalescence used", round(time, 4), "CPU hours while the cluster used", 100*12, "hours for the same amount of simulations.",
+               "Coalescence is faster because it works backwards from present to past. This means that it is always at equilibrium and does not spend computing power simulatin species that will not persist to the end of the simulation"))
 }
 
