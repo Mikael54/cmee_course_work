@@ -780,7 +780,7 @@ plot_neutral_cluster_results <- function(){
     # load combined_results from your rda file
     load("combined_results.rda")
 
-    sizes <- c("Size: 500", "Size: 1000", "Size: 2500", "Size: 5000")
+  sizes <- c("Size: 500", "Size: 1000", "Size: 2500", "Size: 5000")
   plot_data <- data.frame()
   
   # Loop through the 4 result vectors
@@ -1244,42 +1244,66 @@ Challenge_E <- function() {
     # Calculate total time for coalescence
   time <- difftime(Sys.time(), start_time, units = "hours")
   
-
-
-    # Create data frame for plotting (4 panels, one per size)
-  df_list <- list()
+  # Load cluster simulation results from question 26
+  load("combined_results.rda")
+  
+  # Create data frame for coalescence results
+  df_coalescence_list <- list()
   for (i in 1:length(community_sizes)) {
-    df_list[[i]] <- data.frame(
+    df_coalescence_list[[i]] <- data.frame(
       octave = seq_along(octave_results[[i]]),
       species_count = octave_results[[i]],
-      size = paste("Size:", community_sizes[i])
+      size = paste("Size:", community_sizes[i]),
+      method = "Coalescence"
     )
   }
-  df_all <- do.call(rbind, df_list)
+  df_coalescence <- do.call(rbind, df_coalescence_list)
+  
+  # Create data frame for cluster results
+  df_cluster_list <- list()
+  for (i in 1:length(community_sizes)) {
+    df_cluster_list[[i]] <- data.frame(
+      octave = seq_along(combined_results[[i]]),
+      species_count = combined_results[[i]],
+      size = paste("Size:", community_sizes[i]),
+      method = "Cluster"
+    )
+  }
+  df_cluster <- do.call(rbind, df_cluster_list)
+  
+  # Combine both data frames
+  df_all <- rbind(df_coalescence, df_cluster)
   
   # Convert size to factor with correct order
   df_all$size <- factor(df_all$size, 
                         levels = paste("Size:", community_sizes))
   
-  # now to plot it (4 panels like question 26)
-  (octave_plot <- ggplot(df_all, aes(x = octave, y = species_count)) +
-        facet_wrap(~ size, ncol = 2) +
-
+  # Convert method to factor with correct order
+  df_all$method <- factor(df_all$method, 
+                          levels = c("Coalescence", "Cluster"))
+  
+  # Create plot with bars side by side for each octave
+  (octave_plot <- ggplot(df_all, aes(x = octave, y = species_count, fill = method)) +
+    facet_wrap(~ size, ncol = 2) +
     geom_bar(stat = "identity", position = "dodge") +
-    labs(title = "Community Size And Species Abundance Distribution\n",
-         x = "\nAbundance Octave", y = "Number of Species\n") +
-         # breaks for x axis- every octave
+    labs(title = "Community Size And Species Abundance of\nCoalescence and Cluster Simulations\n",
+         x = "\nAbundance Octave", 
+         y = "Number of Species\n",
+         fill = "Simulation Type") +
     scale_x_continuous(breaks = seq(0, max(df_all$octave), by = 1)) +
     scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
-      theme_bw() +
-      theme(
-        strip.text = element_text(size = 12),
-        axis.text.x = element_text(size = 12),
-        axis.text.y = element_text(size = 12),
-        axis.title = element_text(size = 14, face = "plain"),
-        plot.title = element_text(size = 14, face = "plain", hjust = 0.5),
-        panel.grid = element_blank(),
-        plot.margin = unit(c(1, 1, 1, 1), units = "cm")))
+    theme_bw() +
+    theme(
+      strip.text = element_text(size = 12),
+      axis.text.x = element_text(size = 12),
+      axis.text.y = element_text(size = 12),
+      axis.title = element_text(size = 14, face = "plain"),
+      plot.title = element_text(size = 14, face = "plain", hjust = 0.5),
+      panel.grid = element_blank(),
+      plot.margin = unit(c(1, 1, 1, 1), units = "cm"),
+      legend.text = element_text(size = 12, face = "italic"),
+      legend.title = element_text(size = 12),
+      legend.position = "right"))
   
 
 
