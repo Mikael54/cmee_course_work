@@ -1,0 +1,98 @@
+====================================
+=== THIS MESSAGE IS NOT AN ERROR ===
+
+This module is deprecated. If you are using conda, please consider moving to our newer cluster - CX3 Phase 2.
+More info can be found here:
+https://icl-rcs-user-guide.readthedocs.io/en/latest/hpc/pilot/cx3-phase2/
+https://icl-rcs-user-guide.readthedocs.io/en/latest/hpc/pilot/cx3-phase2/#python-and-conda-environments
+
+====================================
+
+mv: 'output_large_adult_11.rda' and '/rds/general/user/mm4725/home/output_large_adult_11.rda' are the same file
+mv: 'output_large_adult_15.rda' and '/rds/general/user/mm4725/home/output_large_adult_15.rda' are the same file
+mv: 'output_large_adult_17.rda' and '/rds/general/user/mm4725/home/output_large_adult_17.rda' are the same file
+mv: 'output_large_adult_18.rda' and '/rds/general/user/mm4725/home/output_large_adult_18.rda' are the same file
+mv: 'output_large_adult_19.rda' and '/rds/general/user/mm4725/home/output_large_adult_19.rda' are the same file
+mv: 'output_large_adult_1.rda' and '/rds/general/user/mm4725/home/output_large_adult_1.rda' are the same file
+mv: 'output_large_adult_2.rda' and '/rds/general/user/mm4725/home/output_large_adult_2.rda' are the same file
+mv: 'output_large_adult_3.rda' and '/rds/general/user/mm4725/home/output_large_adult_3.rda' are the same file
+mv: 'output_large_adult_4.rda' and '/rds/general/user/mm4725/home/output_large_adult_4.rda' are the same file
+mv: 'output_large_adult_5.rda' and '/rds/general/user/mm4725/home/output_large_adult_5.rda' are the same file
+mv: 'output_large_adult_6.rda' and '/rds/general/user/mm4725/home/output_large_adult_6.rda' are the same file
+mv: 'output_large_adult_7.rda' and '/rds/general/user/mm4725/home/output_large_adult_7.rda' are the same file
+mv: 'output_large_adult_8.rda' and '/rds/general/user/mm4725/home/output_large_adult_8.rda' are the same file
+mv: 'output_large_spread_51.rda' and '/rds/general/user/mm4725/home/output_large_spread_51.rda' are the same file
+mv: 'output_large_spread_52.rda' and '/rds/general/user/mm4725/home/output_large_spread_52.rda' are the same file
+mv: 'output_large_spread_53.rda' and '/rds/general/user/mm4725/home/output_large_spread_53.rda' are the same file
+mv: 'output_large_spread_54.rda' and '/rds/general/user/mm4725/home/output_large_spread_54.rda' are the same file
+mv: 'output_large_spread_55.rda' and '/rds/general/user/mm4725/home/output_large_spread_55.rda' are the same file
+mv: 'output_large_spread_56.rda' and '/rds/general/user/mm4725/home/output_large_spread_56.rda' are the same file
+mv: 'output_large_spread_57.rda' and '/rds/general/user/mm4725/home/output_large_spread_57.rda' are the same file
+mv: 'output_large_spread_58.rda' and '/rds/general/user/mm4725/home/output_large_spread_58.rda' are the same file
+mv: 'output_large_spread_59.rda' and '/rds/general/user/mm4725/home/output_large_spread_59.rda' are the same file
+mv: 'output_large_spread_60.rda' and '/rds/general/user/mm4725/home/output_large_spread_60.rda' are the same file
+mv: 'output_large_spread_61.rda' and '/rds/general/user/mm4725/home/output_large_spread_61.rda' are the same file
+mv: 'output_large_spread_62.rda' and '/rds/general/user/mm4725/home/output_large_spread_62.rda' are the same file
+mv: 'output_large_spread_63.rda' and '/rds/general/user/mm4725/home/output_large_spread_63.rda' are the same file
+mv: 'output_large_spread_64.rda' and '/rds/general/user/mm4725/home/output_large_spread_64.rda' are the same file
+mv: 'output_large_spread_65.rda' and '/rds/general/user/mm4725/home/output_large_spread_65.rda' are the same file
+mv: 'output_large_spread_66.rda' and '/rds/general/user/mm4725/home/output_large_spread_66.rda' are the same file
+mv: 'output_large_spread_67.rda' and '/rds/general/user/mm4725/home/output_large_spread_67.rda' are the same file
+mv: 'output_large_spread_68.rda' and '/rds/general/user/mm4725/home/output_large_spread_68.rda' are the same file
+mv: 'output_large_spread_69.rda' and '/rds/general/user/mm4725/home/output_large_spread_69.rda' are the same file
+mv: 'output_large_spread_70.rda' and '/rds/general/user/mm4725/home/output_large_spread_70.rda' are the same file
+mv: 'output_large_spread_71.rda' and '/rds/general/user/mm4725/home/output_large_spread_71.rda' are the same file
+mv: 'output_large_spread_72.rda' and '/rds/general/user/mm4725/home/output_large_spread_72.rda' are the same file
+mv: 'output_large_spread_73.rda' and '/rds/general/user/mm4725/home/output_large_spread_73.rda' are the same file
+mv: 'output_large_spread_74.rda' and '/rds/general/user/mm4725/home/output_large_spread_74.rda' are the same file
+mv: 'output_large_spread_75.rda' and '/rds/general/user/mm4725/home/output_large_spread_75.rda' are the same file
+mv: 'output_small_adult_26.rda' and '/rds/general/user/mm4725/home/output_small_adult_26.rda' are the same file
+mv: 'output_small_adult_27.rda' and '/rds/general/user/mm4725/home/output_small_adult_27.rda' are the same file
+mv: 'output_small_adult_28.rda' and '/rds/general/user/mm4725/home/output_small_adult_28.rda' are the same file
+mv: 'output_small_adult_29.rda' and '/rds/general/user/mm4725/home/output_small_adult_29.rda' are the same file
+mv: 'output_small_adult_30.rda' and '/rds/general/user/mm4725/home/output_small_adult_30.rda' are the same file
+mv: 'output_small_adult_31.rda' and '/rds/general/user/mm4725/home/output_small_adult_31.rda' are the same file
+mv: 'output_small_adult_32.rda' and '/rds/general/user/mm4725/home/output_small_adult_32.rda' are the same file
+mv: 'output_small_adult_33.rda' and '/rds/general/user/mm4725/home/output_small_adult_33.rda' are the same file
+mv: 'output_small_adult_34.rda' and '/rds/general/user/mm4725/home/output_small_adult_34.rda' are the same file
+mv: 'output_small_adult_35.rda' and '/rds/general/user/mm4725/home/output_small_adult_35.rda' are the same file
+mv: 'output_small_adult_36.rda' and '/rds/general/user/mm4725/home/output_small_adult_36.rda' are the same file
+mv: 'output_small_adult_37.rda' and '/rds/general/user/mm4725/home/output_small_adult_37.rda' are the same file
+mv: 'output_small_adult_38.rda' and '/rds/general/user/mm4725/home/output_small_adult_38.rda' are the same file
+mv: 'output_small_adult_39.rda' and '/rds/general/user/mm4725/home/output_small_adult_39.rda' are the same file
+mv: 'output_small_adult_40.rda' and '/rds/general/user/mm4725/home/output_small_adult_40.rda' are the same file
+mv: 'output_small_adult_41.rda' and '/rds/general/user/mm4725/home/output_small_adult_41.rda' are the same file
+mv: 'output_small_adult_42.rda' and '/rds/general/user/mm4725/home/output_small_adult_42.rda' are the same file
+mv: 'output_small_adult_43.rda' and '/rds/general/user/mm4725/home/output_small_adult_43.rda' are the same file
+mv: 'output_small_adult_44.rda' and '/rds/general/user/mm4725/home/output_small_adult_44.rda' are the same file
+mv: 'output_small_adult_45.rda' and '/rds/general/user/mm4725/home/output_small_adult_45.rda' are the same file
+mv: 'output_small_adult_46.rda' and '/rds/general/user/mm4725/home/output_small_adult_46.rda' are the same file
+mv: 'output_small_adult_47.rda' and '/rds/general/user/mm4725/home/output_small_adult_47.rda' are the same file
+mv: 'output_small_adult_48.rda' and '/rds/general/user/mm4725/home/output_small_adult_48.rda' are the same file
+mv: 'output_small_adult_49.rda' and '/rds/general/user/mm4725/home/output_small_adult_49.rda' are the same file
+mv: 'output_small_adult_50.rda' and '/rds/general/user/mm4725/home/output_small_adult_50.rda' are the same file
+mv: 'output_small_spread_100.rda' and '/rds/general/user/mm4725/home/output_small_spread_100.rda' are the same file
+mv: 'output_small_spread_76.rda' and '/rds/general/user/mm4725/home/output_small_spread_76.rda' are the same file
+mv: 'output_small_spread_77.rda' and '/rds/general/user/mm4725/home/output_small_spread_77.rda' are the same file
+mv: 'output_small_spread_78.rda' and '/rds/general/user/mm4725/home/output_small_spread_78.rda' are the same file
+mv: 'output_small_spread_79.rda' and '/rds/general/user/mm4725/home/output_small_spread_79.rda' are the same file
+mv: 'output_small_spread_80.rda' and '/rds/general/user/mm4725/home/output_small_spread_80.rda' are the same file
+mv: 'output_small_spread_81.rda' and '/rds/general/user/mm4725/home/output_small_spread_81.rda' are the same file
+mv: 'output_small_spread_82.rda' and '/rds/general/user/mm4725/home/output_small_spread_82.rda' are the same file
+mv: 'output_small_spread_83.rda' and '/rds/general/user/mm4725/home/output_small_spread_83.rda' are the same file
+mv: 'output_small_spread_84.rda' and '/rds/general/user/mm4725/home/output_small_spread_84.rda' are the same file
+mv: 'output_small_spread_85.rda' and '/rds/general/user/mm4725/home/output_small_spread_85.rda' are the same file
+mv: 'output_small_spread_86.rda' and '/rds/general/user/mm4725/home/output_small_spread_86.rda' are the same file
+mv: 'output_small_spread_87.rda' and '/rds/general/user/mm4725/home/output_small_spread_87.rda' are the same file
+mv: 'output_small_spread_88.rda' and '/rds/general/user/mm4725/home/output_small_spread_88.rda' are the same file
+mv: 'output_small_spread_89.rda' and '/rds/general/user/mm4725/home/output_small_spread_89.rda' are the same file
+mv: 'output_small_spread_90.rda' and '/rds/general/user/mm4725/home/output_small_spread_90.rda' are the same file
+mv: 'output_small_spread_91.rda' and '/rds/general/user/mm4725/home/output_small_spread_91.rda' are the same file
+mv: 'output_small_spread_92.rda' and '/rds/general/user/mm4725/home/output_small_spread_92.rda' are the same file
+mv: 'output_small_spread_93.rda' and '/rds/general/user/mm4725/home/output_small_spread_93.rda' are the same file
+mv: 'output_small_spread_94.rda' and '/rds/general/user/mm4725/home/output_small_spread_94.rda' are the same file
+mv: 'output_small_spread_95.rda' and '/rds/general/user/mm4725/home/output_small_spread_95.rda' are the same file
+mv: 'output_small_spread_96.rda' and '/rds/general/user/mm4725/home/output_small_spread_96.rda' are the same file
+mv: 'output_small_spread_97.rda' and '/rds/general/user/mm4725/home/output_small_spread_97.rda' are the same file
+mv: 'output_small_spread_98.rda' and '/rds/general/user/mm4725/home/output_small_spread_98.rda' are the same file
+mv: 'output_small_spread_99.rda' and '/rds/general/user/mm4725/home/output_small_spread_99.rda' are the same file

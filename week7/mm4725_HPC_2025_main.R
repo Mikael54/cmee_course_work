@@ -82,7 +82,8 @@ question_1 <- function(){
     theme(
     axis.text.x = element_text(size = 12),     # making the years at a bit of an angle
       axis.text.y = element_text(size = 12),
-      axis.title = element_text(size = 14, face = "plain"),                        
+      axis.title = element_text(size = 14, face = "plain"),
+      plot.title = element_text(size = 14, face = "plain", hjust = 0.5),
       panel.grid = element_blank(),                                   # Removing the background grid lines               
       plot.margin = unit(c(1, 1, 1, 1), units = "cm"),                 # Adding a 1cm margin around the plot
       legend.text = element_text(size = 12, face = "italic"),         # Setting the font for the legend text
@@ -130,14 +131,15 @@ question_2 <- function(){
   stochastic_plot <- ggplot() +
     geom_line(data = df, aes(x = time, y = adult, color = "Adult-only initialisation")) +
     geom_line(data = df, aes(x = time, y = spread, color = "Evenly spread initialisation")) +
-    labs(title = "Effect of Initial Age Structure on Stocastic Population Time Series\n",
+    labs(title = "Effect of Initial Age Structure on Stochastic Population Time Series\n",
          x = "\nTime step", y = "Population size\n") +
     scale_x_continuous(limits = c(0, 24), expand = c(0, 0)) +
     theme_bw() +
     theme(
     axis.text.x = element_text(size = 12),     # making the years at a bit of an angle
       axis.text.y = element_text(size = 12),
-      axis.title = element_text(size = 14, face = "plain"),                        
+      axis.title = element_text(size = 14, face = "plain"),
+      plot.title = element_text(size = 14, face = "plain", hjust = 0.5),
       panel.grid = element_blank(),                                   # Removing the background grid lines               
       plot.margin = unit(c(1, 1, 1, 1), units = "cm"),                 # Adding a 1cm margin around the plot
       legend.text = element_text(size = 12, face = "italic"),         # Setting the font for the legend text
@@ -311,9 +313,12 @@ question_6 <- function(){
     deviation_plot <- ggplot() +
     geom_line(data=df, aes(x=time, y=small, colour="Small population")) +
     geom_line(data=df, aes(x=time, y=large, colour="Large population")) +
+    geom_hline(yintercept = 1, linetype = "dashed", color = "black", alpha = 0.5) +
     labs(
+      title = "Deviation of Stochastic Population Time Series from Deterministic Model\n",
       x = "\nTime step",
       y = "Deviation from deterministic model\n",
+      colour = "Population Type"
     ) +
     scale_x_continuous(limits = c(0, 120), expand = c(0, 0)) +
     theme_bw() +
@@ -321,11 +326,11 @@ question_6 <- function(){
       axis.text.x = element_text(size = 12),
       axis.text.y = element_text(size = 12),
       axis.title = element_text(size = 14),
-      plot.title = element_text(size = 14),
+      plot.title = element_text(size = 14, hjust = 0.5),
       panel.grid = element_blank(),
-      legend.title = element_blank(),
-      legend.text = element_text(size = 12, face = "italic"),
-      legend.position = c(0.3, 0.9),
+      legend.title = element_text(size = 10),
+      legend.text = element_text(size = 10, face = "italic"),
+      legend.position = "right",
       plot.margin = unit(c(1, 1, 1, 1), units = "cm")
     )
 
@@ -338,9 +343,7 @@ question_6 <- function(){
   Sys.sleep(0.1)
   dev.off()
 
-  return("
-
-A deterministic model better approximates the average behaviour of a large population. This is evident from the large population values generally being closer to 1, indicating lower deviation. Small populations are more susceptible to stochasticity, whereas in large populations, random individual-level events are averaged out across many individuals. As a result, population dynamics in larger populations more closely align with the predictions of a deterministic model.")
+  return("A deterministic model better approximates the average behaviour of a large population. This is evident from the large population values generally being closer to 1, indicating lower deviation. Small populations are more susceptible to stochasticity, whereas in large populations, random individual-level events are averaged out across many individuals. As a result, population dynamics in larger populations more closely align with the predictions of a deterministic model.")
 }
 
 
@@ -458,8 +461,7 @@ question_8 <- function() {
   Sys.sleep(0.1)
   dev.off()
   
-  return("
-This system will always tend towards domination by a single species. This is because the only process modelled is a death–replacement mechanism (neutral step), in which individuals are removed and replaced at random. Under these conditions, the only lasting change in community composition occurs through species extinctions. Given sufficient time, random fluctuations will lead to the extinction of all but one species."  
+  return("This system will always tend towards domination by a single species. This is because the only process modelled is a death–replacement mechanism (neutral step), in which individuals are removed and replaced at random. Under these conditions, the only lasting change in community composition occurs through species extinctions. Given sufficient time, random fluctuations will lead to the extinction of all but one species."  
 )
 }
 
@@ -569,7 +571,7 @@ question_18 <- function()  {
   dev.off()
 
   
-  return(" In this model, the initial conditions do not affect the long-term outcome, as both communities fluctuate around the same dynamic equilibrium given sufficient time. On average, when community richness is below this stable state, speciation dominates over extinction, leading to an increase in richness. Conversely, when richness exceeds this threshold, extinction plays a larger role than speciation, causing richness to decline.")
+  return("In this model, the initial conditions do not affect the long-term outcome, as both communities fluctuate around the same dynamic equilibrium given sufficient time. On average, when community richness is below this stable state, speciation dominates over extinction, leading to an increase in richness. Conversely, when richness exceeds this threshold, extinction plays a larger role than speciation, causing richness to decline.")
 }
 
 # Question 19
@@ -660,7 +662,7 @@ question_22 <- function() {
       geom_bar(stat = "identity") +
       facet_wrap(~ initialization, ncol = 2) +
       labs(title = "Species Abundance Distribution\n",
-           x = "\nAbudance Octave", y = "Number of Species\n") +
+           x = "\nAbundance Octave", y = "Number of Species\n") +
       scale_x_continuous(breaks = 1:max(df$octave)) +
       scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
       theme_bw() +
@@ -683,7 +685,7 @@ question_22 <- function() {
   Sys.sleep(0.1)
   dev.off()
   
-  return("The initial conditions do not effect the species abundance distribution after the burn in period. This is because, similar to the previous question 18, the system reaches a dynamic equilibrium where the strenght of speciation and extiction are similar.")
+  return("The initial conditions do not effect the species abundance distribution after the burn in period. This is because, similar to the previous question 18, the system reaches a dynamic equilibrium where the strength of speciation and extinction are similar.")
 }
 
 # Question 23
@@ -803,7 +805,7 @@ plot_neutral_cluster_results <- function(){
     geom_bar(stat = "identity", position = "dodge") +
     labs(title = "Community Size And Species Abundance Distribution\n",
          x = "\nAbundance Octave", y = "Number of Species\n") +
-    scale_x_continuous(breaks = 1:max_octave, expand = c(0, 0)) +
+    scale_x_continuous(breaks = 1:max_octave) +
     scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
       theme_bw() +
       theme(
@@ -897,13 +899,14 @@ Challenge_A <- function(){
                   colour = initial_condition)) +
     geom_line(alpha = 0.1) +
     labs(
-      title = "Stochastic Population Time Series Across Initial Conditions",
+      title = "Stochastic Population Time Series Across Initial Conditions\n",
       x = "\nTime step",
       y = "Population size\n",
       colour = "Initial condition"
     ) +
       scale_x_continuous(expand = c(0, 0)) +
       scale_y_continuous(expand = c(0, 0)) +
+      guides(colour = guide_legend(override.aes = list(alpha = 1, linewidth = 1.5))) +
       theme_bw() +
       theme(
       plot.title = element_text(size = 14, face = "plain", hjust = 0.5),
@@ -914,7 +917,7 @@ Challenge_A <- function(){
       plot.margin = unit(c(1, 1, 1, 1), units = "cm"),                 # Adding a 1cm margin around the plot
       legend.text = element_text(size = 12, face = "italic"),         # Setting the font for the legend text
       legend.title = element_blank(),                                 # Removing the legend title
-      legend.position = c(0.15, 0.85))                                 #
+      legend.position = c(0.15, 0.8))                                 #
 
 
   png(filename="Challenge_A", width = 600, height = 400)
@@ -1034,8 +1037,23 @@ init_community_random_richness <- function(size, richness) {
    return(community)
 }
 
+time_series_repetition_random_start <- function(community_size, richness, speciation_rate, duration, rep) {
+   # Create data frame to store 'rep' columns
+   df <- data.frame(matrix(NA, nrow = duration + 1, ncol = rep))
+   
+   # Run 'rep' replicate time series
+   for (i in 1:rep) {
+     community <- init_community_random_richness(community_size, richness)
+     df[, i] <- neutral_time_series_speciation(community, speciation_rate, duration)
+   }
+   
+   df_summary <- data.frame(
+     time = 0:duration,
+     mean = rowMeans(df)
+     )
 
-
+   return(df_summary)
+}
 
 
 # Challenge question C
@@ -1050,9 +1068,8 @@ Challenge_C <- function() {
   
   # Loop through each richness level
   for (i in 1:length(richness_levels)) {
-    community <- init_community_random_richness(100, richness_levels[i])
-    # Use time series repetition function to get mean and ci and save it to list
-    results_list[[i]] <- time_series_repetition(community, 0.1, 150, rep)
+    # Use time series repetition function to get mean and save it to list
+    results_list[[i]] <- time_series_repetition_random_start(100, richness_levels[i], 0.1, 150, rep)
   }
   
 
@@ -1273,6 +1290,6 @@ Challenge_E <- function() {
   dev.off()
 
   return(paste("Coalescence used", round(time, 4), "CPU hours while the cluster used", 100*12, "hours for the same amount of simulations.",
-               "Coalescence is faster because it works backwards from present to past. This means that it is always at equilibrium and does not spend computing power simulatin species that will not persist to the end of the simulation"))
+               "Coalescence is faster because it works backwards from present to past. This means that it is always at equilibrium and does not spend computing power simulating species that will not persist to the end of the simulation"))
 }
 
