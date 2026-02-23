@@ -1,0 +1,13 @@
+# Exclude datasets folder
+datasets/
+stat-fundamentals-videos/datasets/
+stat-fundamentals-videos (2)/datasets/
+
+# Exclude webm video files
+*.webm
+
+# Exclude zip files
+*.zip
+
+# Exclude large video files
+*.mp4
