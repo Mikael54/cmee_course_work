@@ -86,10 +86,9 @@ clean_growth_data <- function(data, min_points = 6) {
     stop(paste("Error: Missing required columns:", paste(missing_cols, collapse = ", ")))
   }
   
-  # NOTE: I probably dont have to actually add a logged data- sing I use just logged 10 _popbio
   data_clean <- data %>%
-    # remove anything with pobio less than 0 or time less than 0
-    filter(popbio > 0, time > 0) %>%
+    # remove anything with pobio less than 0 or time less than or equal to 0
+    filter(popbio > 0, time >= 0) %>%
     # remove the Time_units collumn since it is all the same
     select(-time_units) %>%
     # create a new collumn that is a unique identifier for each dataset, both with and without temperature
