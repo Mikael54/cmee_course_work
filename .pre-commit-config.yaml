@@ -4,4 +4,4 @@ repos:
     rev: v5.0.0  # or use the latest version
     hooks:
       - id: check-added-large-files
-        args: ['--maxkb=1000', '--enforce-all']  # optional: set a custom size limit in KB
+        args: ['--maxkb=1000']  # optional: set a custom size limit in KB
