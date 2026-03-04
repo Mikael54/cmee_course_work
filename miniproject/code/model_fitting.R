@@ -69,7 +69,6 @@ roll_regress <- function(x) {
   )
 }
 
-
 get_start_params <- function(group_data, num_points = 4) {
   # Assumes all values are already in log10 scale
   N <- group_data$log10_popbio
@@ -141,10 +140,8 @@ get_start_params <- function(group_data, num_points = 4) {
   )
 }
 
-
-
 # ====================================================================
-# step 4: Run the model
+# step 4: Run the growth models on multistart with NLSLM
 # ====================================================================
 
 # NEED TO TEST OUT VARIATIONS OF MAX_ITER, started at 1500 cause thats what worked best before though
@@ -200,7 +197,6 @@ run_growth_models_multistart <- function(data,
 }
 
 
-
 # ====================================================================
 # step 4.5: run some models (to delete later)
 # ====================================================================
@@ -220,6 +216,153 @@ gompertz_fits <- run_growth_models_multistart(
 # ====================================================================
 # step 6: Run model evaluation
 # ====================================================================
+
+# Helper function to collect AIC/AICc/BIC from a list of fit lists
+collect_metrics <- function(fit_lists) {
+  do.call(rbind, lapply(fit_lists, function(fit_list) {
+    do.call(rbind, lapply(fit_list, function(x) {
+      if (is.null(x$fit)) return(NULL)
+      data.frame(
+        group = x$group,
+        model = x$model,
+        AIC   = AIC(x$fit),
+        AICc  = AICc(x$fit),
+        BIC   = BIC(x$fit),
+        stringsAsFactors = FALSE
+      )
+    }))
+  }))
+}
+
+
+# FUNCTION 1: compare_models_basic
+#
+# For each group, finds the winning model and records how far
+# ahead it is of the second-best model.
+
+
+compare_models_basic <- function(...) {
+  
+  all_metrics <- collect_metrics(list(...))
+  
+  # For each group and metric, find the winner and the winning margin
+  # (= best score subtracted from second-best score)
+  per_group <- all_metrics %>%
+    group_by(group) %>%
+    filter(n() > 1) %>%
+    summarise(
+      # --- AIC ---
+      winner_AIC   = model[which.min(AIC)],
+      margin_AIC   = sort(AIC)[2] - min(AIC),   # gap to runner-up
+      
+      # --- AICc ---
+      winner_AICc  = model[which.min(AICc)],
+      margin_AICc  = sort(AICc)[2] - min(AICc),
+      
+      # --- BIC ---
+      winner_BIC   = model[which.min(BIC)],
+      margin_BIC   = sort(BIC)[2] - min(BIC),
+      
+      .groups = "drop"
+    ) %>%
+    mutate(
+      # Bin the winning margin into interpretable categories
+      across(starts_with("margin_"), ~ cut(.x,
+        breaks = c(-Inf, 2, 7, Inf),
+        labels = c("< 2 (similar)", "2-7 (moderate)", "> 7 (clear)"),
+        right  = FALSE
+      ), .names = "category_{.col}")
+    ) %>%
+    # Rename for clarity: category_margin_AIC -> category_AIC
+    rename_with(~ gsub("category_margin_", "category_", .x))
+  
+  # Summary: how many times did each model win, broken down by margin size
+  make_summary <- function(winner_col, category_col, label) {
+    per_group %>%
+      group_by(model = .data[[winner_col]],
+               category = .data[[category_col]]) %>%
+      summarise(n_groups = n(), .groups = "drop") %>%
+      pivot_wider(names_from = category, values_from = n_groups, values_fill = 0) %>%
+      mutate(metric = label) %>%
+      relocate(metric, model)
+  }
+  
+  summary_table <- bind_rows(
+    make_summary("winner_AIC",  "category_AIC",  "AIC"),
+    make_summary("winner_AICc", "category_AICc", "AICc"),
+    make_summary("winner_BIC",  "category_BIC",  "BIC")
+  )
+  
+  list(
+    summary     = summary_table,   # ~model x margin category counts
+    per_group   = per_group,       # one row per group with winner + margin
+    all_metrics = all_metrics      # raw AIC/AICc/BIC for every group x model
+  )
+}
+
+# FUNCTION 2: compute_akaike_weights
+#
+# For each group, computes Akaike weights from AICc (and AIC):
+#   1. delta_i  = AICc_i - AICc_min
+#   2. L_i      = exp(-0.5 * delta_i)     (relative likelihood)
+#   3. w_i      = L_i / sum(L)            (Akaike weight)
+
+compute_akaike_weights <- function(...) {
+  
+  all_metrics <- collect_metrics(list(...))
+  
+  all_metrics %>%
+    group_by(group) %>%
+    filter(n() > 1) %>%
+    mutate(
+      # AICc weights
+      delta_AICc  = AICc - min(AICc),
+      weight_AICc = exp(-0.5 * delta_AICc) / sum(exp(-0.5 * delta_AICc)),
+      
+      # AIC weights
+      delta_AIC   = AIC - min(AIC),
+      weight_AIC  = exp(-0.5 * delta_AIC)  / sum(exp(-0.5 * delta_AIC))
+    ) %>%
+    select(group, model, weight_AICc, weight_AIC) %>%
+    ungroup()
+}
+
+
+# FUNCTION 3: summarise_weights
+#
+# Takes the output of compute_akaike_weights.
+# For each model, counts how many groups it had a weight in each size bucket.
+
+summarise_weights <- function(weights) {
+  
+  categorise_weight <- function(w) {
+    cut(w,
+        breaks = c(-Inf, 0.5, 0.8, 0.9, Inf),
+        labels = c("<= 0.5 (no clear winner)", "> 0.5 (slight support)",
+                   "> 0.8 (strong support)",   "> 0.9 (decisive)"),
+        right  = TRUE)
+  }
+  
+  make_weight_summary <- function(weight_col, label) {
+    weights %>%
+      group_by(group) %>%
+      # Keep only the model with the highest weight in each group
+      slice_max(order_by = .data[[weight_col]], n = 1, with_ties = FALSE) %>%
+      ungroup() %>%
+      mutate(category = categorise_weight(.data[[weight_col]])) %>%
+      group_by(model, category) %>%
+      summarise(n_groups = n(), .groups = "drop") %>%
+      pivot_wider(names_from = category, values_from = n_groups, values_fill = 0) %>%
+      mutate(metric = label) %>%
+      relocate(metric, model)
+  }
+  
+  bind_rows(
+    make_weight_summary("weight_AICc", "AICc weights"),
+    make_weight_summary("weight_AIC",  "AIC weights")
+  )
+}
+
 
 # ====================================================================
 # step 7: Evaluate the effect of temperature
