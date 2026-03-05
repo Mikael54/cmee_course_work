@@ -82,13 +82,7 @@ get_start_params <- function(group_data, num_points = 4) {
   N_0_start   <- min(N, na.rm = TRUE)
   N_max_start <- max(N, na.rm = TRUE)
 
-  # ----------------------------------------------------------
   # r_max via rolling regression
-  # Rolls a window of num_points across [N, t], fits lm in each
-  # window, and takes the maximum slope as r_max.
-  # Falls back to finite-difference estimate if rolling fails
-  # (e.g. too few points for the window).
-  # ----------------------------------------------------------
   win_mat <- cbind(N = N, t = t)
 
   slopes <- tryCatch({
@@ -117,11 +111,7 @@ get_start_params <- function(group_data, num_points = 4) {
     r_max_start <- max(diff(N) / dt, na.rm = TRUE)
   }
 
-  # ----------------------------------------------------------
-  # t_lag: time at the start of the window with the maximum rolling slope,
-  # i.e. start of the steepest linear segment, not the end.
-  # Falls back to time of maximum curvature if rolling fails.
-  # ----------------------------------------------------------
+  # t lag via rolling regression
   best_idx  <- which.max(slopes)
   if (length(best_idx) > 0) {
     start_idx   <- max(1, best_idx - floor(num_points / 2))
@@ -156,13 +146,11 @@ run_growth_models_multistart <- function(data,
   groups <- unique(data[[group_var]])
   results <- lapply(groups, function(g) {
     group_data <- data[data[[group_var]] == g, ]
-    response   <- group_data$log10_popbio
-    fit_data   <- data.frame(t = group_data$time, y = response)
+    fit_data   <- data.frame(t = group_data$time, y = group_data$log10_popbio)
     starts     <- get_start_params(group_data)
     params     <- names(formals(model_fn))[-1]
     start_list <- starts[params]
 
-    # Assumes log scale - all bounds are for log-transformed data
     start_upper_all <- list(
       N_0   = start_list$N_0   + 2,
       N_max = start_list$N_max + 2,
@@ -182,20 +170,24 @@ run_growth_models_multistart <- function(data,
     param_str <- paste(params, collapse = ", ")
     fmla      <- as.formula(paste0("y ~ model_fn(t, ", param_str, ")"))
 
-    fit <- nls_multstart(fmla,
-                         data              = fit_data,
-                         iter              = n_iter,
-                         start_lower       = start_lower,
-                         start_upper       = start_upper,
-                         convergence_count = conv_count,
-                         control           = nls.lm.control(maxiter = max_iter))
-    
+    fit <- tryCatch(
+      nls_multstart(fmla,
+                    data              = fit_data,
+                    iter              = n_iter,
+                    start_lower       = start_lower,
+                    start_upper       = start_upper,
+                    convergence_count = conv_count,
+                    control           = nls.lm.control(maxiter = max_iter)),
+      error = function(e) {
+        message(sprintf("[%s | group %s] failed: %s", model_name, g, e$message))
+        NULL
+      }
+    )
     list(fit = fit, group = g, model = model_name)
   })
   names(results) <- as.character(groups)
   results
 }
-
 
 # ====================================================================
 # step 4.5: run some models (to delete later)
@@ -207,6 +199,133 @@ gompertz_fits <- run_growth_models_multistart(
   model_name = "gompertz_multistart",
   group_var  = "id_num"
 )
+# run logistic model with log10 transformation
+logistic_log10_fits <- run_growth_models_multistart(
+  data       = data_clean,
+  model_fn   = logistic_model_log10,
+  model_name = "logistic_log10_multistart",
+  group_var  = "id_num"
+)
+
+# run baranyi model
+baranyi_fits <- run_growth_models_multistart(
+  data       = data_clean,
+  model_fn   = baranyi_model,
+  model_name = "baranyi_multistart",
+  group_var  = "id_num"
+)
+# run buchanan model
+buchanan_fits <- run_growth_models_multistart(
+  data       = data_clean,
+  model_fn   = buchanan_model,
+  model_name = "buchanan_multistart",
+  group_var  = "id_num"
+)
+
+# say the amount of convergences for each model
+cat("Gompertz converged for", sum(sapply(gompertz_fits, function(x) !is.null(x$fit))), "out of", length(gompertz_fits), "groups.\n")
+cat("Logistic (log10) converged for", sum(sapply(logistic_log10_fits, function(x) !is.null(x$fit))), "out of", length(logistic_log10_fits), "groups.\n")
+cat("Baranyi converged for", sum(sapply(baranyi_fits, function(x) !is.null(x$fit))), "out of", length(baranyi_fits), "groups.\n")
+cat("Buchanan converged for", sum(sapply(buchanan_fits, function(x) !is.null(x$fit))), "out of", length(buchanan_fits), "groups.\n")
+
+
+# svae all models as model_fit_default_parameters
+model_fit_default_parameters <- list(
+  gompertz_multistart = gompertz_fits,
+  logistic_log10_multistart = logistic_log10_fits,
+  baranyi_multistart = baranyi_fits,
+  buchanan_multistart = buchanan_fits
+)
+
+# THESE VALUE ARE MUCH BETTER THAN THE DEFAULT ONES- HIGHER CONVERGENCE RATE FOR BUCHAN
+# now rerun the model with lower max iterations and convergence count to see if it makes a difference
+gompertz_fits_low_iter <- run_growth_models_multistart(
+  data       = data_clean,
+  model_fn   = gompertz_model,
+  model_name = "gompertz_multistart_low_iter",
+  group_var  = "id_num",
+  n_iter     = 5000,
+  conv_count = 100,
+  max_iter   = 1000
+)
+logistic_log10_fits_low_iter <- run_growth_models_multistart(
+  data       = data_clean,
+  model_fn   = logistic_model_log10,
+  model_name = "logistic_log10_multistart_low_iter",
+  group_var  = "id_num",
+  n_iter     = 5000,
+  conv_count = 100,
+  max_iter   = 1000
+)
+baranyi_fits_low_iter <- run_growth_models_multistart(
+  data       = data_clean,
+  model_fn   = baranyi_model,
+  model_name = "baranyi_multistart_low_iter",
+  group_var  = "id_num",
+  n_iter     = 5000,
+  conv_count = 100,
+  max_iter   = 1000
+)
+buchanan_fits_low_iter <- run_growth_models_multistart(
+  data       = data_clean,
+  model_fn   = buchanan_model,
+  model_name = "buchanan_multistart_low_iter",
+  group_var  = "id_num",
+  n_iter     = 5000,
+  conv_count = 100,
+  max_iter   = 1000
+)
+
+# say the amount of convergences for each model
+cat("Gompertz (low iter) converged for", sum(sapply(gompertz_fits_low_iter, function(x) !is.null(x$fit))), "out of", length(gompertz_fits_low_iter), "groups.\n")
+cat("Logistic (log10, low iter) converged for", sum(sapply(logistic_log10_fits_low_iter, function(x) !is.null(x$fit))), "out of", length(logistic_log10_fits_low_iter), "groups.\n")
+cat("Baranyi (low iter) converged for", sum(sapply(baranyi_fits_low_iter, function(x) !is.null(x$fit))), "out of", length(baranyi_fits_low_iter), "groups.\n")
+cat("Buchanan (low iter) converged for", sum(sapply(buchanan_fits_low_iter, function(x) !is.null(x$fit))), "out of", length(buchanan_fits_low_iter), "groups.\n")
+
+
+
+
+# RUn the same models again- but include time bechnmarking to see if it makes a difference
+logistic_time <- system.time(
+  logistic_log10_fits_500 <- run_growth_models_multistart(
+    data       = data_clean,
+    model_fn   = logistic_model_log10,
+    model_name = "logistic_log10_multistart_500",
+    group_var  = "id_num",
+    n_iter     = 5000,
+    conv_count = 100,
+    max_iter   = 500
+  )
+)
+
+buchanan_time <- system.time(
+  buchanan_fits_500 <- run_growth_models_multistart(
+    data       = data_clean,
+    model_fn   = buchanan_model,
+    model_name = "buchanan_multistart_500",
+    group_var  = "id_num",
+    n_iter     = 5000,
+    conv_count = 100,
+    max_iter   = 500
+  )
+)
+
+cat(sprintf("Logistic (500 max_iter): %.1f seconds | %d/%d converged\n",
+            logistic_time["elapsed"],
+            sum(sapply(logistic_log10_fits_500, function(x) !is.null(x$fit))),
+            length(logistic_log10_fits_500)))
+
+cat(sprintf("Buchanan (500 max_iter): %.1f seconds | %d/%d converged\n",
+            buchanan_time["elapsed"],
+            sum(sapply(buchanan_fits_500, function(x) !is.null(x$fit))),
+            length(buchanan_fits_500)))
+
+# compare 500 vs 1000 max_iter fits
+model_comparison_500_vs_1000 <- compare_models_basic(logistic_log10_fits_500, logistic_log10_fits_low_iter)
+print(model_comparison_500_vs_1000$summary)
+
+model_comparison_buchanan_500_vs_1000 <- compare_models_basic(buchanan_fits_500, buchanan_fits_low_iter)
+print(model_comparison_buchanan_500_vs_1000$summary)
 
 
 # ====================================================================
@@ -234,12 +353,10 @@ collect_metrics <- function(fit_lists) {
   }))
 }
 
-
 # FUNCTION 1: compare_models_basic
 #
 # For each group, finds the winning model and records how far
 # ahead it is of the second-best model.
-
 
 compare_models_basic <- function(...) {
   
@@ -269,7 +386,7 @@ compare_models_basic <- function(...) {
       # Bin the winning margin into interpretable categories
       across(starts_with("margin_"), ~ cut(.x,
         breaks = c(-Inf, 2, 7, Inf),
-        labels = c("< 2 (similar)", "2-7 (moderate)", "> 7 (clear)"),
+        labels = c("< 2", "2-7", "> 7"),
         right  = FALSE
       ), .names = "category_{.col}")
     ) %>%
@@ -327,7 +444,6 @@ compute_akaike_weights <- function(...) {
     ungroup()
 }
 
-
 # FUNCTION 3: summarise_weights
 #
 # Takes the output of compute_akaike_weights.
@@ -338,8 +454,8 @@ summarise_weights <- function(weights) {
   categorise_weight <- function(w) {
     cut(w,
         breaks = c(-Inf, 0.5, 0.8, 0.9, Inf),
-        labels = c("<= 0.5 (no clear winner)", "> 0.5 (slight support)",
-                   "> 0.8 (strong support)",   "> 0.9 (decisive)"),
+        labels = c("<= 0.5", "> 0.5",
+                   "> 0.8",   "> 0.9"),
         right  = TRUE)
   }
   
@@ -363,6 +479,47 @@ summarise_weights <- function(weights) {
   )
 }
 
+
+# ====================================================================
+# step 6.5: evaluate the models
+# ====================================================================
+
+# delta AIC/AICc/BIC and winner tables
+model_comparison <- compare_models_basic(gompertz_fits, logistic_log10_fits, baranyi_fits, buchanan_fits)
+print(model_comparison$summary)
+
+
+# logistic vs buchanan basic comparison
+model_comparison_2 <- compare_models_basic(logistic_log10_fits, buchanan_fits)
+print(model_comparison_2$summary)
+
+# logistic vs Gompertz basic comparison
+model_comparison_3 <- compare_models_basic(logistic_log10_fits, gompertz_fits)
+print(model_comparison_3$summary)
+
+
+# logistic vs buchanan basic comparison
+model_comparison_4 <- compare_models_basic(logistic_log10_fits, baranyi_fits)
+print(model_comparison_4$summary)
+
+# print akaike weights
+weights <- compute_akaike_weights(gompertz_fits, logistic_log10_fits, baranyi_fits, buchanan_fits)
+print(head(weights))
+# summarize the weights into categories
+weight_summary <- summarise_weights(weights)
+print(weight_summary)
+
+
+# evaluate low iter vs high it for logistic
+model_comparison_low_iter <- compare_models_basic(logistic_log10_fits_low_iter, logistic_log10_fits)
+print(model_comparison_low_iter$summary)
+
+logistic_log10_fits_low_iter
+
+
+# now for buchanan
+model_comparison_low_iter_buchanan <- compare_models_basic(buchanan_fits_low_iter, buchanan_fits)
+print(model_comparison_low_iter_buchanan$summary)
 
 # ====================================================================
 # step 7: Evaluate the effect of temperature
