@@ -189,6 +189,28 @@ run_growth_models_multistart <- function(data,
   results
 }
 
+# Code for linear models
+run_linear_models <- function(data, model_fn, model_name, group_var = "id_num") {
+  
+  # Infer polynomial degree from number of parameters (excluding t)
+  degree <- length(formals(model_fn)) - 1
+  
+  groups  <- unique(data[[group_var]])
+  results <- lapply(groups, function(g) {
+    group_data <- data[data[[group_var]] == g, ]
+    fit_data   <- data.frame(t = group_data$time, y = group_data$log10_popbio)
+    fit <- tryCatch(
+      lm(y ~ poly(t, degree, raw = TRUE), data = fit_data),
+      error = function(e) {
+        message(sprintf("[%s | group %s] failed: %s", model_name, g, e$message))
+        NULL
+      }
+    )
+    list(fit = fit, group = g, model = model_name)
+  })
+  names(results) <- as.character(groups)
+  results
+}
 # ====================================================================
 # step 4.5: run some models (to delete later)
 # ====================================================================
@@ -326,6 +348,110 @@ print(model_comparison_500_vs_1000$summary)
 
 model_comparison_buchanan_500_vs_1000 <- compare_models_basic(buchanan_fits_500, buchanan_fits_low_iter)
 print(model_comparison_buchanan_500_vs_1000$summary)
+
+
+
+# compare buchana and baranyi with 1000 max_iter
+model_comparison_buchanan_vs_baranyi <- compare_models_basic(buchanan_fits_low_iter, baranyi_fits_low_iter)
+print(model_comparison_buchanan_vs_baranyi$summary)
+
+weights_buchanan_baranyi <- compute_akaike_weights(buchanan_fits_low_iter, baranyi_fits_low_iter)
+summary_weights_buchanan_baranyi <- summarise_weights(weights_buchanan_baranyi)
+print(summary_weights_buchanan_baranyi)
+
+# compare sample size of of growth curves for when buchanan wins vs baranyi wins
+buchanan_wins <- model_comparison_buchanan_vs_baranyi$per_group %>%
+  filter(winner_AICc == "buchanan_multistart_low_iter") %>%
+  pull(group)
+
+baranyi_wins <- model_comparison_buchanan_vs_baranyi$per_group %>%
+  filter(winner_AICc == "baranyi_multistart_low_iter") %>%
+  pull(group)
+
+# count number of unique groups in each category
+cat("Buchanan wins for", length(unique(buchanan_wins)), "groups.\n")
+cat("Baranyi wins for", length(unique(baranyi_wins)), "groups.\n")
+
+# summary statistics for the number of time points in each group winner with 
+data_clean %>%
+  group_by(id_num) %>%
+  summarise(n_time_points = n()) %>%
+  mutate(winner = case_when(
+    id_num %in% buchanan_wins ~ "Buchanan",
+    id_num %in% baranyi_wins ~ "Baranyi",
+    TRUE ~ "Neither"
+  )) %>%
+  group_by(winner) %>%
+  summarise(mean_time_points = mean(n_time_points),
+            sd_time_points = sd(n_time_points),
+            .groups = "drop")
+
+
+#buchanan iter vs time
+buchanan_time_N_iter_1500 <- system.time(
+  buchanan_fits_1500 <- run_growth_models_multistart(
+    data       = data_clean,
+    model_fn   = buchanan_model,
+    model_name = "buchanan_multistart_500",
+    group_var  = "id_num",
+    n_iter     = 2500,
+    conv_count = 100,
+    max_iter   = 1000
+  )
+)
+
+cat(sprintf("Buchanan (500 max_iter): %.1f seconds | %d/%d converged\n",
+            buchanan_time_N_iter_1500["elapsed"],
+            sum(sapply(buchanan_fits_1500, function(x) !is.null(x$fit))),
+            length(buchanan_fits_1500)))
+
+
+
+# test 3
+buchanan_time_N_iter_3000 <- system.time(
+  buchanan_fits_3000 <- run_growth_models_multistart(
+    data       = data_clean,
+    model_fn   = buchanan_model,
+    model_name = "buchanan_multistart_3000_max_iter_500_",
+    group_var  = "id_num",
+    n_iter     = 3000,
+    conv_count = 100,
+    max_iter   = 500
+  )
+)
+
+
+cat(sprintf("Buchanan (500 max_iterz, 3000 iterations): %.1f seconds | %d/%d converged\n",
+            buchanan_time_N_iter_3000["elapsed"],
+            sum(sapply(buchanan_fits_3000, function(x) !is.null(x$fit))),
+            length(buchanan_fits_3000)))
+
+buchanan_time_N_iter_3000_400 <- system.time(
+  buchanan_fits_3000_400 <- run_growth_models_multistart(
+    data       = data_clean,
+    model_fn   = buchanan_model,
+    model_name = "buchanan_multistart_3000_max_iter_400_",
+    group_var  = "id_num",
+    n_iter     = 3000,
+    conv_count = 100,
+    max_iter   = 400
+  )
+)
+
+
+cat(sprintf("Buchanan (400 max_iter, 3000 iterations): %.1f seconds | %d/%d converged\n",
+            buchanan_time_N_iter_3000_400["elapsed"],
+            sum(sapply(buchanan_fits_3000_400, function(x) !is.null(x$fit))),
+            length(buchanan_fits_3000_400)))
+
+
+# this is the best one
+# going from 3000 to 5 000 iterations only increased convergence by 1 group, but increased time by 100 seconds
+
+
+# compare buchana with 3000 iterations vs 5000 iterations
+comparison_buchanan_3000_vs_5000 <- compare_models_basic(buchanan_fits_3000, buchanan_fits_500)
+print(comparison_buchanan_3000_vs_5000$summary)
 
 
 # ====================================================================
