@@ -100,10 +100,7 @@ clean_growth_data <- function(data, min_points = 6) {
     ) %>%
     # create a new collumn that is log transformed of popbio and time
     mutate(
-      log_popbio = log(popbio),
-      log_time = log(time),
       log10_popbio = log10(popbio),
-      log10_time = log10(time)
     ) %>%
     # remove any datasets with less than 6 data points
     group_by(id_num) %>%
