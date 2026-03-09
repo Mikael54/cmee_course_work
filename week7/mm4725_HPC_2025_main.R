@@ -90,7 +90,7 @@ question_1 <- function(){
       legend.title = element_blank(),                                 # Removing the legend title
       legend.position = c(0.2, 0.9))                                 #
 
-  png(filename="question_1", width = 600, height = 400)
+  png(filename="question_1.png", width = 600, height = 400)
   print(adult_v_spread_plot)
   # plot your graph here
   Sys.sleep(0.1)
@@ -147,7 +147,7 @@ question_2 <- function(){
       legend.position = c(0.2, 0.9))                                 #
 
 
-  png(filename="question_2", width = 600, height = 400)
+  png(filename="question_2.png", width = 600, height = 400)
   # plot your graph here
   print(stochastic_plot)
 
@@ -223,7 +223,7 @@ for(i in 1:100) {
           plot.margin = unit(c(1, 1, 1, 1), units = "cm")))
 
 
-  png(filename="question_5", width = 600, height = 400)
+  png(filename="question_5.png", width = 600, height = 400)
   # plot your graph here
   print(richness_barplot)
   Sys.sleep(0.1)
@@ -337,7 +337,7 @@ question_6 <- function(){
 
 
 
-  png(filename="question_6", width = 600, height = 400)
+  png(filename="question_6.png", width = 600, height = 400)
   # plot your graph here
   print(deviation_plot)
   Sys.sleep(0.1)
@@ -454,7 +454,7 @@ question_8 <- function() {
       plot.margin = unit(c(1, 1, 1, 1), units = "cm"))                 # Adding a 1cm margin around the plot
       
   
-  png(filename="question_14", width = 600, height = 400)
+  png(filename="question_14.png", width = 600, height = 400)
   # plot your graph here
   print(richness_plot)
 
@@ -565,7 +565,7 @@ question_18 <- function()  {
 
       )
 
-  png(filename = "question_18", width = 600, height = 400)
+  png(filename = "question_18.png", width = 600, height = 400)
   print(richness_plot)
   Sys.sleep(0.1)
   dev.off()
@@ -680,7 +680,7 @@ question_22 <- function() {
 
 
 
-  png(filename="question_22", width = 600, height = 400)
+  png(filename="question_22.png", width = 600, height = 400)
   print(octave_plot)
   Sys.sleep(0.1)
   dev.off()
@@ -818,7 +818,7 @@ plot_neutral_cluster_results <- function(){
         plot.margin = unit(c(1, 1, 1, 1), units = "cm")))
 
   
-    png(filename="plot_neutral_cluster_results", width = 600, height = 400)
+    png(filename="plot_neutral_cluster_results.png", width = 600, height = 400)
     print(bar_plot)
     Sys.sleep(0.1)
     dev.off()
@@ -831,13 +831,13 @@ plot_neutral_cluster_results <- function(){
 # I suggest you only attempt these if you've done all the main questions. 
 
 # Challenge question A
-Challenge_A <- function(){
-  
+# Challenge question A - Part 1: Data computation and saving
+Challenge_A_compute <- function(){
   # Pre allocate the data frame for better performance
   time_steps <- 0:120
   n_total_rows <- 100 * 150 * length(time_steps)
-  row_idx <- 1  # Track where to insert next chunk
-  sim_id <- 1   #
+  row_idx <- 1
+  sim_id <- 1
 
   # Pre-allocate the entire data frame
   population_size_df <- data.frame(
@@ -848,22 +848,18 @@ Challenge_A <- function(){
     stringsAsFactors = FALSE
   )
 
-  # Loop through files 1–100
+  # Loop through files 1-100
   for (i in 1:100) {
-
     # Determine initial condition and file path
     if (i <= 25) {
       initial_state <- "large adult"
       file_path <- paste0("output_large_adult_", i, ".rda")
-
     } else if (i <= 50) {
       initial_state <- "small adult"
       file_path <- paste0("output_small_adult_", i, ".rda")
-
     } else if (i <= 75) {
       initial_state <- "large mixed"
       file_path <- paste0("output_large_spread_", i, ".rda")
-
     } else {
       initial_state <- "small mixed"
       file_path <- paste0("output_small_spread_", i, ".rda")
@@ -874,7 +870,6 @@ Challenge_A <- function(){
 
     # Loop through the 150 simulations in this file
     for (j in 1:150) {
-
       pop_ts <- results_list[[j]]
 
       # Calculate the range of rows to fill
@@ -885,11 +880,21 @@ Challenge_A <- function(){
       population_size_df$initial_condition[row_idx:end_idx] <- initial_state
       population_size_df$time_step[row_idx:end_idx] <- time_steps
       population_size_df$population_size[row_idx:end_idx] <- pop_ts
-      
+
       row_idx <- end_idx + 1
       sim_id <- sim_id + 1
     }
   }
+
+  # Save the computed data frame as an .rda file
+  save(population_size_df, file = "challenge_A_compute.rda")
+}
+
+
+# Challenge question A - Part 2: Load data and export plot
+Challenge_A <- function(){
+  # Load the pre-computed data
+  load("challenge_A_compute.rda")
 
   # Plot all time series
   p <- ggplot(population_size_df,
@@ -904,33 +909,29 @@ Challenge_A <- function(){
       y = "Population size\n",
       colour = "Initial condition"
     ) +
-      scale_x_continuous(expand = c(0, 0)) +
-      scale_y_continuous(expand = c(0, 0)) +
-      guides(colour = guide_legend(override.aes = list(alpha = 1, linewidth = 1.5))) +
-      theme_bw() +
-      theme(
+    scale_x_continuous(expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0)) +
+    guides(colour = guide_legend(override.aes = list(alpha = 1, linewidth = 1.5))) +
+    theme_bw() +
+    theme(
       plot.title = element_text(size = 14, face = "plain", hjust = 0.5),
-    axis.text.x = element_text(size = 12),     # making the years at a bit of an angle
+      axis.text.x = element_text(size = 12),
       axis.text.y = element_text(size = 12),
-      axis.title = element_text(size = 14, face = "plain"),                        
-      panel.grid = element_blank(),                                   # Removing the background grid lines               
-      plot.margin = unit(c(1, 1, 1, 1), units = "cm"),                 # Adding a 1cm margin around the plot
-      legend.text = element_text(size = 12, face = "italic"),         # Setting the font for the legend text
-      legend.title = element_blank(),                                 # Removing the legend title
-      legend.position = c(0.15, 0.8))                                 #
+      axis.title = element_text(size = 14, face = "plain"),
+      panel.grid = element_blank(),
+      plot.margin = unit(c(1, 1, 1, 1), units = "cm"),
+      legend.text = element_text(size = 12, face = "italic"),
+      legend.title = element_blank(),
+      legend.position = c(0.15, 0.8)
+    )
 
-
-  png(filename="Challenge_A", width = 600, height = 400)
-  # plot your graph here
+  png(filename = "Challenge_A.png", width = 600, height = 400)
   print(p)
   Sys.sleep(0.1)
   dev.off()
-  
 
   return(population_size_df)
-
 }
-
 
 time_series_repetition <- function(community, speciation_rate, duration, rep) {
    # Create data frame to store 'rep' columns
@@ -1021,7 +1022,7 @@ df_summary <- rbind(
 
 
 
-  png(filename="Challenge_B", width = 600, height = 400)
+  png(filename="Challenge_B.png", width = 600, height = 400)
   print(richness_plot_CI)
   Sys.sleep(0.1)
   dev.off()
@@ -1101,7 +1102,7 @@ df_all <- do.call(rbind, lapply(1:length(richness_levels), function(i) {
       )
 
 
-  png(filename="Challenge_C", width = 600, height = 400)
+  png(filename="Challenge_C.png", width = 600, height = 400)
   print(richness_plot_CI)
   Sys.sleep(0.1)
   dev.off()
@@ -1162,7 +1163,7 @@ Challenge_D <- function() {
       plot.margin = unit(c(1, 1, 1, 1), units = "cm"),                 # Adding a 1cm margin around the plot
     ))
 
-  png(filename="Challenge_D", width = 600, height = 400)
+  png(filename="Challenge_D.png", width = 600, height = 400)
   print(rich_plot)
   Sys.sleep(0.1)
   dev.off()
@@ -1308,7 +1309,7 @@ Challenge_E <- function() {
 
 
 
-  png(filename="Challenge_E", width = 600, height = 400)
+  png(filename="Challenge_E.png", width = 600, height = 400)
   print(octave_plot)
   Sys.sleep(0.1)
   dev.off()
