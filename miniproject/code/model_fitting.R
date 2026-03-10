@@ -17,6 +17,7 @@ require("nlstools")
 require("lme4")
 require("lmerTest")
 require("performance")
+require("see")
 
 
 
@@ -34,27 +35,6 @@ linear_model <- function(t, a, b){
   a*t + b
 }
 
-# cubic polynomial model
-cubic_model <- function(t, a, b, c, d){
-  a*t^3 + b*t^2 + c*t + d
-}
-
-# Logistic 
-logistic_model <- function(t, r_max, N_max, N_0){ 
-  return(N_0 * N_max * exp(r_max * t)/(N_max + N_0 * (exp(r_max * t) - 1)))
-}
-# logistic log 10
-logistic_model_log10 <- function(t, r_max, N_max, N_0){
-  n0   <- 10^N_0
-  nmax <- 10^N_Max
-  log10(n0 * nmax * exp(r_max * t) / (nmax + n0 * (exp(r_max * t) - 1)))
-}
-
-# Gompertz
-  gompertz_model <- function(t, r_max, N_max, N_0, t_lag){ # Modified gompertz growth model (Zwietering 1990)
-  return(N_0 + (N_max - N_0) * exp(-exp(r_max * exp(1) * (t_lag - t)/((N_max - N_0) * log(10)) + 1)))
-}
-
 # Baranyi model
 baranyi_model <- function(t, r_max, N_max, N_0, t_lag){  # Baranyi model (Baranyi 1993)
   return(N_max + log10((-1+exp(r_max*t_lag) + exp(r_max*t))/(exp(r_max*t) - 1 + exp(r_max*t_lag) * 10^(N_max-N_0))))
@@ -69,19 +49,6 @@ buchanan_model <- function(t, r_max, N_max, N_0, t_lag){ # Buchanan model - thre
 # ====================================================================
 # region - step 3: extract the parameters
 # ====================================================================
-
-# Helper: fit a linear model to a rolling window and return slope and intercept
-roll_regress <- function(x) {
-  temp <- as.data.frame(x)
-  colnames(temp) <- c("N", "t")
-  mod <- lm(N ~ t, data = temp)
-  data.frame(
-    slope     = coef(mod)[["t"]],
-    intercept = coef(mod)[["(Intercept)"]],
-    rsq       = summary(mod)$r.squared,
-    stringsAsFactors = FALSE
-  )
-}
 
 # more efficient function- replace lm() with direct calc
 roll_regress <- function(x) {
@@ -289,14 +256,13 @@ run_simple_linear_models <- function(data, model_name, group_var = "id_num") {
   results
 }
 # endregion
-# ====================================================================
-
 
 
 # ====================================================================
 # region - Step 5: Run model diagnostic
 # ====================================================================
 
+# diagnose fits function
 diagnose_fits <- function(fit_list) {
   
   do.call(rbind, lapply(fit_list, function(x) {
@@ -330,9 +296,7 @@ diagnose_fits <- function(fit_list) {
   }))
 }
 
-# ============================================================
-# FUNCTION: summarise_diagnostics
-# ============================================================
+# summarise_diagnostics function
 summarise_diagnostics <- function(diag_df) {
   cat(sprintf("\nDiagnostics for model: %s\n", unique(diag_df$model)))
   cat(sprintf("  Total fits assessed : %d\n",  nrow(diag_df)))
@@ -367,9 +331,6 @@ collect_metrics <- function(fit_lists) {
 }
 
 # FUNCTION 1: compare_models_basic
-#
-# For each group, finds the winning model and records how far
-# ahead it is of the second-best model.
 
 compare_models_basic <- function(...) {
   
@@ -431,11 +392,6 @@ compare_models_basic <- function(...) {
 }
 
 # FUNCTION 2: compute_akaike_weights
-#
-# For each group, computes Akaike weights from AICc (and AIC):
-#   1. delta_i  = AICc_i - AICc_min
-#   2. L_i      = exp(-0.5 * delta_i)     (relative likelihood)
-#   3. w_i      = L_i / sum(L)            (Akaike weight)
 
 compute_akaike_weights <- function(...) {
   
@@ -458,9 +414,6 @@ compute_akaike_weights <- function(...) {
 }
 
 # FUNCTION 3: summarise_weights
-#
-# Takes the output of compute_akaike_weights.
-# For each model, counts how many groups it had a weight in each size bucket.
 
 summarise_weights <- function(weights) {
   
@@ -497,35 +450,10 @@ summarise_weights <- function(weights) {
 # ====================================================================
 # region - Step 7: Evaluate the effect of temperature
 # ====================================================================
-
-extract_r_max <- function(fit_list, data, group_var = "id_num") {
-  do.call(rbind, lapply(fit_list, function(x) {
-    if (is.null(x$fit)) return(NULL)
-    r <- tryCatch(coef(x$fit)[["r_max"]], error = function(e) NULL)
-    if (is.null(r) || !is.finite(r) || r <= 0) return(NULL)
-    
-    g <- data[data[[group_var]] == x$group, ]
-    data.frame(group      = x$group,
-               model      = x$model,
-               r_max      = r,
-               ln_r_max   = log(r),
-               temp_K       = unique(g$temp+ 273.15),  # convert to Kelvin for Arrhenius
-               inv_temp_K   = 1 / unique(g$temp + 273.15),  # 1/K for Arrhenius
-               inv_temp_boltzmann = 1 / (8.617e-5* unique(g$temp + 273.15)),  # 1/(k_B * K) for Boltzmann-Arrhenius
-               species    = unique(g$species),
-               medium     = unique(g$medium),
-               citation   = unique(g$citation),
-               id_no_temp = unique(g$id_num_no_temp),
-               stringsAsFactors = FALSE)
-  }))
-}
-
 filter_invalid <- function(df, col) {
   df %>%
     filter(!is.na(.data[[col]]) & !is.nan(.data[[col]]) & !is.infinite(.data[[col]]))
 }
-
-
 
 extract_coefficients <- function(fit_list, data, group_var = "id_num") {
   do.call(rbind, lapply(fit_list, function(x) {
@@ -562,37 +490,8 @@ extract_coefficients <- function(fit_list, data, group_var = "id_num") {
 
 
 
-plot_thermal_performance <- function(r_data, 
-                                     export_dir = "../results",
-                                     width = 12, 
-                                     height = 6,
-                                     name = "thermal_performance_ln_r_max.pdf") {
-    
-  cat(sprintf("r_data: %d rows\n", nrow(r_data)))
-  
-  p <- ggplot(r_data, aes(x = inv_temp_K, y = ln_r_max,
-                          color = factor(id_no_temp))) +
-    geom_point(alpha = 0.7, size = 2) +
-    geom_smooth(method = "lm", se = FALSE, linewidth = 0.8) +
-    facet_wrap(~ model, scales = "free_y") +
-    labs(x = "1 / Temperature (1/K)", 
-         y = "ln(Growth Rate)",
-         title = "Thermal Performance: ln(r_max) vs 1/Temperature") +
-    theme_bw() +
-    theme(legend.position = "none")
-  
-  # Save plot
-  filename <- file.path(export_dir, name)
-  ggsave(filename,
-         plot   = p,
-         width  = width,
-         height = height)
-  message(sprintf("Saved: %s", filename))
-  
-  invisible(NULL)
-}
-
 # endregion
+
 # ====================================================================
 # region - Step 8: Create plots
 # ====================================================================
@@ -605,26 +504,29 @@ plot_thermal_performance <- function(r_data,
 
 set.seed(123)  # For reproducibility
 
-# run the three functions with timing
+# ================================================================
+# run all three functions
+# ================================================================
+
 
 # Run the fitting functions
-  baranyi_fits_niter3000_maxiter500_conv_100 <- run_growth_models_multistart(
+  baranyi_fits <- run_growth_models_multistart(
     data       = data_clean,
     model_fn   = baranyi_model,
-    model_name = "baranyi_niter3000_maxiter500_conv_100",
+    model_name = "baryanni_fits",
     group_var  = "id_num",
     n_iter     = 3000,
     conv_count = 100,
     max_iter   = 500
   )
 # how many converged?
-cat(sprintf("Baranyi (3000 n_iter, 500 max_iter, conv_count= 100): %d/%d converged\n",
-            sum(sapply(baranyi_fits_niter3000_maxiter500_conv_100, function(x) !is.null(x$fit))), length(baranyi_fits_niter3000_maxiter500_conv_100)))
+cat(sprintf("Baranyi : %d/%d converged\n",
+            sum(sapply(baranyi_fits, function(x) !is.null(x$fit))), length(baranyi_fits)))
 
-  buchanan_fits_niter3000_maxiter500 <- run_growth_models_multistart(
+  buchanan_fits <- run_growth_models_multistart(
     data       = data_clean,
     model_fn   = buchanan_model,
-    model_name = "buchanan_niter3000_maxiter500",
+    model_name = "buchanan_fits",
     group_var  = "id_num",
     n_iter     = 3000,
     conv_count = 100,
@@ -632,102 +534,74 @@ cat(sprintf("Baranyi (3000 n_iter, 500 max_iter, conv_count= 100): %d/%d converg
   )
 
 cat(sprintf("Buchanan (3000 n_iter, 500 max_iter, conv_count= 100): %d/%d converged\n",
-            sum(sapply(buchanan_fits_niter3000_maxiter500, function(x) !is.null(x$fit))), length(buchanan_fits_niter3000_maxiter500)))
+            sum(sapply(buchanan_fits, function(x) !is.null(x$fit))), length(buchanan_fits)))
 
 
-# run a cubic model
-#cubic_fits <- run_linear_models(
-#  data       = data_clean,
-#  model_fn   = cubic_model,
-#  model_name = "cubic_model",
-#  group_var  = "id_num"
-#)
+diagnostics_baranyi <- diagnose_fits(baranyi_fits) %>% summarise_diagnostics()
+diagnostics_buchanan <- diagnose_fits(buchanan_fits) %>% summarise_diagnostics()
 
 # run a linear model (simple: y = a + bx)
 linear_fits <- run_simple_linear_models(
   data       = data_clean,
-  model_name = "linear_model",
+  model_name = "linear_fits",
   group_var  = "id_num"
 )
 
-
-
-
-# coparison of buchanan vs baranyi vs linear
-model_comparison_2 <- compare_models_basic(buchanan_fits_niter3000_maxiter500, baranyi_fits_niter3000_maxiter500_conv_100, linear_fits)
-print(model_comparison_2$summary) %>% # add a total collumn
-  group_by(metric) %>%
-  mutate(total = sum(`< 2`, `2-7`, `> 7`)) %>%
-  ungroup() %>%
-  select(metric, model, `< 2`, `2-7`, `> 7`, total)
-
-
 # weights for buchanan vs baranyi vs linear
-weights_2 <- compute_akaike_weights(buchanan_fits_niter3000_maxiter500, baranyi_fits_niter3000_maxiter500_conv_100, linear_fits)
+weights <- compute_akaike_weights(buchanan_fits, baranyi_fits, linear_fits)
 
-weight_summary_2 <- summarise_weights(weights_2)
-print(weight_summary_2)
-
-
-weights_smaller_categories <- compute_akaike_weights(baranyi_fits_niter3000_maxiter500_conv_100, linear_fits)
-
-summarise_weights(weights_smaller_categories)
+weight_summary <- summarise_weights(weights)
 
 
-weights_smaller_categories_2 <- compute_akaike_weights(buchanan_fits_niter3000_maxiter500, linear_fits)
+weights_baranyi_linear <- compute_akaike_weights(baranyi_fits, linear_fits)
 
-summarise_weights(weights_smaller_categories_2)
-
-
-weights_smaller_categories_3 <- compute_akaike_weights(buchanan_fits_niter3000_maxiter500, baranyi_fits_niter3000_maxiter500_conv_100)
-
-summarise_weights(weights_smaller_categories_3)
+weight_summary_baranyi_linear <- summarise_weights(weights_baranyi_linear)
 
 
+weights_buchanan_linear <- compute_akaike_weights(buchanan_fits, linear_fits)
 
-# thermal performance- new
+weight_summary_buchanan_linear <- summarise_weights(weights_buchanan_linear)
+
+
+weights_buchanan_baranyi <- compute_akaike_weights(buchanan_fits, baranyi_fits)
+
+weight_summary_buchanan_baranyi <- summarise_weights(weights_buchanan_baranyi)
+
+
+# ================================================================
+# thermal performance
+# ================================================================
 
 # Extract thermal performance data using extract_coefficients
-r_data_buchanan_coeffs <- extract_coefficients(buchanan_fits_niter3000_maxiter500, data_clean)
-r_data_baranyi_coeffs  <- extract_coefficients(baranyi_fits_niter3000_maxiter500_conv_100, data_clean)
+r_data_buchanan_coeffs <- extract_coefficients(buchanan_fits, data_clean)
+r_data_baranyi_coeffs  <- extract_coefficients(baranyi_fits, data_clean)
 
 
 # filter out rows with a NA, NaN or infite r_max values using pipes
 
 # put the two datasets together for plotting
-coef_combined <- bind_rows(r_data_buchanan_coeffs, r_data_baranyi_coeffs) %>%
-  filter_invalid("inv_temp_boltzmann")
+coef_combined_scaled <- bind_rows(r_data_buchanan_coeffs, r_data_baranyi_coeffs) %>%
+  filter_invalid("inv_temp_boltzmann") %>%
+  mutate(inv_temp_boltzmann_scaled = scale(inv_temp_boltzmann)) %>%
+  # Strip the matrix attributes so it's a simple vector
+  mutate(inv_temp_boltzmann_scaled = as.numeric(inv_temp_boltzmann_scaled))
 
 
-# scale the values
-coef_combined_scaled <- coef_combined %>%
-  mutate(inv_temp_boltzmann_scaled = scale(inv_temp_boltzmann))
-
-
-#### v2- to see the resids
-
-# Strip the matrix attributes so it's a simple vector
-coef_combined_scaled$inv_temp_boltzmann_scaled <- as.numeric(coef_combined_scaled$inv_temp_boltzmann_scaled)
-
-# Re-run your model with the "clean" vector
+# run r_max your model with the "clean" vector
 r_max_mod <- lmer(ln_r_max ~ inv_temp_boltzmann_scaled + model + (1 | medium) + (1 | citation),
                   data = coef_combined_scaled, REML = TRUE)
 
-# Now try the check (make sure to install 'see' first!)
-library(see)
-library(performance)
-
-check_model(r_max_mod)
-summary(r_max_mod)
+r_max_mod_check <- check_model(r_max_mod)
+r_max_mod_summary <- summary(r_max_mod)
 
 # R2 of r_max_mod
-performance::r2(r_max_mod)
+r_max_r2 <- performance::r2(r_max_mod)
 
 ## plot it
 predictions <- ggpredict(r_max_mod, terms = c("inv_temp_boltzmann_scaled [all]", "model"))
 
 # 2. Plot using your preferred styling
-(plot <- ggplot(predictions, aes(x = x, y = predicted, group = group, color = group)) +
+(rmax_plot <- ggplot(predictions, aes(x = x, y = predicted, group = group, color = group)) +
   # Confidence Interval Ribbons
   geom_ribbon(aes(ymin = conf.low, ymax = conf.high, fill = group), 
               alpha = 0.2, color = NA) +
@@ -751,8 +625,12 @@ predictions <- ggpredict(r_max_mod, terms = c("inv_temp_boltzmann_scaled [all]",
     plot.margin = unit(c(1,1,1,1), units = "cm")
   ))
 
+# ggsave as pdf
+ggsave("../results/rmax_thermal_performance_plot.pdf", rmax_plot, width = 6, height = 4)
+
 # ======================================================================
 # Latex
+# ======================================================================
 
 # Extract fixed effects for LaTeX table
 fixed_effects <- summary(r_max_mod)$coefficients
@@ -829,6 +707,7 @@ cat("\\end{table}\n")
 
 
 # endregion
+
 # ====================================================================
 # region - Appendix I: plotting best/worst fits by R²
 # ====================================================================
@@ -942,33 +821,20 @@ plot_fits <- function(fit_list, data, n = 15, top = TRUE,
 # ============================================================
 
 # Worst Buchanan fits, with Baranyi overlaid for comparison
-plot_fits(buchanan_fits_3000, data_clean, n = 15, top = FALSE,
-          compare_fit = baranyi_fits)
+#plot_fits(buchanan_fits_3000, data_clean, n = 15, top = FALSE,
+#          compare_fit = baranyi_fits)
+
 
 # Export version
-plot_fits(buchanan_fits_3000, data_clean, n = 15, top = FALSE,
-          export_dir  = "../results/buchanan_worst",
-          compare_fit = baranyi_fits_3000)
-#
+#plot_fits(buchanan_fits_3000, data_clean, n = 15, top = TRUE,
+#          export_dir  = "../results/buchanan_best",
+#          compare_fit = baranyi_fits_3000)
 
-plot_fits(baranyi_fits_3000, data_clean, n = 50, top = FALSE,
-          export_dir  = "../results/baranyi_worst",
-          compare_fit = buchanan_fits_3000)
-
-# Export version
-plot_fits(buchanan_fits_3000, data_clean, n = 15, top = TRUE,
-          export_dir  = "../results/buchanan_best",
-          compare_fit = baranyi_fits_3000)
-#
-
-
-plot_fits(baranyi_fits_3000, data_clean, n = 50, top = TRUE,
-          export_dir  = "../results/baranyi_best",
-          compare_fit = buchanan_fits_3000)
 
 
 
 # endregion
+
 # ===========================================================
 # region - Appendix II: plot by weight category
 # ============================================================
@@ -1070,48 +936,13 @@ plot_by_weight <- function(weights, target_model, fit_lists, data,
 #============================================================
 
 
-# new plot by weight
-plot_by_weight(weights_2, target_model = "buchanan_niter3000_maxiter500",
-               fit_lists = list(buchanan = buchanan_fits_niter3000_maxiter500, baranyi = baranyi_fits_niter3000_maxiter500_conv_100, linear = linear_fits),
-               data = data_clean,
-               threshold = 0.95,
-               weight_col = "weight_AICc",
-               export_dir = "../results/buchanan_weighted")
-
-
-plot_by_weight(weights_2, target_model = "baranyi_niter3000_maxiter500_conv_100",
-               fit_lists = list(buchanan = buchanan_fits_niter3000_maxiter500, baranyi = baranyi_fits_niter3000_maxiter500_conv_100, linear = linear_fits),
-               data = data_clean,
-               threshold = 0.99,
-               weight_col = "weight_AICc",
-               export_dir = "../results/baranyi_weighted")
-
-plot_by_weight(weights_2, target_model = "linear_model",  # Changed from "linear_fits"
-               fit_lists = list(buchanan = buchanan_fits_niter3000_maxiter500, 
-                                baranyi = baranyi_fits_niter3000_maxiter500_conv_100, 
-                                linear = linear_fits),
-               data = data_clean,
-               threshold = 0.99,
-               weight_col = "weight_AICc",
-               export_dir = "../results/linear_weighted")
-
-
-# plot by weight for buchanan vs baranyi only using weights_smaller_categories_3
-plot_by_weight(weights_smaller_categories_3, target_model = "buchanan_niter3000_maxiter500",
-               fit_lists = list(buchanan = buchanan_fits_niter3000_maxiter500, baranyi = baranyi_fits_niter3000_maxiter500_conv_100),
-               data = data_clean,
-               threshold = 0.95,
-               weight_col = "weight_AICc",
-               export_dir = "../results/buchanan_weighted_vs_baranyi")
-
-
-plot_by_weight(weights_smaller_categories_3, target_model = "baranyi_niter3000_maxiter500_conv_100",
-               fit_lists = list(buchanan = buchanan_fits_niter3000_maxiter500, baranyi = baranyi_fits_niter3000_maxiter500_conv_100),
-               data = data_clean,
-               threshold = 0.99,
-               weight_col = "weight_AICc",
-               export_dir = "../results/buchanan_weighted_vs_baranyi_baranyi_win")
-
+# sample
+# plot_by_weight(weights, target_model = "buchanan_fits",
+#               fit_lists = list(buchanan = buchanan_fits, baranyi = baranyi_fits, linear = linear_fits),
+#               data = data_clean,
+#               threshold = 0.95,
+#               weight_col = "weight_AICc",
+#               export_dir = "../results/buchanan_weighted")
 
 
 # endregion
@@ -1137,8 +968,8 @@ temp_sd      <- round(sd(data_clean$temp, na.rm = TRUE), 2)
 mean_temp    <- round(mean(data_clean$temp, na.rm = TRUE), 2)
 
 # --- Convergence counts (using your best fits) ---
-n_buchanan <- sum(sapply(buchanan_fits_niter3000_maxiter500, function(x) !is.null(x$fit)))
-n_baranyi  <- sum(sapply(baranyi_fits_niter3000_maxiter500_conv_100,  function(x) !is.null(x$fit)))
+n_buchanan <- sum(sapply(buchanan_fits, function(x) !is.null(x$fit)))
+n_baranyi  <- sum(sapply(baranyi_fits,  function(x) !is.null(x$fit)))
 
 cat(sprintf(
 "I attempted to fit %d growth curves across %d time points, covering %d species/strains, %d mediums, and %d citations. %d different temperature values were recorded, ranging from %.1f to %.1f °C, with an average of %.2f °C (SD = %.2f °C). The Buchanan model converged %d times and the Baranyi converged %d times.\n",
@@ -1165,240 +996,6 @@ data_clean %>%
   summarise(n_ids = n_distinct(id_num))
 
 
-# endregion
-
-# ===========================================================
-# region - Appendix IV: run polynomial fits
-# ===========================================================
-
-
-# Code for linear models
-run_linear_models <- function(data, model_fn, model_name, group_var = "id_num") {
-  
-  # Infer polynomial degree from number of parameters (excluding t)
-  degree <- length(formals(model_fn)) - 1
-  
-  groups  <- unique(data[[group_var]])
-  results <- lapply(groups, function(g) {
-    group_data <- data[data[[group_var]] == g, ]
-    fit_data   <- data.frame(t = group_data$time, y = group_data$log10_popbio)
-    fit <- tryCatch(
-      lm(y ~ poly(t, degree, raw = TRUE), data = fit_data),
-      error = function(e) {
-        message(sprintf("[%s | group %s] failed: %s", model_name, g, e$message))
-        NULL
-      }
-    )
-    list(fit = fit, group = g, model = model_name)
-  })
-  names(results) <- as.character(groups)
-  results
-}
-
-# endregion
-
-# ===========================================================
-# region - Appendix V: run simple linear fits
-# ===========================================================
-
-# --- Baranyi model ---
-
-# =============================================================
-# region - Appendix VI: temperature - coefficient relationships
-# =============================================================
-
-# ============================================================
-# FUNCTION: extract_coefficients
-#
-# Extract all coefficients from fitted models along with temperature
-# and metadata information
-#
-# Arguments:
-#   fit_list  - list of model fits
-#   data      - data_clean
-#   group_var - grouping column (default "id_num")
-#
-# Returns:
-#   data.frame with all coefficients and metadata
-# ============================================================
-extract_coefficients <- function(fit_list, data, group_var = "id_num") {
-  
-  # First pass: collect all unique coefficient names across all fits
-  all_param_names <- unique(unlist(lapply(fit_list, function(x) {
-    if (is.null(x$fit)) return(NULL)
-    coefs <- tryCatch(coef(x$fit), error = function(e) NULL)
-    if (is.null(coefs)) return(NULL)
-    names(coefs)
-  })))
-  
-  # Second pass: extract data with consistent columns
-  do.call(rbind, lapply(fit_list, function(x) {
-    if (is.null(x$fit)) return(NULL)
-    
-    # Get all coefficients
-    coefs <- tryCatch(coef(x$fit), error = function(e) NULL)
-    if (is.null(coefs)) return(NULL)
-    
-    # Extract metadata
-    g <- data[data[[group_var]] == x$group, ]
-    
-    # Build base data frame
-    result <- data.frame(
-      group      = x$group,
-      model      = x$model,
-      temp_C     = unique(g$temp),
-      temp_K     = unique(g$temp + 273.15),
-      inv_temp_K = 1 / unique(g$temp + 273.15),
-      inv_temp_boltzmann = 1 / (8.617e-5 * unique(g$temp + 273.15)),
-      species    = unique(g$species),
-      medium     = unique(g$medium),
-      citation   = unique(g$citation),
-      id_no_temp = unique(g$id_num_no_temp),
-      stringsAsFactors = FALSE
-    )
-    
-    # Add all coefficients with consistent columns (fill missing with NA)
-    for (param_name in all_param_names) {
-      if (param_name %in% names(coefs)) {
-        result[[param_name]] <- coefs[[param_name]]
-        # Also add log-transformed version if positive
-        if (is.finite(coefs[[param_name]]) && coefs[[param_name]] > 0) {
-          result[[paste0("ln_", param_name)]] <- log(coefs[[param_name]])
-        } else {
-          result[[paste0("ln_", param_name)]] <- NA
-        }
-      } else {
-        # Parameter doesn't exist for this model
-        result[[param_name]] <- NA
-        result[[paste0("ln_", param_name)]] <- NA
-      }
-    }
-    
-    result
-  }))
-}
-
-# ============================================================
-# FUNCTION: plot_coefficient_temperature
-#
-# Plots the relationship between temperature and model coefficients
-# Faceted by model type (Buchanan vs Baranyi)
-#
-# Arguments:
-#   coef_data   - output from extract_coefficients()
-#   coefficient - name of coefficient to plot (e.g., "r_max", "N_0", "N_max", "t_lag")
-#   log_scale   - whether to use log-transformed coefficient (default TRUE)
-#   export_dir  - directory to save plots (default "../results")
-#   width       - plot width (default 10)
-#   height      - plot height (default 6)
-# ============================================================
-plot_coefficient_temperature <- function(coef_data, 
-                                         coefficient = "r_max",
-                                         log_scale = TRUE,
-                                         export_dir = "../results",
-                                         width = 10,
-                                         height = 6) {
-  
-  # Determine y variable
-  y_var <- if (log_scale) paste0("ln_", coefficient) else coefficient
-  
-  # Check if variable exists
-  if (!y_var %in% names(coef_data)) {
-    stop(sprintf("Variable '%s' not found in data", y_var))
-  }
-  
-  # Filter out non-finite values
-  plot_data <- coef_data %>%
-    filter(is.finite(.data[[y_var]]))
-  
-  if (nrow(plot_data) == 0) {
-    warning(sprintf("No finite values for %s", y_var))
-    return(invisible(NULL))
-  }
-  
-  # Create plot
-  p <- ggplot(plot_data, aes(x = temp_C, y = .data[[y_var]], color = species)) +
-    geom_point(alpha = 0.6, size = 2) +
-    geom_smooth(method = "lm", se = TRUE, color = "black", linewidth = 0.8) +
-    facet_wrap(~ model, scales = "free_y") +
-    labs(
-      x = "Temperature (°C)",
-      y = if (log_scale) paste0("ln(", coefficient, ")") else coefficient,
-      title = sprintf("Temperature Effect on %s", coefficient),
-      color = "Species"
-    ) +
-    theme_bw() +
-    theme(
-      legend.position = "bottom",
-      legend.text = element_text(size = 8)
-    )
-  
-  # Save plot
-  filename <- file.path(
-    export_dir, 
-    sprintf("temp_vs_%s%s.pdf", 
-            coefficient, 
-            if (log_scale) "_log" else "")
-  )
-  
-  ggsave(filename, plot = p, width = width, height = height)
-  message(sprintf("Saved: %s", filename))
-  
-  invisible(p)
-}
-
-# ============================================================
-# FUNCTION: plot_all_coefficients
-#
-# Convenience wrapper to plot all coefficients vs temperature
-# ============================================================
-plot_all_coefficients <- function(coef_data, 
-                                  coefficients = c("r_max", "N_0", "N_max", "t_lag"),
-                                  export_dir = "../results",
-                                  width = 10,
-                                  height = 6) {
-  
-  for (coef in coefficients) {
-    # Check if coefficient exists in data
-    if (coef %in% names(coef_data)) {
-      plot_coefficient_temperature(
-        coef_data   = coef_data,
-        coefficient = coef,
-        log_scale   = TRUE,
-        export_dir  = export_dir,
-        width       = width,
-        height      = height
-      )
-    } else {
-      message(sprintf("Coefficient '%s' not found in data, skipping...", coef))
-    }
-  }
-  
-  invisible(NULL)
-}
-
-# --- Example usage (commented out) ---
-# Extract coefficients from both models
-coef_data_buchanan <- extract_coefficients(buchanan_fits_niter3000_maxiter500, data_clean)
- coef_data_baranyi  <- extract_coefficients(baranyi_fits_niter3000_maxiter500_conv_100, data_clean)
-
-# Combine into single dataframe
-coef_data_all <- bind_rows(coef_data_buchanan, coef_data_baranyi)
-
-# Plot all coefficients
-plot_all_coefficients(coef_data_all)
-# 
-# # Or plot individual coefficients
-# plot_coefficient_temperature(coef_data_all, coefficient = "r_max")
-# plot_coefficient_temperature(coef_data_all, coefficient = "N_0")
-# plot_coefficient_temperature(coef_data_all, coefficient = "N_max")
-# plot_coefficient_temperature(coef_data_all, coefficient = "t_lag")
-
-# endregion
-
-
-# check the data clean
-summary(as.factor(data_clean$medium))
 
 # how many unique IDs per medium:
 data_clean %>%
@@ -1550,61 +1147,20 @@ plot_sample_size_boxplot <- function(sample_size_data,
   invisible(p)
 }
 
-# ============================================================
-# Example usage
-# ============================================================
-
-# Analyze sample sizes for models with weight >= 0.9
-sample_size_analysis <- analyze_sample_sizes(
-  weights    = weights_2,
-  data       = data_clean,
-  threshold  = 0.9,
-  weight_col = "weight_AICc"
-)
-
-# View summary
-sample_size_analysis %>%
-  group_by(model) %>%
-  summarise(
-    n_curves = n(),
-    mean_n = mean(n_points),
-    median_n = median(n_points),
-    sd_n = sd(n_points),
-    .groups = "drop"
-  )
-
-# Create density plot
-plot_sample_size_density(sample_size_analysis)
-
-# Create boxplot
-plot_sample_size_boxplot(sample_size_analysis)
-
-
-
-sample_size_analysis_smaller <- analyze_sample_sizes(
-  weights    = weights_smaller_categories_3,
-  data       = data_clean,
-  threshold  = 0.9,
-  weight_col = "weight_AICc"
-)
-
-# View summary
-sample_size_analysis_smaller %>%
-  group_by(model) %>%
-  summarise(
-    n_curves = n(),
-    mean_n = mean(n_points),
-    median_n = median(n_points),
-    sd_n = sd(n_points),
-    .groups = "drop"
-  )
-
-# Create density plot
-plot_sample_size_density(sample_size_analysis_smaller)
-
-# Create boxplot
-plot_sample_size_boxplot(sample_size_analysis_smaller)
-
-
 
 # endregion
+
+
+# ===========================================================
+# region - Appendix VIII: bibtex citation summary
+# ===========================================================
+# Get citations for all loaded packages
+packages <- c("ggplot2", "ggeffects", "tidyverse", "minpack.lm", 
+              "nls.multstart", "AICcmodavg", "zoo", "nlstools", 
+              "lme4", "lmerTest", "performance", "see")
+
+# Extract BibTeX entries
+for (pkg in packages) {
+  cat("\n\n\n")
+  print(toBibtex(citation(pkg)))
+}
