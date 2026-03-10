@@ -144,7 +144,7 @@ question_2 <- function(){
       plot.margin = unit(c(1, 1, 1, 1), units = "cm"),                 # Adding a 1cm margin around the plot
       legend.text = element_text(size = 12, face = "italic"),         # Setting the font for the legend text
       legend.title = element_blank(),                                 # Removing the legend title
-      legend.position = c(0.2, 0.9))                                 #
+      legend.position = "bottom")                                 #
 
 
   png(filename="question_2.png", width = 600, height = 400)
@@ -425,7 +425,7 @@ neutral_time_series <- function(community, duration) {
 }
 
 # Question 14
-question_8 <- function() {
+question_14 <- function() {
   
   community <- init_community_max(100)
 
@@ -658,7 +658,7 @@ question_22 <- function() {
   )
 
 # Plot the results as a bar graph for both octaves
-  (octave_plot <- ggplot(df, aes(x = octave, y = mean_species_abundance, fill = initialization)) +
+  (octave_plot <- ggplot(df, aes(x = octave, y = mean_species_abundance)) +
       geom_bar(stat = "identity") +
       facet_wrap(~ initialization, ncol = 2) +
       labs(title = "Species Abundance Distribution\n",
@@ -830,7 +830,6 @@ plot_neutral_cluster_results <- function(){
 # Challenge questions - these are substantially harder and worth fewer marks.
 # I suggest you only attempt these if you've done all the main questions. 
 
-# Challenge question A
 # Challenge question A - Part 1: Data computation and saving
 Challenge_A_compute <- function(){
   # Pre allocate the data frame for better performance
