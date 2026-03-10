@@ -1,25 +1,38 @@
-
 # preamble
 
 
+# ====================================================================
+# region - Load libraries and data
+# ====================================================================
 
-# ====================================================================
-# load libraries and data
-# ====================================================================
 
 require("ggplot2")
+require("ggeffects")
 require("tidyverse")
 require("minpack.lm")
 require("nls.multstart")
 require("AICcmodavg")
 require("zoo")
+require("nlstools")
+require("lme4")
+require("lmerTest")
+require("performance")
+
+
 
 # load the data
 data_clean <- read.csv("../results/data_clean.csv", header = TRUE)
 
+
+# endregion
 # ====================================================================
-# Define growth model functions
+# region - Define growth model functions
 # ====================================================================
+
+# create a linear model
+linear_model <- function(t, a, b){
+  a*t + b
+}
 
 # cubic polynomial model
 cubic_model <- function(t, a, b, c, d){
@@ -33,7 +46,7 @@ logistic_model <- function(t, r_max, N_max, N_0){
 # logistic log 10
 logistic_model_log10 <- function(t, r_max, N_max, N_0){
   n0   <- 10^N_0
-  nmax <- 10^N_max
+  nmax <- 10^N_Max
   log10(n0 * nmax * exp(r_max * t) / (nmax + n0 * (exp(r_max * t) - 1)))
 }
 
@@ -52,8 +65,9 @@ buchanan_model <- function(t, r_max, N_max, N_0, t_lag){ # Buchanan model - thre
   return(N_0 + (t >= t_lag) * (t <= (t_lag + (N_max - N_0) * log(10)/r_max)) * r_max * (t - t_lag)/log(10) + (t >= t_lag) * (t > (t_lag + (N_max - N_0) * log(10)/r_max)) * (N_max - N_0))
 }
 
+# endregion
 # ====================================================================
-# step 3: extract the parameters
+# region - step 3: extract the parameters
 # ====================================================================
 
 # Helper: fit a linear model to a rolling window and return slope and intercept
@@ -67,6 +81,28 @@ roll_regress <- function(x) {
     rsq       = summary(mod)$r.squared,
     stringsAsFactors = FALSE
   )
+}
+
+# more efficient function- replace lm() with direct calc
+roll_regress <- function(x) {
+  t <- x[, "t"]
+  N <- x[, "N"]
+  n <- length(t)
+
+  t_mean <- mean(t)
+  N_mean <- mean(N)
+  
+  ss_tt <- sum((t - t_mean)^2)
+  ss_Nt <- sum((N - N_mean) * (t - t_mean))
+
+  slope     <- if (ss_tt == 0) 0 else ss_Nt / ss_tt
+  intercept <- N_mean - slope * t_mean
+  
+  ss_res <- sum((N - (intercept + slope * t))^2)
+  ss_tot <- sum((N - N_mean)^2)
+  rsq    <- if (ss_tot == 0) 0 else 1 - ss_res / ss_tot
+
+  data.frame(slope = slope, intercept = intercept, rsq = rsq)
 }
 
 get_start_params <- function(group_data, num_points = 4) {
@@ -130,11 +166,50 @@ get_start_params <- function(group_data, num_points = 4) {
   )
 }
 
-# ====================================================================
-# step 4: Run the growth models on multistart with NLSLM
-# ====================================================================
 
-# NEED TO TEST OUT VARIATIONS OF MAX_ITER, started at 1500 cause thats what worked best before though
+get_start_params_simple <- function(group_data, log_scale = TRUE) {
+  # Use log10 population if model is in log space (Gompertz, Baranyi, Buchanan)
+  # Use raw popbio if model is in linear space (Logistic, Cubic)
+  
+  if (log_scale) {
+    N    <- group_data$log10_popbio
+    t    <- group_data$time
+  } else {
+    N    <- group_data$popbio
+    t    <- group_data$time
+  }
+  
+  # Sort by time to ensure diff() is meaningful
+  ord  <- order(t)
+  N    <- N[ord]
+  t    <- t[ord]
+  
+  N_0_start   <- min(N, na.rm = TRUE)
+  N_max_start <- max(N, na.rm = TRUE)
+  
+  # t_lag: time at maximum curvature (inflection of first derivative)
+  # Guard against edge cases where diff is length < 2
+  dN   <- diff(N)
+  ddN  <- diff(dN)
+  t_lag_start <- if (length(ddN) >= 1) t[which.max(ddN)] else t[1]
+  
+  # r_max: max instantaneous rate (per unit time)
+  dt        <- diff(t)
+  dt[dt == 0] <- NA                          # avoid division by zero
+  r_max_start <- max(dN / dt, na.rm = TRUE)
+  
+  list(
+    N_0    = N_0_start,
+    N_max  = N_max_start,
+    t_lag  = t_lag_start,
+    r_max  = r_max_start
+  )
+}
+
+# endregion
+# ====================================================================
+# region - Step 4: Run the growth models on multistart with NLSLM 
+# ====================================================================
 
 run_growth_models_multistart <- function(data,
                                          model_fn,
@@ -142,7 +217,12 @@ run_growth_models_multistart <- function(data,
                                          group_var  = "id_num",
                                          n_iter     = 1500,
                                          conv_count = 100,
-                                         max_iter   = 1500) {
+                                         max_iter   = 1500,
+                                         N0_upper = 2,
+                                         Nmax_upper = 2,
+                                         tlag_upper = 20,
+                                         r_max_upper = 50
+                                         ) {
   groups <- unique(data[[group_var]])
   results <- lapply(groups, function(g) {
     group_data <- data[data[[group_var]] == g, ]
@@ -152,16 +232,16 @@ run_growth_models_multistart <- function(data,
     start_list <- starts[params]
 
     start_upper_all <- list(
-      N_0   = start_list$N_0   + 2,
-      N_max = start_list$N_max + 2,
-      t_lag = max(20, start_list$t_lag * 20),
-      r_max = max(10, start_list$r_max * 50)
+      N_0   = start_list$N_0   + N0_upper,
+      N_max = start_list$N_max + Nmax_upper,
+      t_lag = start_list$t_lag * tlag_upper,
+      r_max = start_list$r_max * r_max_upper
     )
     start_lower_all <- list(
-      N_0   = start_list$N_0   - 2,
-      N_max = start_list$N_0,
-      r_max = 0,
-      t_lag = 0
+      N_0   =  0, 
+      N_max =  start_list$N_0,
+      r_max = 0,    
+      t_lag = 0     
     )
 
     start_upper <- start_upper_all[params]
@@ -189,18 +269,15 @@ run_growth_models_multistart <- function(data,
   results
 }
 
-# Code for linear models
-run_linear_models <- function(data, model_fn, model_name, group_var = "id_num") {
-  
-  # Infer polynomial degree from number of parameters (excluding t)
-  degree <- length(formals(model_fn)) - 1
+# Code for simple linear models (y = a + bx)
+run_simple_linear_models <- function(data, model_name, group_var = "id_num") {
   
   groups  <- unique(data[[group_var]])
   results <- lapply(groups, function(g) {
     group_data <- data[data[[group_var]] == g, ]
     fit_data   <- data.frame(t = group_data$time, y = group_data$log10_popbio)
     fit <- tryCatch(
-      lm(y ~ poly(t, degree, raw = TRUE), data = fit_data),
+      lm(y ~ t, data = fit_data),
       error = function(e) {
         message(sprintf("[%s | group %s] failed: %s", model_name, g, e$message))
         NULL
@@ -211,255 +288,65 @@ run_linear_models <- function(data, model_fn, model_name, group_var = "id_num") 
   names(results) <- as.character(groups)
   results
 }
+# endregion
 # ====================================================================
-# step 4.5: run some models (to delete later)
-# ====================================================================
 
-gompertz_fits <- run_growth_models_multistart(
-  data       = data_clean,
-  model_fn   = gompertz_model,
-  model_name = "gompertz_multistart",
-  group_var  = "id_num"
-)
-# run logistic model with log10 transformation
-logistic_log10_fits <- run_growth_models_multistart(
-  data       = data_clean,
-  model_fn   = logistic_model_log10,
-  model_name = "logistic_log10_multistart",
-  group_var  = "id_num"
-)
-
-# run baranyi model
-baranyi_fits <- run_growth_models_multistart(
-  data       = data_clean,
-  model_fn   = baranyi_model,
-  model_name = "baranyi_multistart",
-  group_var  = "id_num"
-)
-# run buchanan model
-buchanan_fits <- run_growth_models_multistart(
-  data       = data_clean,
-  model_fn   = buchanan_model,
-  model_name = "buchanan_multistart",
-  group_var  = "id_num"
-)
-
-# say the amount of convergences for each model
-cat("Gompertz converged for", sum(sapply(gompertz_fits, function(x) !is.null(x$fit))), "out of", length(gompertz_fits), "groups.\n")
-cat("Logistic (log10) converged for", sum(sapply(logistic_log10_fits, function(x) !is.null(x$fit))), "out of", length(logistic_log10_fits), "groups.\n")
-cat("Baranyi converged for", sum(sapply(baranyi_fits, function(x) !is.null(x$fit))), "out of", length(baranyi_fits), "groups.\n")
-cat("Buchanan converged for", sum(sapply(buchanan_fits, function(x) !is.null(x$fit))), "out of", length(buchanan_fits), "groups.\n")
-
-
-# svae all models as model_fit_default_parameters
-model_fit_default_parameters <- list(
-  gompertz_multistart = gompertz_fits,
-  logistic_log10_multistart = logistic_log10_fits,
-  baranyi_multistart = baranyi_fits,
-  buchanan_multistart = buchanan_fits
-)
-
-# THESE VALUE ARE MUCH BETTER THAN THE DEFAULT ONES- HIGHER CONVERGENCE RATE FOR BUCHAN
-# now rerun the model with lower max iterations and convergence count to see if it makes a difference
-gompertz_fits_low_iter <- run_growth_models_multistart(
-  data       = data_clean,
-  model_fn   = gompertz_model,
-  model_name = "gompertz_multistart_low_iter",
-  group_var  = "id_num",
-  n_iter     = 5000,
-  conv_count = 100,
-  max_iter   = 1000
-)
-logistic_log10_fits_low_iter <- run_growth_models_multistart(
-  data       = data_clean,
-  model_fn   = logistic_model_log10,
-  model_name = "logistic_log10_multistart_low_iter",
-  group_var  = "id_num",
-  n_iter     = 5000,
-  conv_count = 100,
-  max_iter   = 1000
-)
-baranyi_fits_low_iter <- run_growth_models_multistart(
-  data       = data_clean,
-  model_fn   = baranyi_model,
-  model_name = "baranyi_multistart_low_iter",
-  group_var  = "id_num",
-  n_iter     = 5000,
-  conv_count = 100,
-  max_iter   = 1000
-)
-buchanan_fits_low_iter <- run_growth_models_multistart(
-  data       = data_clean,
-  model_fn   = buchanan_model,
-  model_name = "buchanan_multistart_low_iter",
-  group_var  = "id_num",
-  n_iter     = 5000,
-  conv_count = 100,
-  max_iter   = 1000
-)
-
-# say the amount of convergences for each model
-cat("Gompertz (low iter) converged for", sum(sapply(gompertz_fits_low_iter, function(x) !is.null(x$fit))), "out of", length(gompertz_fits_low_iter), "groups.\n")
-cat("Logistic (log10, low iter) converged for", sum(sapply(logistic_log10_fits_low_iter, function(x) !is.null(x$fit))), "out of", length(logistic_log10_fits_low_iter), "groups.\n")
-cat("Baranyi (low iter) converged for", sum(sapply(baranyi_fits_low_iter, function(x) !is.null(x$fit))), "out of", length(baranyi_fits_low_iter), "groups.\n")
-cat("Buchanan (low iter) converged for", sum(sapply(buchanan_fits_low_iter, function(x) !is.null(x$fit))), "out of", length(buchanan_fits_low_iter), "groups.\n")
-
-
-
-
-# RUn the same models again- but include time bechnmarking to see if it makes a difference
-logistic_time <- system.time(
-  logistic_log10_fits_500 <- run_growth_models_multistart(
-    data       = data_clean,
-    model_fn   = logistic_model_log10,
-    model_name = "logistic_log10_multistart_500",
-    group_var  = "id_num",
-    n_iter     = 5000,
-    conv_count = 100,
-    max_iter   = 500
-  )
-)
-
-buchanan_time <- system.time(
-  buchanan_fits_500 <- run_growth_models_multistart(
-    data       = data_clean,
-    model_fn   = buchanan_model,
-    model_name = "buchanan_multistart_500",
-    group_var  = "id_num",
-    n_iter     = 5000,
-    conv_count = 100,
-    max_iter   = 500
-  )
-)
-
-cat(sprintf("Logistic (500 max_iter): %.1f seconds | %d/%d converged\n",
-            logistic_time["elapsed"],
-            sum(sapply(logistic_log10_fits_500, function(x) !is.null(x$fit))),
-            length(logistic_log10_fits_500)))
-
-cat(sprintf("Buchanan (500 max_iter): %.1f seconds | %d/%d converged\n",
-            buchanan_time["elapsed"],
-            sum(sapply(buchanan_fits_500, function(x) !is.null(x$fit))),
-            length(buchanan_fits_500)))
-
-# compare 500 vs 1000 max_iter fits
-model_comparison_500_vs_1000 <- compare_models_basic(logistic_log10_fits_500, logistic_log10_fits_low_iter)
-print(model_comparison_500_vs_1000$summary)
-
-model_comparison_buchanan_500_vs_1000 <- compare_models_basic(buchanan_fits_500, buchanan_fits_low_iter)
-print(model_comparison_buchanan_500_vs_1000$summary)
-
-
-
-# compare buchana and baranyi with 1000 max_iter
-model_comparison_buchanan_vs_baranyi <- compare_models_basic(buchanan_fits_low_iter, baranyi_fits_low_iter)
-print(model_comparison_buchanan_vs_baranyi$summary)
-
-weights_buchanan_baranyi <- compute_akaike_weights(buchanan_fits_low_iter, baranyi_fits_low_iter)
-summary_weights_buchanan_baranyi <- summarise_weights(weights_buchanan_baranyi)
-print(summary_weights_buchanan_baranyi)
-
-# compare sample size of of growth curves for when buchanan wins vs baranyi wins
-buchanan_wins <- model_comparison_buchanan_vs_baranyi$per_group %>%
-  filter(winner_AICc == "buchanan_multistart_low_iter") %>%
-  pull(group)
-
-baranyi_wins <- model_comparison_buchanan_vs_baranyi$per_group %>%
-  filter(winner_AICc == "baranyi_multistart_low_iter") %>%
-  pull(group)
-
-# count number of unique groups in each category
-cat("Buchanan wins for", length(unique(buchanan_wins)), "groups.\n")
-cat("Baranyi wins for", length(unique(baranyi_wins)), "groups.\n")
-
-# summary statistics for the number of time points in each group winner with 
-data_clean %>%
-  group_by(id_num) %>%
-  summarise(n_time_points = n()) %>%
-  mutate(winner = case_when(
-    id_num %in% buchanan_wins ~ "Buchanan",
-    id_num %in% baranyi_wins ~ "Baranyi",
-    TRUE ~ "Neither"
-  )) %>%
-  group_by(winner) %>%
-  summarise(mean_time_points = mean(n_time_points),
-            sd_time_points = sd(n_time_points),
-            .groups = "drop")
-
-
-#buchanan iter vs time
-buchanan_time_N_iter_1500 <- system.time(
-  buchanan_fits_1500 <- run_growth_models_multistart(
-    data       = data_clean,
-    model_fn   = buchanan_model,
-    model_name = "buchanan_multistart_500",
-    group_var  = "id_num",
-    n_iter     = 2500,
-    conv_count = 100,
-    max_iter   = 1000
-  )
-)
-
-cat(sprintf("Buchanan (500 max_iter): %.1f seconds | %d/%d converged\n",
-            buchanan_time_N_iter_1500["elapsed"],
-            sum(sapply(buchanan_fits_1500, function(x) !is.null(x$fit))),
-            length(buchanan_fits_1500)))
-
-
-
-# test 3
-buchanan_time_N_iter_3000 <- system.time(
-  buchanan_fits_3000 <- run_growth_models_multistart(
-    data       = data_clean,
-    model_fn   = buchanan_model,
-    model_name = "buchanan_multistart_3000_max_iter_500_",
-    group_var  = "id_num",
-    n_iter     = 3000,
-    conv_count = 100,
-    max_iter   = 500
-  )
-)
-
-
-cat(sprintf("Buchanan (500 max_iterz, 3000 iterations): %.1f seconds | %d/%d converged\n",
-            buchanan_time_N_iter_3000["elapsed"],
-            sum(sapply(buchanan_fits_3000, function(x) !is.null(x$fit))),
-            length(buchanan_fits_3000)))
-
-buchanan_time_N_iter_3000_400 <- system.time(
-  buchanan_fits_3000_400 <- run_growth_models_multistart(
-    data       = data_clean,
-    model_fn   = buchanan_model,
-    model_name = "buchanan_multistart_3000_max_iter_400_",
-    group_var  = "id_num",
-    n_iter     = 3000,
-    conv_count = 100,
-    max_iter   = 400
-  )
-)
-
-
-cat(sprintf("Buchanan (400 max_iter, 3000 iterations): %.1f seconds | %d/%d converged\n",
-            buchanan_time_N_iter_3000_400["elapsed"],
-            sum(sapply(buchanan_fits_3000_400, function(x) !is.null(x$fit))),
-            length(buchanan_fits_3000_400)))
-
-
-# this is the best one
-# going from 3000 to 5 000 iterations only increased convergence by 1 group, but increased time by 100 seconds
-
-
-# compare buchana with 3000 iterations vs 5000 iterations
-comparison_buchanan_3000_vs_5000 <- compare_models_basic(buchanan_fits_3000, buchanan_fits_500)
-print(comparison_buchanan_3000_vs_5000$summary)
 
 
 # ====================================================================
-# step 5: Run model diagnostic
+# region - Step 5: Run model diagnostic
 # ====================================================================
 
+diagnose_fits <- function(fit_list) {
+  
+  do.call(rbind, lapply(fit_list, function(x) {
+    
+    if (is.null(x$fit)) return(NULL)
+    
+    tryCatch({
+      
+      resid_obj <- nlsResiduals(x$fit)
+      tests     <- test.nlsResiduals(resid_obj)
+      
+      p_shapiro <- tests$p.value[1]
+      p_runs    <- tests$p.value[2]
+      
+      n_obs <- length(residuals(x$fit))
+      n_par <- length(coef(x$fit))
+      
+      data.frame(
+        group        = x$group,
+        model        = x$model,
+        n_obs        = n_obs,
+        df           = n_obs - n_par,       # residual degrees of freedom
+        p_shapiro    = p_shapiro,
+        p_runs       = p_runs,
+        pass_shapiro = p_shapiro > 0.05,
+        pass_runs    = p_runs    > 0.05,
+        pass_both    = p_shapiro > 0.05 & p_runs > 0.05
+      )
+      
+    }, error = function(e) NULL)
+  }))
+}
+
+# ============================================================
+# FUNCTION: summarise_diagnostics
+# ============================================================
+summarise_diagnostics <- function(diag_df) {
+  cat(sprintf("\nDiagnostics for model: %s\n", unique(diag_df$model)))
+  cat(sprintf("  Total fits assessed : %d\n",  nrow(diag_df)))
+  cat(sprintf("  Median n_obs        : %d\n",  median(diag_df$n_obs)))
+  cat(sprintf("  Median df           : %d\n",  median(diag_df$df)))
+  cat(sprintf("  Pass Shapiro-Wilk   : %d/%d\n", sum(diag_df$pass_shapiro), nrow(diag_df)))
+  cat(sprintf("  Pass runs test      : %d/%d\n", sum(diag_df$pass_runs),    nrow(diag_df)))
+  cat(sprintf("  Pass both tests     : %d/%d\n", sum(diag_df$pass_both),    nrow(diag_df)))
+}
+
+
+# endregion
 # ====================================================================
-# step 6: Run model evaluation
+# region - Step 6: Run model evaluation
 # ====================================================================
 
 # Helper function to collect AIC/AICc/BIC from a list of fit lists
@@ -605,56 +492,1119 @@ summarise_weights <- function(weights) {
   )
 }
 
-
+# endregion
 # ====================================================================
-# step 6.5: evaluate the models
 # ====================================================================
-
-# delta AIC/AICc/BIC and winner tables
-model_comparison <- compare_models_basic(gompertz_fits, logistic_log10_fits, baranyi_fits, buchanan_fits)
-print(model_comparison$summary)
-
-
-# logistic vs buchanan basic comparison
-model_comparison_2 <- compare_models_basic(logistic_log10_fits, buchanan_fits)
-print(model_comparison_2$summary)
-
-# logistic vs Gompertz basic comparison
-model_comparison_3 <- compare_models_basic(logistic_log10_fits, gompertz_fits)
-print(model_comparison_3$summary)
-
-
-# logistic vs buchanan basic comparison
-model_comparison_4 <- compare_models_basic(logistic_log10_fits, baranyi_fits)
-print(model_comparison_4$summary)
-
-# print akaike weights
-weights <- compute_akaike_weights(gompertz_fits, logistic_log10_fits, baranyi_fits, buchanan_fits)
-print(head(weights))
-# summarize the weights into categories
-weight_summary <- summarise_weights(weights)
-print(weight_summary)
-
-
-# evaluate low iter vs high it for logistic
-model_comparison_low_iter <- compare_models_basic(logistic_log10_fits_low_iter, logistic_log10_fits)
-print(model_comparison_low_iter$summary)
-
-logistic_log10_fits_low_iter
-
-
-# now for buchanan
-model_comparison_low_iter_buchanan <- compare_models_basic(buchanan_fits_low_iter, buchanan_fits)
-print(model_comparison_low_iter_buchanan$summary)
-
-# ====================================================================
-# step 7: Evaluate the effect of temperature
+# region - Step 7: Evaluate the effect of temperature
 # ====================================================================
 
+extract_r_max <- function(fit_list, data, group_var = "id_num") {
+  do.call(rbind, lapply(fit_list, function(x) {
+    if (is.null(x$fit)) return(NULL)
+    r <- tryCatch(coef(x$fit)[["r_max"]], error = function(e) NULL)
+    if (is.null(r) || !is.finite(r) || r <= 0) return(NULL)
+    
+    g <- data[data[[group_var]] == x$group, ]
+    data.frame(group      = x$group,
+               model      = x$model,
+               r_max      = r,
+               ln_r_max   = log(r),
+               temp_K       = unique(g$temp+ 273.15),  # convert to Kelvin for Arrhenius
+               inv_temp_K   = 1 / unique(g$temp + 273.15),  # 1/K for Arrhenius
+               inv_temp_boltzmann = 1 / (8.617e-5* unique(g$temp + 273.15)),  # 1/(k_B * K) for Boltzmann-Arrhenius
+               species    = unique(g$species),
+               medium     = unique(g$medium),
+               citation   = unique(g$citation),
+               id_no_temp = unique(g$id_num_no_temp),
+               stringsAsFactors = FALSE)
+  }))
+}
+
+filter_invalid <- function(df, col) {
+  df %>%
+    filter(!is.na(.data[[col]]) & !is.nan(.data[[col]]) & !is.infinite(.data[[col]]))
+}
+
+
+
+extract_coefficients <- function(fit_list, data, group_var = "id_num") {
+  do.call(rbind, lapply(fit_list, function(x) {
+    if (is.null(x$fit)) return(NULL)
+    tryCatch({
+      params <- coef(x$fit)
+      r      <- params[["r_max"]]
+      t_lag  <- params[["t_lag"]]
+      if (!is.finite(r) || r <= 0)        return(NULL)
+      if (!is.finite(t_lag) || t_lag < 0) return(NULL)
+      
+      g <- data[as.character(data[[group_var]]) == as.character(x$group), ]
+      
+      data.frame(
+        group              = x$group,
+        model              = x$model,
+        r_max              = r,
+        ln_r_max           = log(r),
+        t_lag              = t_lag,
+        ln_t_lag           = log(t_lag),
+        temp               = unique(g$temp),
+        temp_K             = unique(g$temp) + 273.15,
+        inv_temp_K         = 1 / (unique(g$temp) + 273.15),
+        inv_temp_boltzmann = 1 / (8.617e-5 * (unique(g$temp) + 273.15)),
+        species            = unique(g$species),
+        medium             = unique(g$medium),
+        citation           = unique(g$citation),
+        id_no_temp         = unique(g$id_num_no_temp),
+        stringsAsFactors   = FALSE
+      )
+    }, error = function(e) NULL)
+  }))
+}
+
+
+
+plot_thermal_performance <- function(r_data, 
+                                     export_dir = "../results",
+                                     width = 12, 
+                                     height = 6,
+                                     name = "thermal_performance_ln_r_max.pdf") {
+    
+  cat(sprintf("r_data: %d rows\n", nrow(r_data)))
+  
+  p <- ggplot(r_data, aes(x = inv_temp_K, y = ln_r_max,
+                          color = factor(id_no_temp))) +
+    geom_point(alpha = 0.7, size = 2) +
+    geom_smooth(method = "lm", se = FALSE, linewidth = 0.8) +
+    facet_wrap(~ model, scales = "free_y") +
+    labs(x = "1 / Temperature (1/K)", 
+         y = "ln(Growth Rate)",
+         title = "Thermal Performance: ln(r_max) vs 1/Temperature") +
+    theme_bw() +
+    theme(legend.position = "none")
+  
+  # Save plot
+  filename <- file.path(export_dir, name)
+  ggsave(filename,
+         plot   = p,
+         width  = width,
+         height = height)
+  message(sprintf("Saved: %s", filename))
+  
+  invisible(NULL)
+}
+
+# endregion
 # ====================================================================
-# step 8: plot any results
+# region - Step 8: Create plots
 # ====================================================================
 
+
+# endregion
 # ====================================================================
-# step 9: run the main() function
+# region - Step 9: Run the main() function
 # ====================================================================
+
+set.seed(123)  # For reproducibility
+
+# run the three functions with timing
+
+# Run the fitting functions
+  baranyi_fits_niter3000_maxiter500_conv_100 <- run_growth_models_multistart(
+    data       = data_clean,
+    model_fn   = baranyi_model,
+    model_name = "baranyi_niter3000_maxiter500_conv_100",
+    group_var  = "id_num",
+    n_iter     = 3000,
+    conv_count = 100,
+    max_iter   = 500
+  )
+# how many converged?
+cat(sprintf("Baranyi (3000 n_iter, 500 max_iter, conv_count= 100): %d/%d converged\n",
+            sum(sapply(baranyi_fits_niter3000_maxiter500_conv_100, function(x) !is.null(x$fit))), length(baranyi_fits_niter3000_maxiter500_conv_100)))
+
+  buchanan_fits_niter3000_maxiter500 <- run_growth_models_multistart(
+    data       = data_clean,
+    model_fn   = buchanan_model,
+    model_name = "buchanan_niter3000_maxiter500",
+    group_var  = "id_num",
+    n_iter     = 3000,
+    conv_count = 100,
+    max_iter   = 500
+  )
+
+cat(sprintf("Buchanan (3000 n_iter, 500 max_iter, conv_count= 100): %d/%d converged\n",
+            sum(sapply(buchanan_fits_niter3000_maxiter500, function(x) !is.null(x$fit))), length(buchanan_fits_niter3000_maxiter500)))
+
+
+# run a cubic model
+#cubic_fits <- run_linear_models(
+#  data       = data_clean,
+#  model_fn   = cubic_model,
+#  model_name = "cubic_model",
+#  group_var  = "id_num"
+#)
+
+# run a linear model (simple: y = a + bx)
+linear_fits <- run_simple_linear_models(
+  data       = data_clean,
+  model_name = "linear_model",
+  group_var  = "id_num"
+)
+
+
+
+
+# coparison of buchanan vs baranyi vs linear
+model_comparison_2 <- compare_models_basic(buchanan_fits_niter3000_maxiter500, baranyi_fits_niter3000_maxiter500_conv_100, linear_fits)
+print(model_comparison_2$summary) %>% # add a total collumn
+  group_by(metric) %>%
+  mutate(total = sum(`< 2`, `2-7`, `> 7`)) %>%
+  ungroup() %>%
+  select(metric, model, `< 2`, `2-7`, `> 7`, total)
+
+
+# weights for buchanan vs baranyi vs linear
+weights_2 <- compute_akaike_weights(buchanan_fits_niter3000_maxiter500, baranyi_fits_niter3000_maxiter500_conv_100, linear_fits)
+
+weight_summary_2 <- summarise_weights(weights_2)
+print(weight_summary_2)
+
+
+weights_smaller_categories <- compute_akaike_weights(baranyi_fits_niter3000_maxiter500_conv_100, linear_fits)
+
+summarise_weights(weights_smaller_categories)
+
+
+weights_smaller_categories_2 <- compute_akaike_weights(buchanan_fits_niter3000_maxiter500, linear_fits)
+
+summarise_weights(weights_smaller_categories_2)
+
+
+weights_smaller_categories_3 <- compute_akaike_weights(buchanan_fits_niter3000_maxiter500, baranyi_fits_niter3000_maxiter500_conv_100)
+
+summarise_weights(weights_smaller_categories_3)
+
+
+
+# thermal performance- new
+
+# Extract thermal performance data using extract_coefficients
+r_data_buchanan_coeffs <- extract_coefficients(buchanan_fits_niter3000_maxiter500, data_clean)
+r_data_baranyi_coeffs  <- extract_coefficients(baranyi_fits_niter3000_maxiter500_conv_100, data_clean)
+
+
+# filter out rows with a NA, NaN or infite r_max values using pipes
+
+# put the two datasets together for plotting
+coef_combined <- bind_rows(r_data_buchanan_coeffs, r_data_baranyi_coeffs) %>%
+  filter_invalid("inv_temp_boltzmann")
+
+
+# scale the values
+coef_combined_scaled <- coef_combined %>%
+  mutate(inv_temp_boltzmann_scaled = scale(inv_temp_boltzmann))
+
+
+#### v2- to see the resids
+
+# Strip the matrix attributes so it's a simple vector
+coef_combined_scaled$inv_temp_boltzmann_scaled <- as.numeric(coef_combined_scaled$inv_temp_boltzmann_scaled)
+
+# Re-run your model with the "clean" vector
+r_max_mod <- lmer(ln_r_max ~ inv_temp_boltzmann_scaled + model + (1 | medium) + (1 | citation),
+                  data = coef_combined_scaled, REML = TRUE)
+
+# Now try the check (make sure to install 'see' first!)
+library(see)
+library(performance)
+
+check_model(r_max_mod)
+summary(r_max_mod)
+
+# R2 of r_max_mod
+performance::r2(r_max_mod)
+
+## plot it
+predictions <- ggpredict(r_max_mod, terms = c("inv_temp_boltzmann_scaled [all]", "model"))
+
+# 2. Plot using your preferred styling
+(plot <- ggplot(predictions, aes(x = x, y = predicted, group = group, color = group)) +
+  # Confidence Interval Ribbons
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high, fill = group), 
+              alpha = 0.2, color = NA) +
+  # Prediction Lines
+  geom_line(linewidth = 1) +
+  # Raw data points (using as.numeric to avoid the matrix error)
+  geom_point(data = coef_combined_scaled, 
+             aes(x = as.numeric(inv_temp_boltzmann_scaled), y = ln_r_max, color = model), 
+             alpha = 0.1, size = 2) +
+  # Labels and Theme (matching your muntjac style)
+  labs(x = "\nInverse Temperature (Scaled Boltzmann)", 
+       y = "ln(r_max)\n",
+       color = "Growth Model",
+       fill = "Growth Model") +
+  theme_bw() +
+  theme(
+    axis.text.x = element_text(size = 12),
+    axis.text.y = element_text(size = 12),
+    axis.title = element_text(size = 14, face = "plain"),
+    panel.grid = element_blank(),
+    plot.margin = unit(c(1,1,1,1), units = "cm")
+  ))
+
+# ======================================================================
+# Latex
+
+# Extract fixed effects for LaTeX table
+fixed_effects <- summary(r_max_mod)$coefficients
+fixed_df <- as.data.frame(fixed_effects)
+fixed_df$coefficient <- rownames(fixed_df)
+
+# Format fixed effects for LaTeX
+cat("\n=== FIXED EFFECTS (for LaTeX table) ===\n")
+for(i in 1:nrow(fixed_df)) {
+  cat(sprintf("%s & %.2f $\\pm$ %.2f & %.2f \\\\\n",
+              fixed_df$coefficient[i],
+              fixed_df$Estimate[i],
+              fixed_df$`Std. Error`[i],
+              fixed_df$`t value`[i]))
+}
+
+# Extract random effects variances
+random_effects <- as.data.frame(VarCorr(r_max_mod))
+
+cat("\n=== RANDOM EFFECTS (for LaTeX table) ===\n")
+for(i in 1:nrow(random_effects)) {
+  if(random_effects$grp[i] == "Residual") {
+    cat(sprintf("Residuals & %.2f &  \\\\\n", sqrt(random_effects$vcov[i])))
+  } else {
+    cat(sprintf("%s & %.2f &  \\\\\n", 
+                random_effects$grp[i], 
+                sqrt(random_effects$vcov[i])))
+  }
+}
+
+cat("\n=== COMPLETE LaTeX TABLE ===\n")
+cat("\\begin{table}[h!]\n")
+cat("\\centering\n")
+cat("\\caption{\\textit{Coefficients from the linear mixed model examining the relationship between ln(r\\_max) and inverse temperature (scaled Boltzmann units). Coefficients are presented alongside their standard error} (\\textit{SE}). \\textit{The random intercepts for Medium and Citation reflect the variability attributable to these factors. Significance was assumed when} \\textit{$t < -1.96$ or $t > 1.96$}.}\n")
+cat("\\vspace{0.5em}\n")
+cat("\\label{tab:r_max_model}\n")
+cat("\\begin{tabular}{lcc}\n")
+cat("\\toprule\n")
+cat("\\multicolumn{3}{c}{\\textbf{Fixed Effects}} \\\\\n")
+cat("\\midrule\n")
+cat("\\textbf{Coefficient} & \\textbf{Estimate $\\pm$ \\textit{SE}} & \\textbf{\\textit{t} Value} \\\\\n")
+cat("\\midrule\n")
+for(i in 1:nrow(fixed_df)) {
+  cat(sprintf("%s & %.2f $\\pm$ %.2f & %.2f \\\\\n",
+              fixed_df$coefficient[i],
+              fixed_df$Estimate[i],
+              fixed_df$`Std. Error`[i],
+              fixed_df$`t value`[i]))
+}
+cat("\\midrule\n")
+cat("\\multicolumn{3}{c}{\\textbf{Random Effects}} \\\\\n")
+cat("\\midrule\n")
+for(i in 1:nrow(random_effects)) {
+  if(random_effects$grp[i] == "Residual") {
+    cat(sprintf("Residuals & %.2f &  \\\\\n", sqrt(random_effects$vcov[i])))
+  } else {
+    cat(sprintf("%s & %.2f &  \\\\\n", 
+                random_effects$grp[i], 
+                sqrt(random_effects$vcov[i])))
+  }
+}
+cat("\\bottomrule\n")
+cat("\\end{tabular}\n")
+cat("\\end{table}\n")
+
+# ======================================================================
+
+
+
+
+
+
+
+
+
+# endregion
+# ====================================================================
+# region - Appendix I: plotting best/worst fits by R²
+# ====================================================================
+
+# ============================================================
+# Plot best or worst fitting models by R²
+# Optionally overlay a second model for comparison
+# ============================================================
+
+compute_r2 <- function(fit_list, data, group_var = "id_num") {
+  do.call(rbind, lapply(fit_list, function(x) {
+    if (!is.list(x) || is.null(x$fit)) return(NULL)
+    tryCatch({
+      group_data <- data[as.character(data[[group_var]]) == as.character(x$group), ]
+      y_obs  <- group_data$log10_popbio
+      y_pred <- predict(x$fit)
+      ss_res <- sum((y_obs - y_pred)^2)
+      ss_tot <- sum((y_obs - mean(y_obs))^2)
+      data.frame(group = x$group, model = x$model, r2 = 1 - ss_res / ss_tot)
+    }, error = function(e) NULL)
+  })) %>% arrange(desc(r2))
+}
+
+# ============================================================
+# FUNCTION: plot_fits
+#
+# Arguments:
+#   fit_list    - primary model fits (the one being ranked by R²)
+#   data        - data_clean
+#   n           - how many plots to make
+#   top         - TRUE = best fits, FALSE = worst fits
+#   group_var   - grouping column
+#   export_dir  - if provided, saves PNGs here; NULL prints to screen
+#   compare_fit - optional second fit_list to overlay on each plot
+# ============================================================
+plot_fits <- function(fit_list, data, n = 15, top = TRUE,
+                      group_var = "id_num", export_dir = NULL,
+                      compare_fit = NULL) {
+  
+  r2_table <- compute_r2(fit_list, data, group_var)
+  selected <- if (top) head(r2_table, n) else tail(r2_table, n)
+  
+  if (!is.null(export_dir)) dir.create(export_dir, showWarnings = FALSE, recursive = TRUE)
+  
+  cat(sprintf("Plotting %s %d fits for model: %s\n",
+              if (top) "top" else "bottom", n, unique(r2_table$model)))
+  
+  for (i in seq_len(nrow(selected))) {
+    
+    g       <- selected$group[i]
+    r2_val  <- selected$r2[i]
+    fit_obj <- fit_list[[as.character(g)]]
+    if (!is.list(fit_obj) || is.null(fit_obj$fit)) next
+    
+    group_data <- data[as.character(data[[group_var]]) == as.character(g), ]
+    t_seq      <- seq(min(group_data$time), max(group_data$time), length.out = 200)
+    
+    # Primary model predictions
+    y_pred <- tryCatch(
+      predict(fit_obj$fit, newdata = data.frame(t = t_seq)),
+      error = function(e) NULL
+    )
+    if (is.null(y_pred)) next
+    
+    pred_df <- data.frame(t = t_seq, y = y_pred,
+                          model_line = fit_obj$model)
+    
+    # Comparison model predictions (if provided)
+    compare_obj <- if (!is.null(compare_fit)) compare_fit[[as.character(g)]] else NULL
+    if (!is.null(compare_obj) && is.list(compare_obj) && !is.null(compare_obj$fit)) {
+      y_compare <- tryCatch(
+        predict(compare_obj$fit, newdata = data.frame(t = t_seq)),
+        error = function(e) NULL
+      )
+      if (!is.null(y_compare)) {
+        pred_df <- bind_rows(pred_df,
+                             data.frame(t = t_seq, y = y_compare,
+                                        model_line = compare_obj$model))
+      }
+    }
+    
+    p <- ggplot(group_data, aes(x = time, y = log10_popbio)) +
+      geom_point(size = 2, alpha = 0.8) +
+      geom_line(data = pred_df,
+                aes(x = t, y = y, color = model_line),
+                linewidth = 1) +
+      labs(title    = sprintf("ID: %s", g),
+           subtitle = sprintf("R² = %.4f | %s | %s°C",
+                              r2_val,
+                              paste(unique(group_data$species), collapse = "/"),
+                              paste(unique(group_data$temp),    collapse = "/")),
+           x     = "Time",
+           y     = "log10(Population)",
+           color = "Model") +
+      theme_bw()
+    
+    if (!is.null(export_dir)) {
+      ggsave(file.path(export_dir, sprintf("id_%s.png", g)),
+             plot = p, width = 8, height = 5, dpi = 150)
+    } else {
+      print(p)
+    }
+  }
+  
+  if (!is.null(export_dir))
+    cat(sprintf("Saved %d plots to: %s\n", nrow(selected), export_dir))
+}
+
+# ============================================================
+# Example usage
+# ============================================================
+
+# Worst Buchanan fits, with Baranyi overlaid for comparison
+plot_fits(buchanan_fits_3000, data_clean, n = 15, top = FALSE,
+          compare_fit = baranyi_fits)
+
+# Export version
+plot_fits(buchanan_fits_3000, data_clean, n = 15, top = FALSE,
+          export_dir  = "../results/buchanan_worst",
+          compare_fit = baranyi_fits_3000)
+#
+
+plot_fits(baranyi_fits_3000, data_clean, n = 50, top = FALSE,
+          export_dir  = "../results/baranyi_worst",
+          compare_fit = buchanan_fits_3000)
+
+# Export version
+plot_fits(buchanan_fits_3000, data_clean, n = 15, top = TRUE,
+          export_dir  = "../results/buchanan_best",
+          compare_fit = baranyi_fits_3000)
+#
+
+
+plot_fits(baranyi_fits_3000, data_clean, n = 50, top = TRUE,
+          export_dir  = "../results/baranyi_best",
+          compare_fit = buchanan_fits_3000)
+
+
+
+# endregion
+# ===========================================================
+# region - Appendix II: plot by weight category
+# ============================================================
+# FUNCTION: plot_by_weight
+#
+# Filters groups where a specific model's Akaike weight
+# exceeds a threshold, then plots those groups.
+#
+# Arguments:
+#   weights     - output of compute_akaike_weights()
+#   target_model - model name to filter on e.g. "buchanan"
+#   fit_lists   - named list of fit_lists to overlay on each plot
+#                 e.g. list(buchanan = buchanan_fits, baranyi = baranyi_fits)
+#   data        - data_clean
+#   threshold   - minimum weight to include (default 0.9)
+#   weight_col  - "weight_AICc" or "weight_AIC" (default AICc)
+#   group_var   - grouping column
+#   export_dir  - if provided, saves multi-page PDF here; NULL prints to screen
+# ============================================================
+plot_by_weight <- function(weights, target_model, fit_lists, data,
+                           threshold  = 0.9,
+                           weight_col = "weight_AICc",
+                           group_var  = "id_num",
+                           export_dir = NULL) {
+  
+  # Filter to groups where target model exceeds the weight threshold
+  selected_groups <- weights %>%
+    filter(model == target_model,
+           .data[[weight_col]] >= threshold) %>%
+    arrange(desc(.data[[weight_col]]))
+  
+  cat(sprintf("Found %d groups where %s has %s >= %.2f\n",
+              nrow(selected_groups), target_model, weight_col, threshold))
+  
+  if (nrow(selected_groups) == 0) {
+    message("No groups meet the threshold - try lowering it")
+    return(invisible(NULL))
+  }
+  
+  # Create output directory if needed
+  if (!is.null(export_dir)) {
+    dir.create(export_dir, showWarnings = FALSE, recursive = TRUE)
+    # Open PDF device
+    pdf_path <- file.path(export_dir, sprintf("%s_weight_plots.pdf", target_model))
+    pdf(pdf_path, width = 10, height = 7)
+  }
+  
+  for (i in seq_len(nrow(selected_groups))) {
+    
+    g      <- selected_groups$group[i]
+    w_val  <- selected_groups[[weight_col]][i]
+    
+    group_data <- data[as.character(data[[group_var]]) == as.character(g), ]
+    t_seq      <- seq(min(group_data$time), max(group_data$time), length.out = 200)
+    
+    # Build prediction lines for every fit_list provided
+    pred_df <- do.call(bind_rows, lapply(names(fit_lists), function(m) {
+      fit_obj <- fit_lists[[m]][[as.character(g)]]
+      if (!is.list(fit_obj) || is.null(fit_obj$fit)) return(NULL)
+      y_pred <- tryCatch(
+        predict(fit_obj$fit, newdata = data.frame(t = t_seq)),
+        error = function(e) NULL
+      )
+      if (is.null(y_pred)) return(NULL)
+      data.frame(t = t_seq, y = y_pred, model_line = m)
+    }))
+    
+    if (nrow(pred_df) == 0) next
+
+    p <- ggplot(group_data, aes(x = time, y = log10_popbio)) +
+      geom_point(aes(color = factor(rep)), size = 2, alpha = 0.8) +
+      geom_line(data = pred_df,
+                aes(x = t, y = y, linetype = model_line),
+                linewidth = 1) +
+      labs(title    = sprintf("ID: %s", g),
+           subtitle = sprintf("%s weight = %.3f | %s | %s°C",
+                              target_model, w_val,
+                              paste(unique(group_data$species), collapse = "/"),
+                              paste(unique(group_data$temp),    collapse = "/")),
+           x        = "Time",
+           y        = "log10(Population)",
+           color    = "Replicate",
+           linetype = "Model") +
+      theme_bw()
+    
+    print(p)
+  }
+  
+  if (!is.null(export_dir)) {
+    dev.off()
+    cat(sprintf("Saved %d plots to: %s\n", nrow(selected_groups), pdf_path))
+  }
+  
+  invisible(NULL)
+}
+
+#============================================================
+# Example usage:
+#============================================================
+
+
+# new plot by weight
+plot_by_weight(weights_2, target_model = "buchanan_niter3000_maxiter500",
+               fit_lists = list(buchanan = buchanan_fits_niter3000_maxiter500, baranyi = baranyi_fits_niter3000_maxiter500_conv_100, linear = linear_fits),
+               data = data_clean,
+               threshold = 0.95,
+               weight_col = "weight_AICc",
+               export_dir = "../results/buchanan_weighted")
+
+
+plot_by_weight(weights_2, target_model = "baranyi_niter3000_maxiter500_conv_100",
+               fit_lists = list(buchanan = buchanan_fits_niter3000_maxiter500, baranyi = baranyi_fits_niter3000_maxiter500_conv_100, linear = linear_fits),
+               data = data_clean,
+               threshold = 0.99,
+               weight_col = "weight_AICc",
+               export_dir = "../results/baranyi_weighted")
+
+plot_by_weight(weights_2, target_model = "linear_model",  # Changed from "linear_fits"
+               fit_lists = list(buchanan = buchanan_fits_niter3000_maxiter500, 
+                                baranyi = baranyi_fits_niter3000_maxiter500_conv_100, 
+                                linear = linear_fits),
+               data = data_clean,
+               threshold = 0.99,
+               weight_col = "weight_AICc",
+               export_dir = "../results/linear_weighted")
+
+
+# plot by weight for buchanan vs baranyi only using weights_smaller_categories_3
+plot_by_weight(weights_smaller_categories_3, target_model = "buchanan_niter3000_maxiter500",
+               fit_lists = list(buchanan = buchanan_fits_niter3000_maxiter500, baranyi = baranyi_fits_niter3000_maxiter500_conv_100),
+               data = data_clean,
+               threshold = 0.95,
+               weight_col = "weight_AICc",
+               export_dir = "../results/buchanan_weighted_vs_baranyi")
+
+
+plot_by_weight(weights_smaller_categories_3, target_model = "baranyi_niter3000_maxiter500_conv_100",
+               fit_lists = list(buchanan = buchanan_fits_niter3000_maxiter500, baranyi = baranyi_fits_niter3000_maxiter500_conv_100),
+               data = data_clean,
+               threshold = 0.99,
+               weight_col = "weight_AICc",
+               export_dir = "../results/buchanan_weighted_vs_baranyi_baranyi_win")
+
+
+
+# endregion
+
+# ============================================================
+# region - Appendix III: the summary statistics
+# ============================================================
+
+
+# --- Data summary ---
+n_timepoints <- nrow(data_clean)
+n_curves     <- length(unique(data_clean$id_num))
+n_species    <- length(unique(data_clean$species))
+n_substrates <- length(unique(data_clean$medium))
+n_citations  <- length(unique(data_clean$citation))
+
+# --- Temperature summary ---
+temps        <- unique(data_clean$temp)
+n_temps      <- length(temps)
+temp_min     <- min(temps, na.rm = TRUE)
+temp_max     <- max(temps, na.rm = TRUE)
+temp_sd      <- round(sd(data_clean$temp, na.rm = TRUE), 2)
+mean_temp    <- round(mean(data_clean$temp, na.rm = TRUE), 2)
+
+# --- Convergence counts (using your best fits) ---
+n_buchanan <- sum(sapply(buchanan_fits_niter3000_maxiter500, function(x) !is.null(x$fit)))
+n_baranyi  <- sum(sapply(baranyi_fits_niter3000_maxiter500_conv_100,  function(x) !is.null(x$fit)))
+
+cat(sprintf(
+"I attempted to fit %d growth curves across %d time points, covering %d species/strains, %d mediums, and %d citations. %d different temperature values were recorded, ranging from %.1f to %.1f °C, with an average of %.2f °C (SD = %.2f °C). The Buchanan model converged %d times and the Baranyi converged %d times.\n",
+  n_curves, n_timepoints,
+  n_species, n_substrates, n_citations,
+  n_temps, temp_min, temp_max, mean_temp, temp_sd,
+  n_buchanan, n_baranyi
+))
+
+
+# solids vs liquids:
+data_clean %>%
+  mutate(state = case_when(
+    medium %in% c("APT Broth", "ESAW", "MRS", "MRS broth", "TSB", "Z8",
+                  "Pasteurised Double Cream", "Pasteurised Full-fat Milk",
+                  "Pasteurised Skim Milk", "UHT Double Cream",
+                  "UHT Full-fat Milk", "UHT Skim Milk") ~ "liquid",
+    medium %in% c("C02 Beef Striploins", "Cooked Chicken Breast",
+                  "Raw Chicken Breast", "Salted Chicken Breast",
+                  "Vacuum Beef Striploins", "TGE agar") ~ "solid",
+    TRUE ~ "unknown"
+  )) %>%
+  group_by(state) %>%
+  summarise(n_ids = n_distinct(id_num))
+
+
+# endregion
+
+# ===========================================================
+# region - Appendix IV: run polynomial fits
+# ===========================================================
+
+
+# Code for linear models
+run_linear_models <- function(data, model_fn, model_name, group_var = "id_num") {
+  
+  # Infer polynomial degree from number of parameters (excluding t)
+  degree <- length(formals(model_fn)) - 1
+  
+  groups  <- unique(data[[group_var]])
+  results <- lapply(groups, function(g) {
+    group_data <- data[data[[group_var]] == g, ]
+    fit_data   <- data.frame(t = group_data$time, y = group_data$log10_popbio)
+    fit <- tryCatch(
+      lm(y ~ poly(t, degree, raw = TRUE), data = fit_data),
+      error = function(e) {
+        message(sprintf("[%s | group %s] failed: %s", model_name, g, e$message))
+        NULL
+      }
+    )
+    list(fit = fit, group = g, model = model_name)
+  })
+  names(results) <- as.character(groups)
+  results
+}
+
+# endregion
+
+# ===========================================================
+# region - Appendix V: run simple linear fits
+# ===========================================================
+
+# --- Baranyi model ---
+
+# =============================================================
+# region - Appendix VI: temperature - coefficient relationships
+# =============================================================
+
+# ============================================================
+# FUNCTION: extract_coefficients
+#
+# Extract all coefficients from fitted models along with temperature
+# and metadata information
+#
+# Arguments:
+#   fit_list  - list of model fits
+#   data      - data_clean
+#   group_var - grouping column (default "id_num")
+#
+# Returns:
+#   data.frame with all coefficients and metadata
+# ============================================================
+extract_coefficients <- function(fit_list, data, group_var = "id_num") {
+  
+  # First pass: collect all unique coefficient names across all fits
+  all_param_names <- unique(unlist(lapply(fit_list, function(x) {
+    if (is.null(x$fit)) return(NULL)
+    coefs <- tryCatch(coef(x$fit), error = function(e) NULL)
+    if (is.null(coefs)) return(NULL)
+    names(coefs)
+  })))
+  
+  # Second pass: extract data with consistent columns
+  do.call(rbind, lapply(fit_list, function(x) {
+    if (is.null(x$fit)) return(NULL)
+    
+    # Get all coefficients
+    coefs <- tryCatch(coef(x$fit), error = function(e) NULL)
+    if (is.null(coefs)) return(NULL)
+    
+    # Extract metadata
+    g <- data[data[[group_var]] == x$group, ]
+    
+    # Build base data frame
+    result <- data.frame(
+      group      = x$group,
+      model      = x$model,
+      temp_C     = unique(g$temp),
+      temp_K     = unique(g$temp + 273.15),
+      inv_temp_K = 1 / unique(g$temp + 273.15),
+      inv_temp_boltzmann = 1 / (8.617e-5 * unique(g$temp + 273.15)),
+      species    = unique(g$species),
+      medium     = unique(g$medium),
+      citation   = unique(g$citation),
+      id_no_temp = unique(g$id_num_no_temp),
+      stringsAsFactors = FALSE
+    )
+    
+    # Add all coefficients with consistent columns (fill missing with NA)
+    for (param_name in all_param_names) {
+      if (param_name %in% names(coefs)) {
+        result[[param_name]] <- coefs[[param_name]]
+        # Also add log-transformed version if positive
+        if (is.finite(coefs[[param_name]]) && coefs[[param_name]] > 0) {
+          result[[paste0("ln_", param_name)]] <- log(coefs[[param_name]])
+        } else {
+          result[[paste0("ln_", param_name)]] <- NA
+        }
+      } else {
+        # Parameter doesn't exist for this model
+        result[[param_name]] <- NA
+        result[[paste0("ln_", param_name)]] <- NA
+      }
+    }
+    
+    result
+  }))
+}
+
+# ============================================================
+# FUNCTION: plot_coefficient_temperature
+#
+# Plots the relationship between temperature and model coefficients
+# Faceted by model type (Buchanan vs Baranyi)
+#
+# Arguments:
+#   coef_data   - output from extract_coefficients()
+#   coefficient - name of coefficient to plot (e.g., "r_max", "N_0", "N_max", "t_lag")
+#   log_scale   - whether to use log-transformed coefficient (default TRUE)
+#   export_dir  - directory to save plots (default "../results")
+#   width       - plot width (default 10)
+#   height      - plot height (default 6)
+# ============================================================
+plot_coefficient_temperature <- function(coef_data, 
+                                         coefficient = "r_max",
+                                         log_scale = TRUE,
+                                         export_dir = "../results",
+                                         width = 10,
+                                         height = 6) {
+  
+  # Determine y variable
+  y_var <- if (log_scale) paste0("ln_", coefficient) else coefficient
+  
+  # Check if variable exists
+  if (!y_var %in% names(coef_data)) {
+    stop(sprintf("Variable '%s' not found in data", y_var))
+  }
+  
+  # Filter out non-finite values
+  plot_data <- coef_data %>%
+    filter(is.finite(.data[[y_var]]))
+  
+  if (nrow(plot_data) == 0) {
+    warning(sprintf("No finite values for %s", y_var))
+    return(invisible(NULL))
+  }
+  
+  # Create plot
+  p <- ggplot(plot_data, aes(x = temp_C, y = .data[[y_var]], color = species)) +
+    geom_point(alpha = 0.6, size = 2) +
+    geom_smooth(method = "lm", se = TRUE, color = "black", linewidth = 0.8) +
+    facet_wrap(~ model, scales = "free_y") +
+    labs(
+      x = "Temperature (°C)",
+      y = if (log_scale) paste0("ln(", coefficient, ")") else coefficient,
+      title = sprintf("Temperature Effect on %s", coefficient),
+      color = "Species"
+    ) +
+    theme_bw() +
+    theme(
+      legend.position = "bottom",
+      legend.text = element_text(size = 8)
+    )
+  
+  # Save plot
+  filename <- file.path(
+    export_dir, 
+    sprintf("temp_vs_%s%s.pdf", 
+            coefficient, 
+            if (log_scale) "_log" else "")
+  )
+  
+  ggsave(filename, plot = p, width = width, height = height)
+  message(sprintf("Saved: %s", filename))
+  
+  invisible(p)
+}
+
+# ============================================================
+# FUNCTION: plot_all_coefficients
+#
+# Convenience wrapper to plot all coefficients vs temperature
+# ============================================================
+plot_all_coefficients <- function(coef_data, 
+                                  coefficients = c("r_max", "N_0", "N_max", "t_lag"),
+                                  export_dir = "../results",
+                                  width = 10,
+                                  height = 6) {
+  
+  for (coef in coefficients) {
+    # Check if coefficient exists in data
+    if (coef %in% names(coef_data)) {
+      plot_coefficient_temperature(
+        coef_data   = coef_data,
+        coefficient = coef,
+        log_scale   = TRUE,
+        export_dir  = export_dir,
+        width       = width,
+        height      = height
+      )
+    } else {
+      message(sprintf("Coefficient '%s' not found in data, skipping...", coef))
+    }
+  }
+  
+  invisible(NULL)
+}
+
+# --- Example usage (commented out) ---
+# Extract coefficients from both models
+coef_data_buchanan <- extract_coefficients(buchanan_fits_niter3000_maxiter500, data_clean)
+ coef_data_baranyi  <- extract_coefficients(baranyi_fits_niter3000_maxiter500_conv_100, data_clean)
+
+# Combine into single dataframe
+coef_data_all <- bind_rows(coef_data_buchanan, coef_data_baranyi)
+
+# Plot all coefficients
+plot_all_coefficients(coef_data_all)
+# 
+# # Or plot individual coefficients
+# plot_coefficient_temperature(coef_data_all, coefficient = "r_max")
+# plot_coefficient_temperature(coef_data_all, coefficient = "N_0")
+# plot_coefficient_temperature(coef_data_all, coefficient = "N_max")
+# plot_coefficient_temperature(coef_data_all, coefficient = "t_lag")
+
+# endregion
+
+
+# check the data clean
+summary(as.factor(data_clean$medium))
+
+# how many unique IDs per medium:
+data_clean %>%
+  group_by(medium) %>%
+  summarise(n_ids = n_distinct(id_num))
+
+# ===========================================================
+# region - Appendix VII: Sample size analysis for high-weight models
+# ===========================================================
+
+# ============================================================
+# FUNCTION: analyze_sample_sizes
+#
+# Analyzes the distribution of sample sizes (n time points) for
+# growth curves where a model has high Akaike weight (>0.9)
+#
+# Arguments:
+#   weights     - output from compute_akaike_weights()
+#   data        - data_clean
+#   threshold   - minimum weight threshold (default 0.9)
+#   weight_col  - "weight_AICc" or "weight_AIC" (default "weight_AICc")
+#   group_var   - grouping column (default "id_num")
+#
+# Returns:
+#   data.frame with group, model, weight, and n_points
+# ============================================================
+analyze_sample_sizes <- function(weights, data, 
+                                 threshold  = 0.9,
+                                 weight_col = "weight_AICc",
+                                 group_var  = "id_num") {
+  
+  # Calculate sample sizes per group
+  sample_sizes <- data %>%
+    group_by(!!sym(group_var)) %>%
+    summarise(n_points = n(), .groups = "drop") %>%
+    rename(group = !!sym(group_var))
+  
+  # Filter weights above threshold and merge with sample sizes
+  high_weight_data <- weights %>%
+    filter(.data[[weight_col]] >= threshold) %>%
+    left_join(sample_sizes, by = "group") %>%
+    select(group, model, weight = !!sym(weight_col), n_points)
+  
+  return(high_weight_data)
+}
+
+# ============================================================
+# FUNCTION: plot_sample_size_density
+#
+# Creates density plots of sample sizes for each model with
+# high Akaike weights
+#
+# Arguments:
+#   sample_size_data - output from analyze_sample_sizes()
+#   export_dir       - directory to save plot (default "../results")
+#   width            - plot width (default 10)
+#   height           - plot height (default 6)
+# ============================================================
+plot_sample_size_density <- function(sample_size_data,
+                                     export_dir = "../results",
+                                     width = 10,
+                                     height = 6) {
+  
+  # Count observations per model
+  model_counts <- sample_size_data %>%
+    group_by(model) %>%
+    summarise(n = n(), .groups = "drop")
+  
+  cat("\nSample size summary for high-weight models (w >= 0.9):\n")
+  print(model_counts)
+  
+  # Create density plot
+  p <- ggplot(sample_size_data, aes(x = n_points, fill = model)) +
+    geom_density(alpha = 0.5) +
+    geom_rug(aes(color = model), alpha = 0.3) +
+    labs(
+      x = "Number of Time Points",
+      y = "Density",
+      title = "Sample Size Distribution for High-Weight Models",
+      subtitle = "Models with Akaike weight ≥ 0.9",
+      fill = "Model",
+      color = "Model"
+    ) +
+    theme_bw() +
+    theme(legend.position = "bottom")
+  
+  # Save plot
+  filename <- file.path(export_dir, "sample_size_density_high_weight.pdf")
+  ggsave(filename, plot = p, width = width, height = height)
+  message(sprintf("Saved: %s", filename))
+  
+  invisible(p)
+}
+
+# ============================================================
+# FUNCTION: plot_sample_size_boxplot
+#
+# Creates boxplots comparing sample sizes across models
+#
+# Arguments:
+#   sample_size_data - output from analyze_sample_sizes()
+#   export_dir       - directory to save plot (default "../results")
+#   width            - plot width (default 10)
+#   height           - plot height (default 6)
+# ============================================================
+plot_sample_size_boxplot <- function(sample_size_data,
+                                     export_dir = "../results",
+                                     width = 10,
+                                     height = 6) {
+  
+  # Summary statistics
+  summary_stats <- sample_size_data %>%
+    group_by(model) %>%
+    summarise(
+      n_curves = n(),
+      mean_points = mean(n_points),
+      median_points = median(n_points),
+      sd_points = sd(n_points),
+      min_points = min(n_points),
+      max_points = max(n_points),
+      .groups = "drop"
+    )
+  
+  cat("\nSummary statistics by model:\n")
+  print(summary_stats)
+  
+  # Create boxplot
+  p <- ggplot(sample_size_data, aes(x = model, y = n_points, fill = model)) +
+    geom_boxplot(alpha = 0.7, outlier.shape = 21) +
+    geom_jitter(width = 0.2, alpha = 0.3, size = 1) +
+    stat_summary(fun = mean, geom = "point", shape = 23, size = 3, fill = "red") +
+    labs(
+      x = "Model",
+      y = "Number of Time Points",
+      title = "Sample Size Comparison Across Models",
+      subtitle = "Models with Akaike weight ≥ 0.9 (red diamond = mean)"
+    ) +
+    theme_bw() +
+    theme(
+      legend.position = "none",
+      axis.text.x = element_text(angle = 45, hjust = 1)
+    )
+  
+  # Save plot
+  filename <- file.path(export_dir, "sample_size_boxplot_high_weight.pdf")
+  ggsave(filename, plot = p, width = width, height = height)
+  message(sprintf("Saved: %s", filename))
+  
+  invisible(p)
+}
+
+# ============================================================
+# Example usage
+# ============================================================
+
+# Analyze sample sizes for models with weight >= 0.9
+sample_size_analysis <- analyze_sample_sizes(
+  weights    = weights_2,
+  data       = data_clean,
+  threshold  = 0.9,
+  weight_col = "weight_AICc"
+)
+
+# View summary
+sample_size_analysis %>%
+  group_by(model) %>%
+  summarise(
+    n_curves = n(),
+    mean_n = mean(n_points),
+    median_n = median(n_points),
+    sd_n = sd(n_points),
+    .groups = "drop"
+  )
+
+# Create density plot
+plot_sample_size_density(sample_size_analysis)
+
+# Create boxplot
+plot_sample_size_boxplot(sample_size_analysis)
+
+
+
+sample_size_analysis_smaller <- analyze_sample_sizes(
+  weights    = weights_smaller_categories_3,
+  data       = data_clean,
+  threshold  = 0.9,
+  weight_col = "weight_AICc"
+)
+
+# View summary
+sample_size_analysis_smaller %>%
+  group_by(model) %>%
+  summarise(
+    n_curves = n(),
+    mean_n = mean(n_points),
+    median_n = median(n_points),
+    sd_n = sd(n_points),
+    .groups = "drop"
+  )
+
+# Create density plot
+plot_sample_size_density(sample_size_analysis_smaller)
+
+# Create boxplot
+plot_sample_size_boxplot(sample_size_analysis_smaller)
+
+
+
+# endregion
