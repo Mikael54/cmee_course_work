@@ -1,16 +1,16 @@
 # Microbial Growth Curve Analysis
 
 **Author:** Mikael Minten  
-**Date:** 2024  
+**Date:** March 2026  
 **Institution:** Imperial College London - MSc Computational Methods in Ecology and Evolution (CMEE)
 
 ---
 
 ## Description
 
-This project presents statistical analysis of microbial growth curves, comparing the performance of multiple mechanistic and phenomenological growth models (Buchanan, Baranyi, and linear) across diverse experimental conditions.
+This project presents statistical analysis of microbial growth curves, comparing the performance of multiple mechanistic and phenomenological growth models (Buchanan, Baranyi, and linear) and assessing the effect of temperature on growth parameters.
 
-The repository contains both the analytical pipeline and the LaTeX manuscript documenting the methodological approach, results, and ecological implications.
+The repository contains both the analytical pipeline and the relevant LaTeX manuscript.
 
 ---
 
@@ -20,23 +20,22 @@ The repository contains both the analytical pipeline and the LaTeX manuscript do
 miniproject/
 │
 ├── code/
-│   ├── data_wrangling.R          # Data cleaning and preprocessing
-│   ├── model_fitting.R            # Growth model implementation and fitting
-│   └── [run_analysis.sh]          # [PLACEHOLDER] Master script to execute full 
+│   ├── run_analysis.sh             # Master script to execute full analysis
+│   ├── data_preparation.R          # Data cleaning and preprocessing
+│   ├── model_fitting.R             # Growth model implementation and fitting
+│   ├── citations.bib               # Bibliography file
+│   └── latex.tex                   # LaTeX manuscript notes
 │
 ├── data/
-│   └── LogisticGrowthData.csv     # Raw microbial growth measurements
-│   └── miniproject.tex            # [PLACEHOLDER] Manuscript source file
+│   ├── logistic_growth_data.csv    # Raw microbial growth measurements
+│   └── logistic_growth_meta_data.csv # Metadata for growth experiments
 │
 ├── results/
-│   ├── data_clean.csv             # [OUTPUT] Cleaned and processed dataset
-│   ├── thermal_response_*.pdf     # [OUTPUT] Thermal performance curves
-│   └── [miniproject.pdf]          # [OUTPUT] Compiled LaTeX manuscript
+│   ├── data_clean.csv              # [OUTPUT] Cleaned and processed dataset
+│   ├── *.pdf                       # [OUTPUT] Various figures for the report 
+│   └── report.pdf                  # [OUTPUT] Compiled manuscript
 │
-├── latex/
-│   └── 
-│
-└── README.md                      # This file
+└── README.md                       # This file
 ```
 
 ---
@@ -45,34 +44,36 @@ miniproject/
 
 ### Code
 
-- **[`data_wrangling.R`](#data_wranglingr)** — Data preprocessing and quality control  
+- **[`data_preparation.R`](#data_preparationr)** — Data preprocessing and quality control  
 - **[`model_fitting.R`](#model_fittingr)** — Model implementation, fitting, and evaluation  
-- **[`run_analysis.sh`](#run_analysissh)** — [PLACEHOLDER] Automated execution script
+- **[`run_analysis.sh`](#run_analysissh)** — Automated execution script
 
 ### Data
 
-- **[`LogisticGrowthData.csv`](#logisticgrowthdatacsv)** — Input dataset  
+- **[`logistic_growth_data.csv`](#logistic_growth_datacsv)** — Input dataset  
+- **[`logistic_growth_meta_data.csv`](#logistic_growth_meta_datacsv)** — Experimental metadata
 
 ### Results
 
 - **[`data_clean.csv`](#data_cleancsv)** — [OUTPUT] Processed data  
-
-### Documentation
-
-- **[`miniproject.tex`](#miniprojecttex)** — Manuscript source
+- **[`sample_curves.pdf`](#sample_curvespdf)** — [OUTPUT] Sample growth curve fits
+- **[`rmax_thermal_performance_plot.pdf`](#rmax_thermal_performance_plotpdf)** — [OUTPUT] Thermal performance plot
+- **[`report.pdf`](#reportpdf)** — [OUTPUT] Compiled manuscript
 
 ---
 
 ## Detailed File Descriptions
 
-### `data_wrangling.R`
+### `data_preparation.R`
 Performs data cleaning and preprocessing:
-- **Input:** `data/LogisticGrowthData.csv`
+- **Input:** `data/logistic_growth_data.csv`
 - **Processing:**
-  - Removes incomplete growth curves (< 3 time points)
+  - Removes incomplete growth curves (< 6 time points)
   - Filters non-monotonic growth patterns
+  - Removes negative time and population values
   - Standardizes variable naming conventions
   - Assigns unique identifiers to experimental replicates
+  - Log-transforms population values
 - **Output:** `results/data_clean.csv`
 
 ### `model_fitting.R`
@@ -80,31 +81,37 @@ Implements growth model fitting pipeline:
 - **Input:** `results/data_clean.csv`
 - **Methods:**
   - Fits Buchanan (three-phase linear), Baranyi (dynamic lag-phase), and linear models
-  - Uses `nls_multstart` for robust parameter estimation (3000 iterations, convergence threshold = 100)
+  - Uses `nls_multstart` for robust parameter estimation (3,000 start combinations, convergence threshold = 100)
   - Performs model selection via AICc and Akaike weights
   - Extracts thermal parameters (growth rate *r*) for Boltzmann-Arrhenius analysis
-  - Fits mixed-effects models to account for species, medium, and study effects
+  - Fits mixed-effects models to account for medium and study effects
 - **Outputs:**
-  - PLACEHOLDER
+  - Various PDF figures showing model fits and thermal responses
+  - Statistical analysis results
 
 ### `run_analysis.sh`
-**[PLACEHOLDER]** Master script to execute the full analysis:
-```bash
-# Will run:
-# 1. data_wrangling.R
-# 2. model_fitting.R
-# 3. LaTeX compilation
-```
+Master bash script to execute the full analysis pipeline. Must be run from the `code/` directory:
+- Cleans any leftover LaTeX auxiliary files from `results/`
+- Runs `data_preparation.R`
+- Runs `model_fitting.R`
+- Copies `latex.tex` and `citations.bib` into `results/` and compiles the LaTeX report
+- Provides progress feedback and error handling
 
-### `LogisticGrowthData.csv`
-The dataset contains measurements of changes in microbial biomass or cell numbers over time. These data originate from laboratory experiments conducted by researchers in various locations around the world.
+### `logistic_growth_data.csv`
+The dataset contains measurements of changes in microbial biomass or cell numbers over time. These data originate from laboratory experiments conducted by researchers in various locations around the world. The data include multiple bacterial species grown at various temperatures on different growth media.
 
-### `miniproject.tex`
-LaTeX manuscript documenting:
-- Introduction to microbial growth modeling
+### `logistic_growth_meta_data.csv`
+Metadata file containing information about the experimental conditions and citations for each growth curve study.
+
+### `latex.tex`
+LaTeX manuscript source file containing:
+- Introduction to microbial growth modelling
 - Statistical methodology (model selection, thermal analysis)
-- Results (convergence rates, model comparison, activation energy estimates)
-- Discussion of ecological implications
+- Results (convergence rates, model comparison, Arrhenius temperature dependence)
+- Discussion of ecological and food safety implications
+
+### `citations.bib`
+BibTeX bibliography file containing all references cited in the manuscript.
 
 ---
 
@@ -112,43 +119,59 @@ LaTeX manuscript documenting:
 
 ### Installation
 
-#### Dependencies
+#### System Requirements
 
-**R packages:**
-```r
-install.packages(c(
-  "ggplot2", "tidyverse", "minpack.lm", "nls.multstart",
-  "AICcmodavg", "zoo", "nlstools", "lme4", "lmerTest", "performance"
-))
-```
+- **R** ≥ 4.0
+- **LaTeX distribution** (for manuscript compilation)
+  - **Linux (Ubuntu/Debian):** `sudo apt-get install texlive-full`
+  - **macOS:** Install [MacTeX](https://www.tug.org/mactex/)
+  - **Windows:** Install [MiKTeX](https://miktex.org/)
+- **Git** (for cloning the repository)
 
-**System requirements:**
-- R ≥ 4.0
-- LaTeX distribution (for manuscript compilation; e.g., TeX Live, MiKTeX)
+#### 1. Clone the Repository
 
-#### Clone Repository
 ```bash
-git clone https://github.com/your-username/cmee_course_work.git
-cd cmee_course_work/miniproject
+git clone https://github.com/Mikael54/cmee_course_work.git
+cd cmee_course_work/miniproject/code
 ```
 
+#### 2. Install Required R Packages
+
+```bash
+Rscript -e 'install.packages(c("ggplot2", "ggeffects", "tidyverse", "minpack.lm", "nls.multstart", "AICcmodavg", "zoo", "nlstools", "lme4", "lmerTest", "performance", "see", "patchwork"), repos="https://cran.r-project.org")'
+```
 ---
 
 ### Running the Analysis
 
-**[PLACEHOLDER - Full automation pending]**
+#### Automated Workflow (Recommended)
+
+The entire analysis pipeline can be executed with a single command:
+
+```bash
+bash run_analysis.sh
+```
+
+This script will automatically:
+1. Run `data_preparation.R` → generates `../results/data_clean.csv`
+2. Run `model_fitting.R` → generates plots in `../results/`
+3. Compile the LaTeX report → generates `../results/report.pdf`
 
 ---
+
+### Output Files
+
+All output files are generated in the `results/` directory:
+- `data_clean.csv` — Cleaned dataset
+- `rmax_thermal_performance_plot.pdf` — Plot showing the effect of temperature on r_max
+- `sample_curves.pdf` — Three sample plot of the highest Akaike Weight growth curves
+- `report.pdf` — Final compiled manuscript
+
+---
+
 ## Input Data
 
-The dataset contains measurements of changes in microbial biomass or cell numbers over time. These data originate from laboratory experiments conducted by researchers in various locations around the world. The data include multiple bacterial species grown at various temperatures on different growth media.
-
----
-
-## License
-
-**[PLACEHOLDER]**  
-This project will be released under an open-source license. See [LICENSE](https://en.wikipedia.org/wiki/Software_license) for details.
+The dataset contains measurements of changes in microbial biomass or cell numbers over time. These data originate from various laboratory experiments. The data include multiple bacterial species grown at various temperatures on different growth media.
 
 ---
 
@@ -160,7 +183,7 @@ This work was completed as part of the **MSc Computational Methods in Ecology an
 
 ## Contact
 
-For questions or collaboration inquiries:  
+For questions or inquiries:  
 **Mikael Minten** — [mikael.minten25@imperial.ac.uk]
 
 ---

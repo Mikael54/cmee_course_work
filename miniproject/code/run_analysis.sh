@@ -11,9 +11,13 @@ echo "Starting Microbial Growth Curve Analysis"
 echo "================================================"
 echo ""
 
-# Get the directory where the script is located
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR/code"
+RESULTS_DIR="../results"
+
+# Clean up any leftover LaTeX auxiliary and source files from previous runs
+rm -f "$RESULTS_DIR"/*.aux "$RESULTS_DIR"/*.log "$RESULTS_DIR"/*.out \
+      "$RESULTS_DIR"/*.bbl "$RESULTS_DIR"/*.blg "$RESULTS_DIR"/*.toc \
+      "$RESULTS_DIR"/*.lof "$RESULTS_DIR"/*.lot \
+      "$RESULTS_DIR"/report.tex "$RESULTS_DIR"/citations.bib
 
 # Step 1: Data Preparation
 echo "[1/3] Running data preparation..."
@@ -42,38 +46,45 @@ fi
 # Step 3: Compile LaTeX Report
 echo "[3/3] Compiling LaTeX report..."
 echo "----------------------------------------------"
-cd ../results
 
-# Check if report.tex exists
-if [ ! -f "report.tex" ]; then
-    echo "Warning: report.tex not found in results directory"
+# Copy latex.tex and citations.bib into results/ for compilation
+if [ ! -f "latex.tex" ]; then
+    echo "Warning: latex.tex not found in code directory"
     echo "Skipping LaTeX compilation"
 else
+    cp "latex.tex" "$RESULTS_DIR/report.tex"
+
+    if [ -f "citations.bib" ]; then
+        cp "citations.bib" "$RESULTS_DIR/citations.bib"
+    fi
+
+    cd "$RESULTS_DIR"
+
     # Run pdflatex twice for proper cross-references
     pdflatex -interaction=nonstopmode report.tex > /dev/null 2>&1
-    
-    # Check if bibtex is needed (if citation.bib exists)
-    if [ -f "../code/citation.bib" ]; then
+
+    # Run bibtex if citations.bib was copied
+    if [ -f "citations.bib" ]; then
         bibtex report > /dev/null 2>&1
         pdflatex -interaction=nonstopmode report.tex > /dev/null 2>&1
     fi
-    
+
     # Final compilation
     pdflatex -interaction=nonstopmode report.tex > /dev/null 2>&1
-    
+
     if [ $? -eq 0 ]; then
         echo "LaTeX compilation completed successfully"
-        echo "Report generated: ../results/report.pdf"
-        
-        # Clean up auxiliary files
-        rm -f *.aux *.log *.out *.bbl *.blg *.toc *.lof *.lot
+        echo "Report generated: results/report.pdf"
+
+        # Clean up all auxiliary and copied source files
+        rm -f *.aux *.log *.out *.bbl *.blg *.toc *.lof *.lot report.tex citations.bib
     else
         echo "Error in LaTeX compilation"
         exit 1
     fi
-fi
 
-cd "$SCRIPT_DIR"
+    cd - > /dev/null
+fi
 
 echo ""
 echo "================================================"
@@ -83,7 +94,7 @@ echo ""
 echo "Output files:"
 echo "  - results/data_clean.csv (cleaned data)"
 echo "  - results/*.pdf (figures and plots)"
-if [ -f "results/report.pdf" ]; then
+if [ -f "$RESULTS_DIR/report.pdf" ]; then
     echo "  - results/report.pdf (final report)"
 fi
 echo ""

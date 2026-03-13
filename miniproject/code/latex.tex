@@ -11,7 +11,7 @@
 \usepackage{booktabs}
 %TC:macro \caption [ignore]
 % --- Title info ---
-\title{Your Title Here}
+\title{Model Complexity and Arrhenius-Like Temperature Dependence in Microbial Growth: The Baranyi Model Outperforms Simpler Alternatives Across Diverse Microbial Datasets}
 \author{Mikael Ridza Minten \\ \small CMEE Imperial College London}
 \date{March 2026}  % leave empty to suppress date, or add one
 
@@ -22,19 +22,34 @@
   \maketitle
   \vspace{1cm}
   \begin{center}
-    \textbf{Word count:} 0{,}000
+    \textbf{Word count:} 3{,}467
   \end{center}
 \end{titlingpage}
 
 % --- Start line numbers before main body ---
 \begin{abstract}
 
-Microbial growth underpins central questions in food safety, ecology, and public health, where accurate quantitative predictions of population dynamics are essential. Primary models describe population change over time, while secondary models relate their parameters to environmental conditions such as temperature. Three primary model types spanning a range of complexity have been widely used: the mechanistic Baranyi model, the simpler piecewise Buchanan three-phase linear model, and a minimal linear model. However, the conditions under which each performs best remain poorly defined, and the relationship between maximum growth rate and temperature is similarly contested, with Arrhenius-type secondary models widely applied despite unresolved questions about their mechanistic validity and consistency across strains and conditions. Here we use a large microbial growth dataset compiled from diverse laboratory experiments to show that the four-parameter Baranyi model provides the best fits across a range of growth curve types, while the linear model performs comparably when datasets are small or confined to a single growth phase. We further show that maximum growth rate responds to temperature in an Arrhenius-like manner that is broadly stable across experimental conditions. These results challenge earlier findings that the Buchanan model performs equivalently to Baranyi, a conclusion that does not hold for the four-parameter reparameterisation, and support the practical utility of Arrhenius-type secondary models despite their theoretical limitations, with implications for predictive microbiology and food safety risk assessment.
+Microbial growth underpins central questions in food safety, where accurate 
+predictions of population dynamics are essential. Primary models describe population 
+change over time, while secondary models relate their parameters to environmental conditions 
+like temperature. Three primary models are investigated here; the mechanistic Baranyi model, the somewhat simpler Buchanan
+model, and the linear model. However, the conditions under which each performs best 
+remain poorly defined, and the relationship between maximum growth rate and temperature is 
+similarly contested, with Arrhenius-type secondary models widely applied despite unresolved 
+questions about their mechanistic validity. Here we use a large microbial growth dataset  from diverse laboratory experiments to show that the four-parameter Baranyi model 
+provides the best fits across a range of growth curves, while the linear model performs 
+comparably when datasets are small or confined to a single growth phase. We further show 
+that maximum growth rate responds to temperature in an Arrhenius-like manner that is broadly 
+stable across experimental conditions. These results challenge earlier findings that the 
+Buchanan model performs equivalently to Baranyi, a conclusion that does not hold for the 
+four-parameter reparameterisation, and support the practical use of Arrhenius-type secondary 
+models despite theoretical limitations, with implications for microbiology 
+and food safety risk assessment.
 
 
 
 \end{abstract}
-
+\newpage
 \modulolinenumbers[5]
 \linenumbers
 
@@ -44,105 +59,116 @@ Microbial growth underpins central questions in food safety, ecology, and public
 
 \section{Introduction}
 
-Understanding single species population growth is vital to understanding ecological dynamics and can influence emergent functional characteristics. One well studied case of this is in microbial populations, where accurate characterization of growth underpins predictions of shelf life and assessments of microbial safety
+Understanding single species population growth is vital to understanding ecological dynamics. 
+One well studied case is in microbial populations, where accurate characterization of growth 
+underpins predictions of shelf life and assessments of microbial safety
 \citep{zwietering1990modeling}. 
 
-Microbial population growth follows a characteristic pattern proceeding through three
- phases \citep{buchanan1997simple}. 
+Microbial population growth proceeds through three phases \citep{buchanan1997simple}. 
  The lag phase, where growth is stagnant as cells prepare for growth, is made up of two 
  periods: first, they sense physiological demands and may express alternative metabolic 
  capabilities; second, sufficient energy must be generated to produce the components 
  required for replication \citep{buchanan1997simple}. The lag phase comprises two 
  preparatory periods: an initial stage in which cells sense physiological demands and may 
  activate alternative metabolic pathways, and a subsequent stage in which energy is 
- accumulated to synthesise components for replication This is followed
+ accumulated to synthesise components for replication. This is followed
 by a period of exponential growth while resources are not limiting, defined by a consistent 
-doubling time. Population growth slows as the population approaches carrying capacity, 
-ultimately transitioning into a stationary phase as resources become limiting.
+doubling time. Population growth slows as it approaches carrying capacity, 
+ultimately entering a stationary phase as resources become limiting.
 \citep{zwietering1990modeling}. 
 
-Mathematical descriptions of bacterial growth are organized into a hierarchy of model
+Mathematical descriptions of microbial growth are organized into a hierarchy of model
 types \citep{peleg2011microbial}. The  relationship between population and time is first 
-captured by a``primary model.'' The dependence of the primary model coefficient's on 
+captured by a primary model. The dependence of the primary model coefficient's on 
 environmental factors such as temperature, pH, or water activity is described by
-``secondary models,'' which can, when combined with primary models to create ``tertiary 
-model'', able to predict growth rate in a range of conditions \citep{peleg2011microbial}. 
+secondary models. This can combine with primary models to create tertiary 
+models, able to predict growth rate in a range of conditions \citep{peleg2011microbial}. 
 
 A wide range of approaches has been proposed for constructing growth models. Mechanistic 
 models are derived from explicit biological or physical mechanisms and aim to represent the 
 underlying processes that generate the observed growth pattern. Phenomenological models, by 
 contrast, do not explicitly encode detailed mechanisms, but instead provide flexible 
-mathematical descriptions chosen primarily for their ability to fit the data. Simpler models 
-of either kind offer greater computational robustness and are often easier to fit to data 
-\citep{buchanan1997simple}. They can also offer more pragmatic choices when data are limited 
-or only certain growth phases are of interest \citep{buchanan1997simple, 
-peleg2011microbial}.However, simpler empirical models can be too rigid to capture 
-non‑standard curve shapes, and may oversimplify the biology or fail under changing 
-environmental conditions \citep{baranyi1997simple, peleg2011microbial, buchanan1997simple}
+mathematical descriptions chosen primarily for their ability to fit the data\citep{peleg2011microbial}. Simpler models of either kind offer greater computational robustness, are easier to fit, and are more pragmatic when data are limited \citep{buchanan1997simple, 
+peleg2011microbial}. However, they can be too rigid to capture 
+non‑standard curve shapes, and may oversimplify the biology \citep{baranyi1997simple, peleg2011microbial, buchanan1997simple}
 
- In the microbial growth literature, mechanistic or “mechanistic‑style” models have often 
- been preferred for describing primary growth curves, sometimes with the implicit 
+ In the microbial growth literature, mechanistic or “mechanistic‑style” primary models have often 
+ been preferred for describing primary growth curves, with the implicit 
  assumption that this makes them inherently superior to phenomenological alternatives 
- \citep{baranyi1995mathematics,peleg2011microbial}. However, as Peleg and Corradini note, a 
+ \citep{baranyi1995mathematics,peleg2011microbial}. However, a 
  true mechanistic interpretation of a growth model should be supported by microscopic or 
- physiological evidence. The mechanistic label, in many cases, is therefore more 
- aspirational than demonstrable. It follows that mechanistic status alone should not grant a 
- model special status; rather, model selection should be guided by criteria such as 
- parsimony, goodness of fit, and convenience \citep{peleg2011microbial}.
+ physiological evidence \citep{peleg2011microbial}. The mechanistic label is therefore often more aspirational than 
+ demonstrable. It follows that mechanistic status alone should not grant a model special 
+ status, and model selection should be guided by parsimony, goodness of fit, and 
+ convenience \citep{peleg2011microbial}.
  
 The formulation of secondary growth models for factors like temperature are vital. 
-Temperature is a central driver of growth because biochemical reaction rates increase exponentially with temperature, accelerating enzymatic processes and, consequently, cellular growth. Arrhenius‑type equations have 
-therefore been widely used to describe how growth 
-rates change with temperature \citep{peleg2012arrhenius}. However, most biological processes exhibit a thermal optimum, beyond which further heating leads to a rapid decline\citep{arnoldi2025universal}. In addition, the mechanistic basis of the arrhenius equation comes from gas‑phase reactions expressed in moles, which may not necessarily apply 
-to cells or enzymes \citep{peleg2011microbial}. Despite these mechanistic concerns, many studies focused on food safety still 
-rely on data from only three or four temperature points \citep{peleg2012arrhenius}. With such sparse 
-information, it is difficult to determine whether temperature can consistently predict the 
-growth rate across different bacterial strains and growth environments. 
+Temperature is a central driver of growth because biochemical reaction rates increase 
+exponentially with temperature, accelerating enzymatic processes and, consequently, cellular 
+growth. Arrhenius‑type equations have therefore been widely used to describe how growth 
+rates change with temperature \citep{peleg2012arrhenius}. However, most biological processes 
+exhibit a thermal optimum, beyond which further heating leads to rapid 
+decline\citep{arnoldi2025universal}. In addition, the mechanistic basis of the arrhenius 
+equation comes from gas‑phase reactions expressed in moles, which may not apply 
+to cells or enzymes \citep{peleg2011microbial}. Despite these mechanistic concerns, many 
+studies compute arrhenius parameters from only three or four temperature points 
+\citep{peleg2012arrhenius}. With such sparse information, it is difficult to determine 
+whether temperature can consistently predict growth rate across different microbial strains 
+and environments.
 
 
-These uncertainties are not independent: the maximum growth rate from a primary model feeds directly into secondary model fitting. 
+These uncertainties are not independent and primary model choice propagates directly into secondary model fitting. 
 Evaluating both levels together is therefore essential.
-the relevant range of mechanistic justification and complexity are considered here: the Buchanan three‑phase linear model, the four‑parameter Baranyi model, and a simple linear model. The Baranyi model used here is a re‑parameterisation of the original six‑parameter formulation; 
+the relevant range of mechanistic justification and complexity are considered here: the 
+Buchanan three‑phase linear model, the four‑parameter Baranyi model, and a simple linear 
+model. The Baranyi model used here is a re‑parameterisation of the original six‑parameter 
+formulation; 
 it is a growth rate equation and could in that sense be considered the most 
-'mechanistic' of the three \citep{baranyi1997simple}. The Buchanan model is a piecewise linear model: although 
+'mechanistic' of the three \citep{baranyi1997simple}. The Buchanan model is a piecewise linear model, although 
 algebraically simpler than Baranyi, it retains a physiological basis by tying its 
-parameters to single‑cell behaviour \citep{buchanan1997simple}. Finally, the simple linear model has no mechanistic or 
-physiological basis and is intended  as an empirical description that may fit well over 
-single phases of the growth curve, while also being the simplest and arguably the easiest to 
-interpret.
+parameters to single‑cell behaviour \citep{buchanan1997simple}. Finally, the simple linear 
+model has no mechanistic basis and is an empirical description that may fit well over 
+single phases of the growth curve, while also being the most parsimonious.
 
-It is not known which model performs best across a range of practical situations. \cite{buchanan1997simple} found that their three-phase linear model and the six-parameter Baranyi–Roberts model yielded broadly similar fits, favouring the simpler formulation on grounds of parsimony. 
-In the present work we analyse the four‑parameter primary Baranyi model, rather than the 
+It is not known which model performs best across a range of practical situations. 
+\cite{buchanan1997simple} found that their Buchanan model and the six-parameter 
+Baranyi model yielded similar fits, favouring the simpler formulation on grounds of parsimony. 
+In the present work we analyse the four‑parameter Baranyi model, rather than the 
 original six‑parameter formulation. This re‑parameterisation removes two curvature/
 adjustment parameters that were reported to be “instable to fit” \citep{baranyi1997simple}. 
-\citet{zwietering1990modeling} found that linear models were adequate in only around 20--30\% of growth curves, with sigmoidal models providing consistently better fits across well-sampled data. Though their datasets may not reflect the diversity of species, media, and data quality found in broader experimental compilations.
+\citet{zwietering1990modeling} found sigmoidal models consistently outperformed linear alternatives, though their model comparison did not penalise for complexity, unlike many model selection methods \citep{johnson2004model}.
 
-Growth model parameters  can differ widely between studies as they are strongly affected by experimental conditions including temperature, pH, and water activity, 
-\citep{peleg2011microbial}. Systematic evaluation of these gorth models across diverse datasets remains limited, and it is similarly unclear how consistently an Arrhenius-type secondary model can predict maximum growth rate across varying conditions and primary model choices. These gaps motivate the two research questions addressed in this study:
+Growth model parameters can differ widely between studies as they are strongly affected by 
+experimental conditions including temperature, pH, and water activity, 
+\citep{peleg2011microbial}. Systematic evaluation of these growth models across diverse 
+datasets remains limited, and it is similarly unclear how consistently an Arrhenius-type 
+secondary model can predict maximum growth rate across varying conditions and primary model 
+choices. These gaps motivate the two research questions addressed in this study:
 
-Do more complex, mechanistic-style primary models provide better descriptions of bacterial growth curves than simpler phenomenological alternatives across a diverse range of experimental conditions?
-
-Does temperature effect growth rate in an arrhaneous-like manner, and is this relationship consistent across primary model choices?
+\begin{enumerate}
+\item Do more complex, mechanistic-style primary models provide better descriptions of microbial growth curves than simpler phenomenological alternatives across a diverse range of experimental conditions?
+\item Does maximum specific growth rate respond to temperature in an Arrhenius-like manner, and is this relationship consistent across primary model choices?
+\end{enumerate}
 
 \section{Methodology}
 
 \subsection{Growth equations}
 
-Three different growth equations were used to model bacterial population dynamics.
+Three different growth equations were used to model microbial population dynamics.
 
-\textbf{Linear Model:} A simple linear model representing constant growth rate.
+A simple linear model representing constant growth rate.
 \begin{equation}
 N(t) = at + b
 \label{eq:linear}
 \end{equation}
 
-\textbf{Baranyi Model \citep{grijspeerdt1999estimating}:} A mechanistic model that accounts for lag phase adjustment and describes the transition from lag to exponential growth.
+The Baranyi model \citep{grijspeerdt1999estimating} is a growth-rate mechanistic model.
 \begin{equation}
 N(t) = N_{\text{max}} + \log_{10}\left(\frac{-1 + e^{r_{\text{max}} t_{\text{lag}}} + e^{r_{\text{max}} t}}{e^{r_{\text{max}} t} - 1 + e^{r_{\text{max}} t_{\text{lag}}} \cdot 10^{N_{\text{max}} - N_0}}\right)
 \label{eq:baranyi}
 \end{equation}
 
-\textbf{Buchanan Model \citep{buchanan1997} (Three-Phase Logistic):} A piecewise model explicitly dividing growth into three distinct phases: lag, exponential, and stationary.
+The Buchanan Model \citep{buchanan1997simple} is a piecewise model dividing growth into three linear phases.
 
 \begin{equation}
 N(t) = N_0, \quad t < t_{\text{lag}}
@@ -159,15 +185,20 @@ t > t_{\text{lag}} + \dfrac{(N_{\text{max}} - N_0)\ln(10)}{r_{\text{max}}}
 \label{eq:buchanan}
 \end{equation}
 
-\noindent where $N(t)$ is the population density at time $t$, $N_0$ is the initial population density, $N_{\text{max}}$ is the maximum population density, $r_{\text{max}}$ is the maximum specific growth rate, $t_{\text{lag}}$ is the lag time, $a$ is the slope, and $b$ is the intercept.
+\noindent where $N(t)$ is the $log_{10}$ population at time $t$, $N_0$ is the $log_{10}$ 
+population at $t = 0$, $N_{\text{max}}$ is the maximum population, $r_{\text{max}}$ is the 
+maximum specific growth rate, $t_{\text{lag}}$ is the lag time, $a$ is the slope, and $b$ is the intercept.
 
 
 
 \subsection{Data processing}
 
-I assumed time values below zero and population values at and below zero to be input errors and excluded them from the dataset. I then grouped growth curves by species, medium, citation, and temperature to allow for consistent growth conditions. I removed curves containing fewer than six data points from the analysis: since the model estimates four parameters, a minimum of five degrees of freedom is required, with one additional observation necessary to satisfy the correction term in the AICc criterion.
-
-I then log transformed population values for several reasons. Log-transformation allowed for standardised comparison of results across models, . Growth phases are exponential growth, which means linear models are well suited when log transformed. Finally, early-phase growth at low population densities is of equal practical importance to late-phase dynamics in food biology and microbial safety applications [CITE].
+I assumed time values below zero and population values at and below zero to be input errors 
+and excluded them from the dataset. I then grouped growth curves by species, medium, 
+citation, and temperature to allow for consistent growth conditions. I removed curves 
+containing fewer than six data points from the analysis: since the model estimates four 
+parameters, a minimum of five degrees of freedom is required, with one additional 
+observation necessary to satisfy the correction term in the AICc criterion. Population values were log-transformed to standardise comparison across models, linearise the exponential growth phase, and ensure early-phase dynamics at low densities were weighted equally to late-phase dynamics in the analysis.
 \subsection{Model Fitting}
 
 I used non-linear least squares to fit the Buchanan and Baranyi models, with 
@@ -189,13 +220,24 @@ attempt.
 
 \subsection{Model Selection}
 
-I performed model selection using Akaike weights derived from AICc. AICc penalises model complexity relative to sample size, preventing overfitting by models with additional parameters that contribute little explanatory power. I used AICc as no growth curve reached the 160 observations required to satisfy the recommended 40-observations-per-parameter threshold for AIC \citep{johnson2004model}. I used this to calculate Akaike weights, which can be interpreted as the probability that model $_i_$ is the best model for the data and the set of models considered.
+I performed model selection using Akaike weights derived from AICc. AICc penalises model 
+complexity relative to sample size, preventing overfitting by models with additional 
+parameters that contribute little explanatory power. I used AICc as no growth curve reached 
+the 160 observations required to satisfy the recommended 40-observations-per-parameter 
+threshold for AIC \citep{johnson2004model}. I used this to calculate Akaike weights, which 
+can be interpreted as the probability that model $_i_$ is the best model for the data and 
+the set of models considered.
 
-I compared weights both across all three models simultaneously and in pairwise combinations, with model support quantified by counting the number of growth curves exceeding various Akaike weight thresholds. I included pairwise comparisons because, when evaluated across many growth curves, structurally similar models may dilute weight between them, reducing threshold counts and inflating support for a more distinct model regardless of its true fit. 
+I compared weights both across all three models simultaneously and in pairwise combinations, 
+with model support quantified by counting the number of growth curves exceeding various 
+Akaike weight thresholds. I included pairwise comparisons because, when evaluated across 
+many growth curves, structurally similar models may dilute weight between them, reducing 
+threshold counts and inflating support for a more distinct model regardless of its true fit. 
 
 \subsection{Thermal Performance}
 
-To evaluate the effect of temperature on maximum growth rate, I restructured the Arrhenius equation by taking the natural logarithm of both sides.
+To evaluate the effect of temperature on maximum growth rate, I restructured the Arrhenius 
+equation by taking the natural logarithm of both sides.
 
 From:
 
@@ -211,14 +253,38 @@ $$
 where, $T$ is the temperature in Kelvin, $E$ is the activation energy, $k_B$ is Boltzmann's constant,
 $r_0$ is the pre-exponential factor, and $r_{\max}(T)$ is the maximum
 specific growth rate at temperature $T$.
-This linearises Arrhenius equation, and allows me to examin how temperature effects the maximum specific growth rate using a linear mixed model. The response variable was $ln(r_{\max}(T))$ and the explanatory variables were a two level fixed factor of model type (Buchanan or Baryani) and a standardised continuous variable of  $1/T$. Temperature was standardised to improve interpretability and to reduce correlation between intercept and slope cause by very small $1/T$ values. 
-I included both variables additively as I assumed them to be independent. Specifically, the choice of growth model may influence the estimation of absolute growth capacity (the pre exponential factor), however I dont expect it to alter the organisms underlying sensitivity to temperature (the activation energy). Citation, medium and species were all initially fitted as random effects to account for non independence between similar growth conditions, but species was removed as it explained no variation and to make it possible to calculate conditional and marginal $R^2$. I visually verified model assumptions, including residual normality and homoscedasticity, using diagnostic plots. The linear model was not considered in this analysis as it's  parameters have no underlying biological meaning.
+This linearises the Arrhenius equation, and allows me to examine how temperature affects the 
+maximum specific growth rate using a linear mixed model. The response variable was 
+$ln(r_{\max}(T))$ and the explanatory variables were a two level fixed factor of model type 
+(Buchanan or Baranyi) and a standardised continuous variable of $1/T$. Temperature was 
+standardised to improve interpretability and to reduce correlation between intercept and 
+slope caused by very small $1/T$ values. 
+I included both variables additively as I assumed them to be independent. Specifically, the 
+choice of growth model may influence the estimation of absolute growth capacity (the pre 
+exponential factor), however I don't expect it to alter the organism's underlying sensitivity 
+to temperature (the activation energy). Citation, medium and species were all initially 
+fitted as random effects to account for non independence between similar growth conditions, 
+but species was removed as it explained no variation and to make it possible to calculate 
+conditional and marginal $R^2$. I visually verified model assumptions, including residual 
+normality and homoscedasticity, using diagnostic plots. The linear model was not considered 
+in this analysis as its parameters have no underlying biological meaning.
 
 
 
 \subsection{Computational Tools}
 
-All analyses were conducted in R version 4.3.3 \citep{R}. \texttt{Tidyverse} \citep{tidyverse} was used for data manipulation and wrangling. Growth curves were visualised using \texttt{ggplot2} \citep{ggplot}, and \texttt{ggeffects} \citep{ggeffects}. Non-linear least squares was performed using the Levenberg-Marquardt algorithm implemented in \texttt{minpack.lm} \citep{minpack}, with multi-start via \texttt{nls.multstart} \citep{multstart}. Model diagnostics were assessed using \texttt{nlstools} \citep{nls}, and model selection was based on AICc values calculated with \texttt{AICcmodavg} \citep{AICcmodavg-package}. Rolling window regressions for parameter estimation used \texttt{zoo} \citep{zoo}. Linear mixed-effects models examining thermal performance were fitted using \texttt{lme4} \citep{lmer4}, with significance testing performed using \texttt{lmerTest} \citep{lmer_test} and model diagnostics using the \texttt{performance} \citep{performance} and \texttt{see} \citep{see} packages.
+All analyses were conducted in R version 4.3.3 \citep{R}. \texttt{Tidyverse} 
+\citep{tidyverse} was used for data manipulation and wrangling. Growth curves were 
+visualised using \texttt{ggplot2} \citep{ggplot}, and \texttt{ggeffects} \citep{ggeffects}. 
+Non-linear least squares was performed using the Levenberg-Marquardt algorithm implemented 
+in \texttt{minpack.lm} \citep{minpack}, with multi-start via \texttt{nls.multstart} 
+\citep{multstart}. Model diagnostics were assessed using \texttt{nlstools} \citep{nls}, and 
+model selection was based on AICc values calculated with \texttt{AICcmodavg} 
+\citep{AICcmodavg-package}. Rolling window regressions for parameter estimation used 
+\texttt{zoo} \citep{zoo}. Linear mixed-effects models examining thermal performance were 
+fitted using \texttt{lme4} \citep{lmer4}, with significance testing performed using 
+\texttt{lmerTest} \citep{lmer_test} and model diagnostics using the \texttt{performance} 
+\citep{performance} and \texttt{see} \citep{see} packages.
 
 
 
@@ -229,7 +295,7 @@ All analyses were conducted in R version 4.3.3 \citep{R}. \texttt{Tidyverse} \ci
 \section{Results}
 
 \subsection{Summary Statistics}
-I attempted to fit 267 growth across 4212 time points, covering 45 species/strains, 18 
+I attempted to fit 267 growth curves across 4212 time points, covering 45 species/strains, 18 
 mediums, and 10 citations. 17 different temperature values were recorded, ranging from 0.0 
 to 37.0 °C, with an average of 15.69 °C (SD = 10.28 °C). The Buchanan model converged 225 
 times and the Baranyi converged 233 times.
@@ -242,11 +308,11 @@ the Baranyi model provided the best fit for 113 curves, but the linear model, wh
 for 88 curves, was more often selected with very strong support, achieving an Akaike weight 
 (\textgreater 0.95) in 73 instances (Table~\ref{tab:aicc_weights}). 
 Substantial model uncertainty was observed between 
-the two more complex models, with 80 curves showing Akaike weights below 0.8 in the Buchanan–
-Baranyi comparison ((n = 225)); nevertheless, Baranyi outperformed Buchanan overall, 
-receiving strong support ((w \textgreater 0.95)) for 60 vs.\ 11 curves. In contrast, 
+the two more complex models, with 154 curves showing Akaike weights below 0.95 in the Buchanan–
+Baranyi comparison ((n = 225)). Nevertheless, Baranyi outperformed Buchanan overall, 
+receiving strong support (w \textgreater 0.95) for 60 vs.\ 11 curves. In contrast, 
 comparisons involving the linear model were more decisive; when compared pairwise, both the 
-Buchanan and Baranyi models showed strong wins (\textgreater0.95) in 125 and 131 cases, 
+Buchanan and Baranyi models showed strong wins (\textgreater0.95) in 125 and 131 cases 
 respectively. Overall, these results indicate that the more complex Buchanan and Baranyi 
 models describe a similar subset of non‑linear growth curves, with Baranyi receiving 
 stronger support overall. In contrast, the linear model, although less frequently preferred, 
@@ -288,7 +354,7 @@ Buchanan & 0 & 27 & 5 & 7 & 11 & 50 \\
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\textwidth]{Figures/sample_curves.pdf}
+    \includegraphics[width=0.5\textwidth]{../results/sample_curves.pdf}
     \caption{Growth curves with the highest Akaike weight for the Buchanan (A), Baranyi (B), and Linear (C) models. Each point represents a 
 single population measurement and lines represent the fitted curve coloured by model.}
     \label{fig:sample_mod}
@@ -297,15 +363,15 @@ single population measurement and lines represent the fitted curve coloured by m
 
 \subsection{Temperature}
 Maximum growth rates were higher at warmer temperatures and when estimated using the Baranyi 
-model(Figure \ref{fig:rmax}, Table \ref{tab:r_max_model}). 
+model(Figure~\ref{fig:rmax}, Table~\ref{tab:r_max_model}). 
 A linear mixed model found a negative relationship between the natural logarithm 
 of maximum growth rate ($\ln r_{max}$) and the scaled inverse of the product of temperature 
-and Boltzmann constant ($1/k_BT$) (Figure~\ref{fig:arrhenius}, Table~\ref{tab:r_max_model}).
+and Boltzmann constant ($1/k_BT$) (Figure~\ref{fig:rmax}, Table~\ref{tab:r_max_model}).
  For every one standard deviation increase in inverse 
 temperature ($1/k_BT$), $\ln r_{max}$ decreased by $0.79$ (SE = $0.06$, $t = -13.67$). The 
 Buchanan model was found to estimate $\ln r_{max}$ values $0.55$ lower 
-than the Baranyi model (SE = $0.10$, $t = -5.38$). Fixed effects explainned far less 
-variance than the random effects as shown by the difference between the marginale (Marginal 
+than the Baranyi model (SE = $0.10$, $t = -5.38$). Fixed effects explained far less 
+variance than the random effects as shown by the difference between the marginal (Marginal 
 $R^2 = 0.134$), and conditional $R^2$ (Conditional $R^2 = 0.822$). These 
 results suggest that the Baranyi model provides higher maximum growth rate estimates and 
 that temperature sensitivity follows a standard Arrhenius relationship.
@@ -322,8 +388,8 @@ that temperature sensitivity follows a standard Arrhenius relationship.
 \textbf{Coefficient} & \textbf{Estimate $\pm$ \textit{SE}} & \textbf{\textit{t} Value} \\
 \midrule
 (Intercept) & -2.26 $\pm$ 0.61 & -3.72 \\
-inv_temp_K_scaled & -0.79 $\pm$ 0.06 & -13.67 \\
-modelbuchanan_fits & -0.55 $\pm$ 0.10 & -5.38 \\
+Standardised Inverted Temperature (K$^{-1}$) & -0.79 $\pm$ 0.06 & -13.67 \\
+Buchanan Model & -0.55 $\pm$ 0.10 & -5.38 \\
 \midrule
 \multicolumn{3}{c}{\textbf{Random Effects}} \\
 \midrule
@@ -336,7 +402,7 @@ Residuals & 0.96 &  \\
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{Figures/rmax_thermal_performance_plot.pdf}
+    \includegraphics[width=1\textwidth]{../results/rmax_thermal_performance_plot.pdf}
     \caption{Relationship between the natural logarithm of maximum specific growth rate 
 ($\ln r_{max}$) and standardised inverse temperature (K$^{-1}$). Each point represents 
 a single growth curve. Regression lines with 95\% confidence intervals are plotted according 
@@ -353,53 +419,123 @@ are coloured by growth model.}
 
 
 
-\section{Disscussion}
+\section{Discussion}
 
-This study investigated whether the mechanistic basis of a model and complexity influences goodness-of-fit to bacterial growth curve data, and whether maximum growth rate follows an Arrhenius-style temperature dependence across two mechanistic models.
+This study investigated whether the mechanistic basis of a model and complexity influences goodness-of-fit to microbial growth curve data, and whether maximum growth rate follows an Arrhenius-style temperature dependence across two mechanistic models.
 
-Model performance depended heavily on data structure and sample size. The linear model performed best when data spanned few phases or contained few points, fitting naturally without forcing transitions between phases (Figure~\ref{fig:linear_low_data}). It also outperformed alternatives when data were sparse across all three phases (Figure~\ref{fig:sample_mod}), as AICc's heavier penalty on additional parameters at low $n$ favoured the simpler model despite others achieving higher likelihood and $R^2$.
+Model performance depended heavily on data structure and sample size. The linear model performed best when data spanned few phases or contained few points, fitting naturally without forcing transitions between phases (Figure~\ref{fig:sample_mod}). It also outperformed alternatives when data were sparse across all three phases, as AICc's heavier penalty on additional parameters at low $n$ favoured the simpler model despite others achieving higher likelihood and $R^2$.
 
 More complex and mechanistic three phased models generally performed better than the linear model when two or more growth phases were present.
-Both describe three phased linear growth and estimate the same parameters (tlag, Nmax, N0 and rmax) as such, these ended up being relatively similar for many growth curves (N=87 for akaike weight <0.8, ~\ref{tab:aicc_weights}). ~\cite{buchanan1997simple} argues that when these are similar, simpler models like buchanan tend to be superior because of increased robustness.
+Both describe three-phase linear growth and estimate the same parameters ($t_{\text{lag}}$, $N_{\text{max}}$, $N_0$ and $r_{\text{max}}$); as such, these ended up being relatively similar for many growth curves (N=154 for Akaike weight \<0.9, Table~\ref{tab:aicc_weights}). \cite{buchanan1997simple} argues that when these are similar, simpler models like Buchanan tend to be superior due to increased robustness.
 
 
-Additionally, Buchanan's three-phase linear model outperformed the Baranyi model in a small subset 
-of curves where data were sparse or unevenly distributed, particularly those with few 
-observations in the transition phases (Figure~\ref{fig:buchanan}). This mirrors earlier 
-findings that, owing to its simplicity, the three-phase linear model can be more robust 
-than sigmoidal models when phase coverage is poor or the number of time points is 
-limited \citep{buchanan1997simple}.
+Additionally, Buchanan's three-phase linear model outperformed the Baranyi model in a small 
+subset of curves where data were sparse or unevenly distributed, particularly those with few 
+observations in the transition phases (Figure~\ref{fig:sample_mod}). This mirrors earlier 
+findings that the three-phase linear model can be more robust than sigmoidal models when 
+phase coverage is poor or time points are limited \citep{buchanan1997simple}.
 
-Despite some exceptions, the Bayarni model was overall superior to the Buchanan model, with higher AICc scores \> 0.95 and higher convergence rates (Figure ~\ref{tab:aicc_weights}). This was not found in the analysis by ~\cite{buchanan1997simple}, where Buchanan model had similar fits when compared to the six parameter baryani model. Moreover, they found the Baryani model had more growth curves where parameters could not be estimated. Our results on the other hand support the claims by \cite{baranyi1997simple}, where he stated that using a four parameter model instead of six would have solved many of the non covergence issues \cite{buchanan1997simple} discussed.
+Despite some exceptions, the Baranyi model was overall superior to the Buchanan model, with 
+higher AICc scores \> 0.95 and higher convergence rates (Figure ~\ref{tab:aicc_weights}). 
+This was not found by ~\cite{buchanan1997simple}, where the Buchanan model had 
+similar fits when compared to the six-parameter Baranyi model. Moreover, they found the 
+Baranyi model had more growth curves where parameters could not be estimated. Our results 
+support the claims by \cite{baranyi1997simple}, that using a four-parameter model instead 
+of six would resolve many of the non-convergence issues \cite{buchanan1997simple} discussed.
 
-One of the key advantages of the Baryani model is that it is able to model the transition between phases more accurately, as shown in figure \ref{fig:sample_mod}. \cite{buchanan1997simple} motivate their model by considering single cells, which show an abrupt transition from non‑division to division, and then argue that at the population level, this can be approximated by a straight lag phase followed by a period of constant specific growth rate. On the other hand, Baranyi's model represents a population-level transition arising from variation in individual cell physiology and lag times, with the smooth transition reflecting the aggregation of cells with differing adjustment periods \citep{buchanan1997simple, baranyi1997simple}. As noted by ~\cite{buchanan1997simple}, when there is substantial variability among individual cells in either of the two lag‑phase periods (adaptation or metabolic build up), the population‑level transition from lag to exponential growth becomes smooth rather than abrupt.
+One of the key advantages of the Baranyi model is that it quantifies the transition 
+between phases more accurately, as shown in figure \ref{fig:sample_mod}. 
+\cite{buchanan1997simple} motivate their model by considering single cells, which show an 
+abrupt transition from non‑division to division, and argue that at the population 
+level this can be approximated by a straight lag phase followed by constant specific growth 
+rate. Baranyi's model instead represents a population-level transition arising from variation 
+in individual cell physiology and lag times, with the smooth transition reflecting the 
+aggregation of cells with differing adjustment periods 
+\citep{buchanan1997simple, baranyi1997simple}. As noted by \cite{buchanan1997simple}, when 
+there is substantial variability among individual cells in either lag‑phase period, the 
+population‑level transition from lag to exponential growth becomes smooth rather than abrupt.
 
-Additionally, Buchanan's abrupt transition between growth and stationary phase justified on the basis that most growth experiments use continuously stirred and homogeneous liquid systems\citep{buchanan1997simple}.  In these conditions, transitions are more abrupt as bacteria grow as dispersed individual cells rather than micro-colonies \citep{buchanan1997simple}. However, 134 out of 267 curves in our dataset were conducted in solid media, where colony-level heterogeneity may produce smoother transitions, potentially favoring the Baranyi model.
+Additionally, Buchanan's abrupt transition between growth and stationary phase is justified 
+on the basis that most growth experiments use continuously stirred homogeneous liquid 
+systems, where transitions are more abrupt as microbes grow in individual cells rather than micro-colonies \citep{buchanan1997simple}. However, 
+134 out of 267 curves in our dataset were conducted in solid media, where colony-level 
+heterogeneity may produce smoother transitions, potentially favouring the Baranyi model.
 
-Beyond differences in fit, the choice of primary model also influenced parameter estimation, with Baranyi’s model yielding a higher estimate of $ r_{max}$⁡. \cite{buchanan1997simple} found a similar results, with buchanan models have generation times 22 to 32\% greater than baryani.
+Beyond differences in fit, the choice of primary model also influenced parameter estimation, 
+with Baranyi’s model yielding a higher estimate of $ r_{max}$⁡. \cite{buchanan1997simple} 
+found a similar result, with Buchanan models having generation times 22 to 32\% greater than Baranyi.
 
-At the same time, the estimated influence of temperature itself was somewhat stable, with the moderate standard error indicating activation energies were similar among the different growth curves. The confidence interval for the temperature coefficient remained positive, suggesting that growth rates in these datasets did not reach the denaturation region \citep{peleg2012arrhenius}. While this followed a Arrhenius-like curve, it should also be emphasized that good statistical fit does not itself validate its underlying mechanism; it only shows that the curve shape matches the data. Over the biologically relevant temperature range, simple exponential models have been shown to provide comparable fits \cite{peleg2012arrhenius}. Finally, temperature explained only about 11\% of the variance, with the majority attributed to between‑study differences. This likely reflects variation in experimental conditions and underscores the need for additional secondary models, such as those relating to pH or water content\citep{peleg2011microbial}, to capture other factors influencing growth.
+At the same time, the estimated influence of temperature on parameters was broadly stable, with the 
+moderate confidence intervals indicating similar activation energies across growth curves. The 
+confidence interval for the temperature coefficient remained positive, suggesting growth 
+rates did not reach the denaturation region \citep{peleg2012arrhenius}. While this followed 
+an Arrhenius-like pattern, good statistical fit does not validate the underlying mechanism; 
+it only shows that the curve shape matches the data. Over the biologically relevant 
+temperature range, simple exponential models have been shown to provide comparable fits 
+\citep{peleg2012arrhenius}. Finally, temperature explained only about 13.4\% of the variance, 
+with the majority attributed to between‑study differences, likely reflecting variation in 
+experimental conditions. This underscores the need for additional secondary models such as pH or water content \citep{peleg2011microbial} to capture other factors influencing growth.
 
-The primary models used here are optimised for the first three growth phases and do not include a mortality phase \citep{peleg2011microbial}, though this is of secondary concern in food safety contexts. While flexible cubic or quadratic models could in principle capture the decline stage, they tend to lack biological interpretability and have performed poorly in describing the first three phases \citep{zwietering1990modeling}. Future refinements could improve the temperature analysis by fitting a weighted linear mixed model, weighting $r_{max}$ by the inverse of its variance and applying the delta method to place estimates in log space. Finally, as $t_{lag}$ reflects the time required for enzymatic and metabolic preparation for growth, it may similarly exhibit Arrhenius-like temperature dependence and represents a natural extension of the temperature analysis explored here.
+The primary models used here are optimised for the first three growth phases and do not 
+include a mortality phase \citep{peleg2011microbial}, though this is of secondary concern in 
+food safety contexts. While flexible cubic or quadratic models could in principle capture 
+the decline stage, they tend to lack biological interpretability and have performed poorly 
+in describing the first three phases \citep{zwietering1990modeling}. Future refinements 
+could improve the temperature analysis by fitting a weighted linear mixed model, weighting 
+$r_{max}$ by the inverse of its variance and applying the delta method to place estimates in 
+log space. Finally, as $t_{lag}$ reflects the time required for enzymatic and metabolic 
+preparation for growth, it may similarly exhibit Arrhenius-like temperature dependence and 
+represents a natural extension of the temperature analysis explored here \citep{peleg2012arrhenius}.
 
-Other statistical methods could also prove useful to predict growth parameter. Maximum likelihood could be used by optimising the log-likelihood for each curve 
-and model. If we assume normally distributed and homoscedastic errors, this method 
-is equivalent to the NLS method already in use (citation??). However, the strength 
-of maximum likelihood is that it would also allow us to use different error models, 
-which may help improve fit for some models. It should be noted that XX growth failed 
-the Shapiro--Wilk normality test, which suggests other data distributions could be 
-more appropriate in those cases. However, maximum likelihood share some limitations with NLS as confidence intervals require either Hessian-based approximations or bootstrapping, the optimisation can converge on local optima, and results are sensitive to the choice of error distribution.
+Other statistical methods could also prove useful for predicting growth parameters. Maximum 
+likelihood could be used by optimising the log-likelihood for each curve and model. Assuming 
+normally distributed and homoscedastic errors, this method is equivalent to NLS. However, 
+maximum likelihood would also allow use of different error models, which may improve fit. Maximum likelihood shares some 
+limitations with NLS, including confidence intervals requiring Hessian-based approximations or 
+bootstrapping, optimisation converging on local optima, and results being sensitive to the 
+choice of error distribution.
 
 
-Bayesian parameter estimation can also be used for a similar purpose, and this has been done effectively (Pouillot et al., 2003). For each growth curve and for the overall model, we could specify prior distributions for the parameters and then compute posterior distributions using MCMC. Priors allow us to incorporate biological knowledge and results from previous studies. The resulting posterior distributions and their credible intervals provide a measure of uncertainty about parameter values. Furthermore, hierarchical priors on hyperparameters can be used to describe differences between strains or species, allowing information to be pooled across curves while accounting for between‑strain variability (Pouillot et al., 2003). However, MCMC can be computationally intensive. In addition, when informative priors are used, care is needed for curves with small sample sizes, as the prior can become disproportionately influential.
+Bayesian parameter estimation can also be used for a similar purpose, and has been applied 
+effectively (Pouillot et al., 2003). For each growth curve we could specify prior 
+distributions for the parameters and compute posterior distributions using MCMC. Priors 
+allow incorporation of biological knowledge from previous studies. The resulting posterior 
+distributions and credible intervals provide a measure of parameter uncertainty. Hierarchical 
+priors on hyperparameters can further describe differences between strains or species, 
+pooling information across curves while accounting for between‑strain variability 
+(Pouillot et al., 2003). However, MCMC can be computationally intensive, and when 
+informative priors are used, care is needed with small sample sizes as the prior can become 
+disproportionately influential.
 
 
-Machine learning offers several flexible methods for predicting bacterial growth. Data from all growth curves, together with metadata, such as temperature, pH, strain and medium, can be pooled to predict population or log‑population over time. Tree‑based ensembles, like random forests, boosted regression trees, can model complex nonlinear interactions between environmental variables \citepp{ndiokwere2026ml_bacterial_growth}. Time‑series neural networks such as RNNs and especially LSTMs use previous observations to inform future predictions and have shown good performance for microbial growth \citep{panagou2007application, saetae2025machine}. Support Vector Regression has also been applied, for example to modelling pH dynamics, and may require less data than some deep‑learning methods \citep{saetae2025machine}. Overall, these approaches can handle noisy data, capture nonlinear relationships between many environmental variables that may have high parrallelism,  and general robustness\citep{panagou2007application}. Hybrid models that combine methods, such as LSTM and SVR, have also been proposed \citep{saetae2025machine}.
+Machine learning offers flexible methods for predicting microbial growth. Data from all 
+growth curves, together with metadata like temperature, species and medium, can be 
+pooled to predict population over time. Methods such as random forests and 
+boosted regression trees can capture nonlinear interactions between environmental 
+variables \citep{ndiokwere2026ml_bacterial_growth}. Time‑series neural networks such as 
+RNNs and LSTMs use previous observations to inform future predictions and have shown good 
+performance for microbial growth \citep{panagou2007application, saetae2025machine}. Support 
+Vector Regression (SVR) has also been applied and may require less data than deep‑learning methods 
+\citep{saetae2025machine}. These approaches can handle noisy data, capture nonlinear 
+relationships, and are generally robust \citep{panagou2007application}. Hybrid models 
+combining methods such as LSTM and SVR have also been proposed \citep{saetae2025machine}.
 
-However, machine‑learning models generally require substantial, well‑balanced training and test datasets and are often less interpretable than mechanistic parametric models, providing limited insight into underlying metabolic processes. They do not usually yield confidence or credible intervals without additional procedures, can be computationally intensive, and are prone to overfitting if not carefully regularised and validated. Moreover, they may extrapolate poorly outside the range of training conditions; for instance, \citet{ndiokwere2026ml_bacterial_growth} found that their model failed to predict growth at previously unobserved pH values.
+However, machine‑learning models generally require substantial, well‑balanced training and 
+test datasets and are often less interpretable than mechanistic models, providing limited 
+insight into underlying metabolic processes. They do not usually yield confidence or credible 
+intervals without additional procedures, can be computationally intensive, and are prone to 
+overfitting if not carefully regularised and validated. They may also extrapolate poorly 
+outside the range of training conditions; for instance, \citet{ndiokwere2026ml_bacterial_growth} 
+found that their model failed to predict growth at previously unobserved pH values.
 
-Despite the potential improvements outlined above, NLS provides a robust framework for the analyses conducted here. This study has shown that while the linear model performs best when data are sparse or confined to a single growth phase, the four-parameter Baranyi model is generally superior across the full range of growth curve . Maximum specific growth rate responds to temperature in an Arrhenius-like manner that is broadly consistent across conditions and primary model choices, suggesting that combining these two models provides a reliable framework for predicting bacterial growth across diverse environments.
-
+Despite the potential improvements outlined above, NLS provides a robust framework for the 
+analyses conducted here. This study has shown that while the linear model performs best when 
+data are sparse or confined to a single growth phase, the four-parameter Baranyi model is 
+generally superior across the full range of growth curve . Maximum specific growth rate 
+responds to temperature in an Arrhenius-like manner that is broadly consistent across 
+conditions and primary model choices, suggesting that combining these two models provides a 
+reliable framework for predicting microbial growth across diverse environments.
+\newpage
 \bibliographystyle{apalike}
 \bibliography{citations}
 

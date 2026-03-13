@@ -212,58 +212,8 @@ run_simple_linear_models <- function(data, model_name, group_var = "id_num") {
 
 
 # ====================================================================
-# region - Step 5: Run model diagnostic
 # ====================================================================
-
-# diagnose fits function
-diagnose_fits <- function(fit_list) {
-  
-  do.call(rbind, lapply(fit_list, function(x) {
-    
-    if (is.null(x$fit)) return(NULL)
-    
-    tryCatch({
-      
-      resid_obj <- nlsResiduals(x$fit)
-      tests     <- test.nlsResiduals(resid_obj)
-      
-      p_shapiro <- tests$p.value[1]
-      p_runs    <- tests$p.value[2]
-      
-      n_obs <- length(residuals(x$fit))
-      n_par <- length(coef(x$fit))
-      
-      data.frame(
-        group        = x$group,
-        model        = x$model,
-        n_obs        = n_obs,
-        df           = n_obs - n_par,       # residual degrees of freedom
-        p_shapiro    = p_shapiro,
-        p_runs       = p_runs,
-        pass_shapiro = p_shapiro > 0.05,
-        pass_runs    = p_runs    > 0.05,
-        pass_both    = p_shapiro > 0.05 & p_runs > 0.05
-      )
-      
-    }, error = function(e) NULL)
-  }))
-}
-
-# summarise_diagnostics function
-summarise_diagnostics <- function(diag_df) {
-  cat(sprintf("\nDiagnostics for model: %s\n", unique(diag_df$model)))
-  cat(sprintf("  Total fits assessed : %d\n",  nrow(diag_df)))
-  cat(sprintf("  Median n_obs        : %d\n",  median(diag_df$n_obs)))
-  cat(sprintf("  Median df           : %d\n",  median(diag_df$df)))
-  cat(sprintf("  Pass Shapiro-Wilk   : %d/%d\n", sum(diag_df$pass_shapiro), nrow(diag_df)))
-  cat(sprintf("  Pass runs test      : %d/%d\n", sum(diag_df$pass_runs),    nrow(diag_df)))
-  cat(sprintf("  Pass both tests     : %d/%d\n", sum(diag_df$pass_both),    nrow(diag_df)))
-}
-
-
-# endregion
-# ====================================================================
-# region - Step 6: Run model evaluation
+# region - Step 5: Run model evaluation
 # ====================================================================
 
 # Helper function to collect AIC/AICc/BIC from a list of fit lists
@@ -340,7 +290,7 @@ summarise_weights <- function(weights) {
 # endregion
 # ====================================================================
 # ====================================================================
-# region - Step 7: Evaluate the effect of temperature
+# region - Step 6: Evaluate the effect of temperature
 # ====================================================================
 filter_invalid <- function(df, col) {
   df %>%
@@ -385,7 +335,7 @@ extract_coefficients <- function(fit_list, data, group_var = "id_num") {
 # endregion
 
 # ====================================================================
-# region - Step 8: Create plots
+# region - Step 7: Create plots
 # ====================================================================
 
 # FUNCTION: plot_highest_weight_example
@@ -472,7 +422,7 @@ plot_highest_weight_example <- function(weights, target_model, fit_lists, data,
 
 # endregion
 # ====================================================================
-# region - Step 9: Main function
+# region - Step 8: Main function
 # ====================================================================
 
 main <- function() {
@@ -514,9 +464,6 @@ cat(sprintf("Baranyi : %d/%d converged\n",
 cat(sprintf("Buchanan: %d/%d converged\n",
             sum(sapply(buchanan_fits, function(x) !is.null(x$fit))), length(buchanan_fits)))
 
-
-diagnose_fits(baranyi_fits) %>% summarise_diagnostics()
-diagnose_fits(buchanan_fits) %>% summarise_diagnostics()
 
 # run a linear model (simple: y = a + bx)
 linear_fits <- run_simple_linear_models(
