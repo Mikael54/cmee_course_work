@@ -60,17 +60,19 @@ else
 
     cd "$RESULTS_DIR"
 
-    # Run pdflatex twice for proper cross-references
+    # First pass: generate .aux file
     pdflatex -interaction=nonstopmode report.tex > /dev/null 2>&1
 
-    # Run bibtex if citations.bib was copied
+    # Run bibtex to resolve citations from the .aux file
     if [ -f "citations.bib" ]; then
-        bibtex report > /dev/null 2>&1
+        bibtex report || true  # bibtex may return non-zero even on success; ignore exit code
+        # Two more pdflatex passes needed to fully resolve citations
+        pdflatex -interaction=nonstopmode report.tex > /dev/null 2>&1
+        pdflatex -interaction=nonstopmode report.tex > /dev/null 2>&1
+    else
+        # Final compilation (no citations)
         pdflatex -interaction=nonstopmode report.tex > /dev/null 2>&1
     fi
-
-    # Final compilation
-    pdflatex -interaction=nonstopmode report.tex > /dev/null 2>&1
 
     if [ $? -eq 0 ]; then
         echo "LaTeX compilation completed successfully"
@@ -98,3 +100,6 @@ if [ -f "$RESULTS_DIR/report.pdf" ]; then
     echo "  - results/report.pdf (final report)"
 fi
 echo ""
+
+
+
