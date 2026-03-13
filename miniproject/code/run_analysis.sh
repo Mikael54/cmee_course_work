@@ -42,40 +42,18 @@ fi
 
 # Step 3: Compile LaTeX Report
 echo "[3/3] Compiling LaTeX report..."
-echo "----------------------------------------------"
+pdflatex latex.tex
+bibtex latex
+pdflatex latex.tex
+pdflatex latex.tex
+mv latex.pdf "$RESULTS_DIR/report.pdf"
+rm -f latex.aux latex.log latex.bbl latex.blg latex.out latex.toc latex.lof latex.lot
 
-if [ ! -f "latex.tex" ]; then
-    echo "Warning: latex.tex not found in code directory"
-    echo "Skipping LaTeX compilation"
-else
-    # Compile everything in code/ (where latex.tex and citations.bib both live)
-    # Figures are referenced as ../results/*.pdf
+echo "================================================"
 
-    # First pass: generate .aux file
-    pdflatex -interaction=nonstopmode latex.tex > /dev/null 2>&1 || true
-
-    # Run bibtex to resolve citations
-    bibtex latex
-
-    # Two more pdflatex passes to fully resolve all citation references
-    pdflatex -interaction=nonstopmode latex.tex > /dev/null 2>&1 || true
-    pdflatex -interaction=nonstopmode latex.tex > /dev/null 2>&1 || true
-
-    if [ -f "latex.pdf" ]; then
-        # Move the final PDF to results/
-        mv latex.pdf "$RESULTS_DIR/report.pdf"
-
-        # Clean up auxiliary files
-        rm -f latex.aux latex.log latex.out latex.bbl latex.blg latex.toc latex.lof latex.lot
-
-        echo "LaTeX compilation completed successfully"
-        echo "Report generated: results/report.pdf"
-    else
-        echo "Error in LaTeX compilation"
-        exit 1
-    fi
-fi
-
+echo "Analysis Complete!"
+echo "================================================"
+echo "  - results/report.pdf (final report)"
 echo ""
 echo "================================================"
 echo "Analysis Complete!"
