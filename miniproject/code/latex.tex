@@ -1,5 +1,6 @@
 \documentclass[11pt]{article}
 \usepackage{graphicx} % Required for inserting images
+\usepackage{amsmath}
 
 \usepackage[a4paper, margin=2.5cm]{geometry}
 \usepackage{titling}        % for title page control
@@ -132,7 +133,7 @@ Baranyi model yielded similar fits, favouring the simpler formulation on grounds
 In the present work we analyse the four‑parameter Baranyi model, rather than the 
 original six‑parameter formulation. This re‑parameterisation removes two curvature/
 adjustment parameters that were reported to be “instable to fit” \citep{baranyi1997simple}. 
-\citet{zwietering1990modeling} found sigmoidal models consistently outperformed linear alternatives, though their model comparison did not penalise for complexity, unlike many model selection methods \citep{johnson2004model}.
+\citet{zwietering1990modeling} found sigmoidal models consistently outperformed linear alternatives, though their model comparison did not penalise for complexity, unlike many modern model selection methods \citep{johnson2004model}.
 
 Growth model parameters can differ widely between studies as they are strongly affected by 
 experimental conditions including temperature, pH, and water activity, 
@@ -350,7 +351,7 @@ Buchanan & 0 & 27 & 5 & 7 & 11 & 50 \\
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\textwidth]{sample_curves.pdf}
+    \includegraphics[width=0.5\textwidth]{../results/sample_curves.pdf}
     \caption{Growth curves with the highest Akaike weight for the Buchanan (A), Baranyi (B), and Linear (C) models. Each point represents a 
 single population measurement and lines represent the fitted curve coloured by model.}
     \label{fig:sample_mod}
@@ -398,7 +399,7 @@ Residuals & 0.96 &  \\
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{rmax_thermal_performance_plot.pdf}
+    \includegraphics[width=1\textwidth]{../results/rmax_thermal_performance_plot.pdf}
     \caption{Relationship between the natural logarithm of maximum specific growth rate 
 ($\ln r_{\text{max}}$) and standardised inverse temperature (K$^{-1}$). Each point represents 
 a single growth curve. Regression lines with 95\% confidence intervals are plotted according 

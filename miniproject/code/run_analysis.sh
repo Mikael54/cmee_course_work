@@ -13,11 +13,8 @@ echo ""
 
 RESULTS_DIR="../results"
 
-# Clean up any leftover LaTeX auxiliary and source files from previous runs
-rm -f "$RESULTS_DIR"/*.aux "$RESULTS_DIR"/*.log "$RESULTS_DIR"/*.out \
-      "$RESULTS_DIR"/*.bbl "$RESULTS_DIR"/*.blg "$RESULTS_DIR"/*.toc \
-      "$RESULTS_DIR"/*.lof "$RESULTS_DIR"/*.lot \
-      "$RESULTS_DIR"/report.tex "$RESULTS_DIR"/citations.bib
+# Clean up any leftover LaTeX auxiliary files from previous runs (compile in code/)
+rm -f latex.aux latex.log latex.out latex.bbl latex.blg latex.toc latex.lof latex.lot
 
 # Step 1: Data Preparation
 echo "[1/3] Running data preparation..."
@@ -47,45 +44,36 @@ fi
 echo "[3/3] Compiling LaTeX report..."
 echo "----------------------------------------------"
 
-# Copy latex.tex and citations.bib into results/ for compilation
 if [ ! -f "latex.tex" ]; then
     echo "Warning: latex.tex not found in code directory"
     echo "Skipping LaTeX compilation"
 else
-    cp "latex.tex" "$RESULTS_DIR/report.tex"
-
-    if [ -f "citations.bib" ]; then
-        cp "citations.bib" "$RESULTS_DIR/citations.bib"
-    fi
-
-    cd "$RESULTS_DIR"
+    # Compile everything in code/ (where latex.tex and citations.bib both live)
+    # Figures are referenced as ../results/*.pdf
 
     # First pass: generate .aux file
-    pdflatex -interaction=nonstopmode report.tex > /dev/null 2>&1
+    pdflatex -interaction=nonstopmode latex.tex > /dev/null 2>&1 || true
 
-    # Run bibtex to resolve citations from the .aux file
-    if [ -f "citations.bib" ]; then
-        bibtex report || true  # bibtex may return non-zero even on success; ignore exit code
-        # Two more pdflatex passes needed to fully resolve citations
-        pdflatex -interaction=nonstopmode report.tex > /dev/null 2>&1
-        pdflatex -interaction=nonstopmode report.tex > /dev/null 2>&1
-    else
-        # Final compilation (no citations)
-        pdflatex -interaction=nonstopmode report.tex > /dev/null 2>&1
-    fi
+    # Run bibtex to resolve citations
+    bibtex latex
 
-    if [ $? -eq 0 ]; then
+    # Two more pdflatex passes to fully resolve all citation references
+    pdflatex -interaction=nonstopmode latex.tex > /dev/null 2>&1 || true
+    pdflatex -interaction=nonstopmode latex.tex > /dev/null 2>&1 || true
+
+    if [ -f "latex.pdf" ]; then
+        # Move the final PDF to results/
+        mv latex.pdf "$RESULTS_DIR/report.pdf"
+
+        # Clean up auxiliary files
+        rm -f latex.aux latex.log latex.out latex.bbl latex.blg latex.toc latex.lof latex.lot
+
         echo "LaTeX compilation completed successfully"
         echo "Report generated: results/report.pdf"
-
-        # Clean up all auxiliary and copied source files
-        rm -f *.aux *.log *.out *.bbl *.blg *.toc *.lof *.lot report.tex citations.bib
     else
         echo "Error in LaTeX compilation"
         exit 1
     fi
-
-    cd - > /dev/null
 fi
 
 echo ""
@@ -100,6 +88,8 @@ if [ -f "$RESULTS_DIR/report.pdf" ]; then
     echo "  - results/report.pdf (final report)"
 fi
 echo ""
+
+
 
 
 
